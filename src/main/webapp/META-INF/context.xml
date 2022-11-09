@@ -1,0 +1,12 @@
+<Context>
+    <Resource name="jdbc/root"
+              auth="Container"
+              type="javax.sql.DataSource"
+              maxTotal="8" maxIdle="30" maxWait="10000"
+              username="root" password="root"
+              driverClassName="com.mysql.jdbc.Driver"
+              defaultTransactionIsolation="READ_COMMITTED"
+              url="jdbc:mysql://localhost:3306/mydb?characterEncoding=utf8&amp;sslMode=DISABLED&amp;serverTimezone=UTC"/>
+
+</Context>
+
