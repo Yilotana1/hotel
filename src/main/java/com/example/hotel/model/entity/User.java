@@ -10,6 +10,19 @@ public class User {
     private String phone;
     private User(){}
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
+    }
+
     public static UserBuilder builder(){
         return new UserBuilder();
     }
@@ -22,6 +35,11 @@ public class User {
 
         public UserBuilder id(Long id){
             user.setId(id);
+            return this;
+        }
+
+        public UserBuilder login(String login){
+            user.setLogin(login);
             return this;
         }
         public UserBuilder firstname(String firstname){
