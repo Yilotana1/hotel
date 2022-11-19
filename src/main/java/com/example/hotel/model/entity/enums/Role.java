@@ -8,7 +8,15 @@ public enum Role {
         this.role = role;
     }
 
-    public String getRole() {
+    public static Role getFromString(String role) {
+        switch (role) {
+            case "client": return CLIENT;
+            case "manager": return MANAGER;
+        }
+        return null;
+    }
+
+    public String getName() {
         return role;
     }
 }

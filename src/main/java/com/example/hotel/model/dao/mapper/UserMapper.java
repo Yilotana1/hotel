@@ -8,13 +8,14 @@ import java.sql.SQLException;
 public class UserMapper implements EntityMapper<User> {
     @Override
     public User extractFromResultSet(ResultSet rs) throws SQLException {
-        return User.builder()
-                .id(rs.getLong("id"))
+        var userBuilder = User.builder()
+                .id(rs.getLong("user.id"))
                 .login(rs.getString("login"))
                 .firstname(rs.getString("firstname"))
                 .lastname(rs.getString("lastname"))
+                .password(rs.getString("password"))
                 .email(rs.getString("email"))
-                .phone(rs.getString("phone"))
-                .build();
+                .phone(rs.getString("phone"));
+        return userBuilder.build();
     }
 }

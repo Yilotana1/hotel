@@ -1,35 +1,43 @@
 package com.example.hotel.model.dao.impl;
 
-import com.example.hotel.model.dao.Tools;
 import com.example.hotel.model.dao.UserDao;
 import com.example.hotel.model.dao.mapper.EntityMapper;
 import com.example.hotel.model.entity.User;
+import com.example.hotel.model.entity.enums.Role;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import static com.example.hotel.model.dao.sql.UserSQL.DELETE_USER_BY_ID_SQL;
-import static com.example.hotel.model.dao.sql.UserSQL.INSERT_USER_SQL;
-import static com.example.hotel.model.dao.sql.UserSQL.SELECT_COUNT_USERS;
-import static com.example.hotel.model.dao.sql.UserSQL.SELECT_USER_BY_FULL_NAME_SQL;
-import static com.example.hotel.model.dao.sql.UserSQL.SELECT_USER_BY_ID_SQL;
-import static com.example.hotel.model.dao.sql.UserSQL.SELECT_USER_BY_LIMIT_SQL;
-import static com.example.hotel.model.dao.sql.UserSQL.SELECT_USER_BY_LOGIN_SQL;
-import static com.example.hotel.model.dao.sql.UserSQL.UPDATE_USER_SQL;
+
+import static com.example.hotel.model.dao.Tools.getGeneratedId;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.DELETE_PREVIOUS_ROLES;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.DELETE_USER_BY_ID;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.INSERT_UPDATED_ROLES;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.INSERT_USER;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.INSERT_USER_ROLE;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_COUNT_USERS;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_ROLES_BY_USER_ID;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_FULL_NAME;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_ID;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_LIMIT;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_LOGIN;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.UPDATE_USER;
+import static com.example.hotel.model.entity.enums.Role.CLIENT;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class JDBCUserDao implements UserDao {
 
     private final Connection connection;
     private final EntityMapper<User> userMapper;
+    private final EntityMapper<Role> roleMapper;
 
-    public JDBCUserDao(Connection connection, EntityMapper<User> entityMapper) {
+    public JDBCUserDao(Connection connection, EntityMapper<User> userMapper, EntityMapper<Role> roleMapper) {
         this.connection = connection;
-        this.userMapper = entityMapper;
+        this.userMapper = userMapper;
+        this.roleMapper = roleMapper;
     }
 
     @Override
@@ -39,8 +47,8 @@ public class JDBCUserDao implements UserDao {
 
     @Override
     public int getCount() throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(SELECT_COUNT_USERS);
+        try (var statement = connection.createStatement()) {
+            var resultSet = statement.executeQuery(SELECT_COUNT_USERS);
             resultSet.next();
             return resultSet.getInt("count");
         }
@@ -48,82 +56,103 @@ public class JDBCUserDao implements UserDao {
 
     @Override
     public int create(User user) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USER_SQL, RETURN_GENERATED_KEYS)) {
-            setStatementParameters(user, preparedStatement);
-            preparedStatement.executeUpdate();
-            return Tools.getGeneratedId(preparedStatement);
+        try (var insertUserStatement = connection.prepareStatement(INSERT_USER, RETURN_GENERATED_KEYS);
+             var insertRoleStatement = connection.prepareStatement(INSERT_USER_ROLE)) {
+            setStatementParametersForUser(user, insertUserStatement);
+            insertUserStatement.executeUpdate();
+            insertRoleStatement.setString(1, CLIENT.getName());
+            var userId = getGeneratedId(insertUserStatement);
+            insertRoleStatement.setInt(2, userId);
+            insertRoleStatement.executeUpdate();
+            return userId;
         }
     }
 
     @Override
-    public Optional<User> findById(long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_ID_SQL)) {
-            preparedStatement.setLong(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(userMapper.extractFromResultSet(resultSet));
+    public Optional<User> findById(long userId) throws SQLException {
+        try (var selectUserStatement = connection.prepareStatement(SELECT_USER_BY_ID);
+             var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
+            selectUserStatement.setLong(1, userId);
+            var usersSet = selectUserStatement.executeQuery();
+            if (usersSet.next()) {
+                var user = userMapper.extractFromResultSet(usersSet);
+                selectRolesStatement.setLong(1, userId);
+                addRolesToUser(user, selectRolesStatement);
+                return Optional.of(user);
             }
         }
         return Optional.empty();
-    }
-
-    @Override
-    public List<User> findByLimit(int start, int count) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_LIMIT_SQL)) {
-            preparedStatement.setLong(1, start - 1);
-            preparedStatement.setLong(2, count);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            List<User> users = new ArrayList<>();
-            while (resultSet.next()) {
-                users.add(userMapper.extractFromResultSet(resultSet));
-            }
-            return users;
-        }
     }
 
     @Override
     public Optional<User> findByLogin(String login) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_LOGIN_SQL)) {
-            preparedStatement.setString(1, login);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(userMapper.extractFromResultSet(resultSet));
+        try (var selectUserStatement = connection.prepareStatement(SELECT_USER_BY_LOGIN);
+             var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
+            selectUserStatement.setString(1, login);
+            var usersSet = selectUserStatement.executeQuery();
+            if (usersSet.next()) {
+                var user = userMapper.extractFromResultSet(usersSet);
+                selectRolesStatement.setLong(1, user.getId());
+                addRolesToUser(user, selectRolesStatement);
+                return Optional.of(user);
             }
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<User> findByFullName(String firstname, String lastname) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_FULL_NAME_SQL)) {
-            preparedStatement.setString(1, firstname);
-            preparedStatement.setString(2, lastname);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(userMapper.extractFromResultSet(resultSet));
-            }
+    public List<User> findByLimit(int skip, int count) throws SQLException {
+        try (var selectUserStatement = connection.prepareStatement(SELECT_USER_BY_LIMIT);
+             var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
+            selectUserStatement.setLong(1, skip);
+            selectUserStatement.setLong(2, count);
+            return getUsers(selectUserStatement, selectRolesStatement);
         }
-        return Optional.empty();
     }
+
+    @Override
+    public List<User> findByFullName(String firstname, String lastname) throws SQLException {
+        try (var selectUserStatement = connection.prepareStatement(SELECT_USER_BY_FULL_NAME);
+             var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
+            selectUserStatement.setString(1, firstname);
+            selectUserStatement.setString(2, lastname);
+            return getUsers(selectUserStatement, selectRolesStatement);
+        }
+    }
+
 
     @Override
     public void update(User user) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_USER_SQL)) {
-            setStatementParameters(user, preparedStatement);
-            preparedStatement.setLong(7, user.getId());
-            preparedStatement.executeUpdate();
+        try (var updateUserStatement = connection.prepareStatement(UPDATE_USER);
+             var deleteRolesStatement = connection.prepareStatement(DELETE_PREVIOUS_ROLES);
+             var insertRolesStatement = connection.prepareStatement(INSERT_UPDATED_ROLES)) {
+            setStatementParametersForUser(user, updateUserStatement);
+            updateUserStatement.setLong(7, user.getId());
+            deleteRolesStatement.setLong(1, user.getId());
+            updateUserStatement.executeUpdate();
+            deleteRolesStatement.executeUpdate();
+
+            var roles = user.getRoles();
+            if (roles == null) {
+                return;
+            }
+            for (var role : roles) {
+                insertRolesStatement.setString(1, role.getName());
+                insertRolesStatement.setLong(2, user.getId());
+                insertRolesStatement.executeUpdate();
+            }
         }
     }
 
     @Override
     public void delete(long id) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_USER_BY_ID_SQL)) {
+        try (var preparedStatement = connection.prepareStatement(DELETE_USER_BY_ID)) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         }
     }
 
-    private void setStatementParameters(User user, PreparedStatement preparedStatement) throws SQLException {
+    private void setStatementParametersForUser(User user, PreparedStatement preparedStatement) throws SQLException {
         preparedStatement.setString(1, user.getLogin());
         preparedStatement.setString(2, user.getFirstname());
         preparedStatement.setString(3, user.getLastname());
@@ -132,8 +161,29 @@ public class JDBCUserDao implements UserDao {
         preparedStatement.setString(6, user.getPhone());
     }
 
+    private ArrayList<User> getUsers(PreparedStatement selectUserStatement, PreparedStatement selectRolesStatement) throws SQLException {
+        var usersSet = selectUserStatement.executeQuery();
+        var users = new ArrayList<User>();
+        while (usersSet.next()) {
+            var user = userMapper.extractFromResultSet(usersSet);
+            selectRolesStatement.setLong(1, user.getId());
+            addRolesToUser(user, selectRolesStatement);
+            users.add(user);
+        }
+        return users;
+    }
+
+    private void addRolesToUser(User user, PreparedStatement selectRolesStatement) throws SQLException {
+        var roles = new ArrayList<Role>();
+        var rolesSet = selectRolesStatement.executeQuery();
+        while (rolesSet.next()) {
+            roles.add(roleMapper.extractFromResultSet(rolesSet));
+        }
+        user.setRoles(roles);
+    }
+
     @Override
     public void close() throws SQLException {
-//        connection.close();
+        connection.close();
     }
 }

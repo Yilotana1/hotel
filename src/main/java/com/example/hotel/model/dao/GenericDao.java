@@ -15,7 +15,7 @@ public interface GenericDao<T> extends AutoCloseable {
 
     Optional<T> findById(long id) throws SQLException;
 
-    List<T> findByLimit(int start, int count) throws SQLException;
+    List<T> findByLimit(int skip, int count) throws SQLException;
 
     void update(T entity) throws SQLException;
 

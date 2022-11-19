@@ -1,5 +1,9 @@
 package com.example.hotel.model.entity;
 
+import com.example.hotel.model.entity.enums.Role;
+
+import java.util.Collection;
+
 public class User {
     private Long id;
     private String login;
@@ -8,6 +12,7 @@ public class User {
     private String email;
     private String password;
     private String phone;
+    private Collection<Role> roles;
     private User(){}
 
     @Override
@@ -20,6 +25,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", phone='" + phone + '\'' +
+                ", roles=" + roles +
                 '}';
     }
 
@@ -35,6 +41,11 @@ public class User {
 
         public UserBuilder id(Long id){
             user.setId(id);
+            return this;
+        }
+
+        public UserBuilder roles(Collection<Role> roles){
+            user.setRoles(roles);
             return this;
         }
 
@@ -63,6 +74,14 @@ public class User {
             return this;
         }
 
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 
     public Long getId() {
