@@ -1,19 +1,19 @@
 package com.example.hotel.model.entity;
 
-import com.example.hotel.model.entity.enums.ApplicationStatus;
+import com.example.hotel.model.entity.enums.ApartmentStatus;
 
 public class Application {
 
     private Long id;
     private User client;
     private Apartment apartment;
-    private ApplicationStatus applicationStatus;
+    private ApartmentStatus apartmentStatus;
 
-    public Application(Long id, User client, Apartment apartment, ApplicationStatus applicationStatus) {
+    public Application(Long id, User client, Apartment apartment, ApartmentStatus apartmentStatus) {
         this.id = id;
         this.client = client;
         this.apartment = apartment;
-        this.applicationStatus = applicationStatus;
+        this.apartmentStatus = apartmentStatus;
     }
 
     public Long getId() {
@@ -40,11 +40,11 @@ public class Application {
         this.apartment = apartment;
     }
 
-    public ApplicationStatus getApplicationStatus() {
-        return applicationStatus;
+    public ApartmentStatus getApplicationStatus() {
+        return apartmentStatus;
     }
 
-    public void setApplicationStatus(ApplicationStatus applicationStatus) {
-        this.applicationStatus = applicationStatus;
+    public void setApplicationStatus(ApartmentStatus apartmentStatus) {
+        this.apartmentStatus = apartmentStatus;
     }
 }
