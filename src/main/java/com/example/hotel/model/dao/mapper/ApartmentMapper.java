@@ -13,13 +13,13 @@ public class ApartmentMapper implements EntityMapper<Apartment>{
     public Apartment extractFromResultSet(ResultSet rs) throws SQLException {
         return Apartment
                 .builder()
-                .number(rs.getInt("number"))
-                .floor(rs.getInt("floor"))
-                .demand(rs.getInt("demand"))
-                .price(BigDecimal.valueOf(rs.getDouble("price")))
-                .apartmentClass(ApartmentClass.getById(rs.getInt("class_id")))
-                .apartmentStatus(ApartmentStatus.getById(rs.getInt("status_id")))
-                .numberOfPeople(rs.getInt("number_of_people"))
+                .number(rs.getInt("apartment.number"))
+                .floor(rs.getInt("apartment.floor"))
+                .demand(rs.getInt("apartment.demand"))
+                .price(BigDecimal.valueOf(rs.getDouble("apartment.price")))
+                .apartmentClass(ApartmentClass.getById(rs.getInt("apartment.class_id")))
+                .apartmentStatus(ApartmentStatus.getById(rs.getInt("apartment.status_id")))
+                .numberOfPeople(rs.getInt("apartment.number_of_people"))
                 .build();
     }
 }

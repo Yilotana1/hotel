@@ -1,19 +1,123 @@
 package com.example.hotel.model.entity;
 
-import com.example.hotel.model.entity.enums.ApartmentStatus;
+import com.example.hotel.model.entity.enums.ApplicationStatus;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.Period;
 
 public class Application {
 
     private Long id;
     private User client;
     private Apartment apartment;
-    private ApartmentStatus apartmentStatus;
+    private ApplicationStatus status;
+    private BigDecimal price;
+    private LocalDateTime creationDate;
+    private LocalDateTime lastModified;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 
-    public Application(Long id, User client, Apartment apartment, ApartmentStatus apartmentStatus) {
-        this.id = id;
-        this.client = client;
-        this.apartment = apartment;
-        this.apartmentStatus = apartmentStatus;
+
+    //TODO Create LocalDateTime field for creationDate and according dao methods.
+//TODO Create LocalDateTime fields for beginning date of application and end date of application
+//TODO Create LocalDateTime field for lastModified
+    public static ApplicationBuilder builder() {
+        return new ApplicationBuilder();
+    }
+
+    private Application() {
+    }
+
+    public static class ApplicationBuilder {
+        private final Application application = new Application();
+
+        public ApplicationBuilder id(long id) {
+            application.setId(id);
+            return this;
+        }
+
+        public ApplicationBuilder client(User client) {
+            application.setClient(client);
+            return this;
+        }
+
+        public ApplicationBuilder apartment(Apartment apartment) {
+            application.setApartment(apartment);
+            return this;
+        }
+
+        public ApplicationBuilder applicationStatus(ApplicationStatus applicationStatus) {
+            application.setStatus(applicationStatus);
+            return this;
+        }
+
+        public ApplicationBuilder price(BigDecimal price) {
+            application.setPrice(price);
+            return this;
+        }
+
+        public ApplicationBuilder creationDate(LocalDateTime creationDate) {
+            application.setCreationDate(creationDate);
+            return this;
+        }
+
+        public ApplicationBuilder lastModified(LocalDateTime lastModified) {
+            application.setLastModified(lastModified);
+            return this;
+        }
+
+        public ApplicationBuilder startDate(LocalDateTime startDate) {
+            application.setStartDate(startDate);
+            return this;
+        }
+
+        public ApplicationBuilder endDate(LocalDateTime endDate) {
+            application.setEndDate(endDate);
+            return this;
+        }
+
+
+        public Application build() {
+            return application;
+        }
+    }
+
+
+    @Override
+    public String toString() {
+        return "Application{" +
+                "id=" + id +
+                ", client=" + client +
+                ", apartment=" + apartment +
+                ", status=" + status +
+                ", price=" + price +
+                ", creationDate=" + creationDate +
+                ", lastModified=" + lastModified +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", duration=" + getDuration() +
+                '}';
+    }
+
+    public Period getDuration() {
+        return Period.between(getStartDate().toLocalDate(), getEndDate().toLocalDate());
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 
     public Long getId() {
@@ -40,11 +144,37 @@ public class Application {
         this.apartment = apartment;
     }
 
-    public ApartmentStatus getApplicationStatus() {
-        return apartmentStatus;
+    public ApplicationStatus getStatus() {
+        return status;
     }
 
-    public void setApplicationStatus(ApartmentStatus apartmentStatus) {
-        this.apartmentStatus = apartmentStatus;
+    public BigDecimal getPrice() {
+        return price;
     }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public void setStatus(ApplicationStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
+
 }
