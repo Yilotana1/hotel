@@ -8,6 +8,6 @@ import java.sql.SQLException;
 public class RoleMapper implements EntityMapper<Role> {
     @Override
     public Role extractFromResultSet(ResultSet resultSet) throws SQLException {
-        return Role.getFromString(resultSet.getString("role"));
+        return Role.getFromString(resultSet.getString("role.role"));
     }
 }

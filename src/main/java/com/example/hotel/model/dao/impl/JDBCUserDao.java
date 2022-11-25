@@ -20,9 +20,9 @@ import static com.example.hotel.model.dao.sql.mysql.UserSQL.INSERT_USER;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.INSERT_USER_ROLE;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_COUNT_USERS;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_ROLES_BY_USER_ID;
-import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_FULL_NAME;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USERS_BY_FULL_NAME;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_ID;
-import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_LIMIT;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USERS_SORTED_BY_ID_LIMITED;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_LOGIN;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.UPDATE_USER;
 import static com.example.hotel.model.entity.enums.Role.CLIENT;
@@ -60,8 +60,9 @@ public class JDBCUserDao implements UserDao {
              var insertRoleStatement = connection.prepareStatement(INSERT_USER_ROLE)) {
             setStatementParametersForUser(user, insertUserStatement);
             insertUserStatement.executeUpdate();
-            insertRoleStatement.setString(1, CLIENT.getName());
             var userId = getGeneratedId(insertUserStatement);
+
+            insertRoleStatement.setString(1, CLIENT.getName());
             insertRoleStatement.setInt(2, userId);
             insertRoleStatement.executeUpdate();
             return userId;
@@ -101,8 +102,8 @@ public class JDBCUserDao implements UserDao {
     }
 
     @Override
-    public List<User> findByLimit(int skip, int count) throws SQLException {
-        try (var selectUserStatement = connection.prepareStatement(SELECT_USER_BY_LIMIT);
+    public List<User> findSortedById(int skip, int count) throws SQLException {
+        try (var selectUserStatement = connection.prepareStatement(SELECT_USERS_SORTED_BY_ID_LIMITED);
              var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
             selectUserStatement.setLong(1, skip);
             selectUserStatement.setLong(2, count);
@@ -111,11 +112,13 @@ public class JDBCUserDao implements UserDao {
     }
 
     @Override
-    public List<User> findByFullName(String firstname, String lastname) throws SQLException {
-        try (var selectUserStatement = connection.prepareStatement(SELECT_USER_BY_FULL_NAME);
+    public List<User> findByFullName(String firstname, String lastname, int skip, int count) throws SQLException {
+        try (var selectUserStatement = connection.prepareStatement(SELECT_USERS_BY_FULL_NAME);
              var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
             selectUserStatement.setString(1, firstname);
             selectUserStatement.setString(2, lastname);
+            selectUserStatement.setInt(3, skip);
+            selectUserStatement.setInt(4, count);
             return getUsers(selectUserStatement, selectRolesStatement);
         }
     }

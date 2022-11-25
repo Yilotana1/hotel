@@ -10,12 +10,12 @@ public class UserMapper implements EntityMapper<User> {
     public User extractFromResultSet(ResultSet rs) throws SQLException {
         var userBuilder = User.builder()
                 .id(rs.getLong("user.id"))
-                .login(rs.getString("login"))
-                .firstname(rs.getString("firstname"))
-                .lastname(rs.getString("lastname"))
-                .password(rs.getString("password"))
-                .email(rs.getString("email"))
-                .phone(rs.getString("phone"));
+                .login(rs.getString("user.login"))
+                .firstname(rs.getString("user.firstname"))
+                .lastname(rs.getString("user.lastname"))
+                .password(rs.getString("user.password"))
+                .email(rs.getString("user.email"))
+                .phone(rs.getString("user.phone"));
         return userBuilder.build();
     }
 }
