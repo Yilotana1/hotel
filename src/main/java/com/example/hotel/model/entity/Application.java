@@ -18,10 +18,6 @@ public class Application {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
-
-    //TODO Create LocalDateTime field for creationDate and according dao methods.
-//TODO Create LocalDateTime fields for beginning date of application and end date of application
-//TODO Create LocalDateTime field for lastModified
     public static ApplicationBuilder builder() {
         return new ApplicationBuilder();
     }
