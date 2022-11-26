@@ -6,7 +6,7 @@ import com.example.hotel.model.entity.enums.ApplicationStatus;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface ApplicationDAO extends GenericDao<Application> {
+public interface ApplicationDao extends GenericDao<Application> {
     List<Application> findByClientId(long clientId, int skip, int count) throws SQLException;
 
     List<Application> findSortedById(int skip, int count) throws SQLException;

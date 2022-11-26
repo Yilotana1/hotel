@@ -1,6 +1,6 @@
 package com.example.hotel.model.dao.impl;
 
-import com.example.hotel.model.dao.ApplicationDAO;
+import com.example.hotel.model.dao.ApplicationDao;
 import com.example.hotel.model.dao.mapper.EntityMapper;
 import com.example.hotel.model.entity.Application;
 import com.example.hotel.model.entity.enums.ApplicationStatus;
@@ -33,11 +33,11 @@ import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_COUNT_
 import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.UPDATE_APPLICATION;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
-public class JDBCApplicationDAO implements ApplicationDAO {
+public class JDBCApplicationDao implements ApplicationDao {
     private final Connection connection;
     private final EntityMapper<Application> applicationMapper;
 
-    public JDBCApplicationDAO(Connection connection, EntityMapper<Application> applicationMapper) {
+    public JDBCApplicationDao(Connection connection, EntityMapper<Application> applicationMapper) {
         this.connection = connection;
         this.applicationMapper = applicationMapper;
     }
