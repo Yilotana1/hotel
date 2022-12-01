@@ -25,7 +25,6 @@ import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_ID;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USERS_SORTED_BY_ID_LIMITED;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_LOGIN;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.UPDATE_USER;
-import static com.example.hotel.model.entity.enums.Role.CLIENT;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class JDBCUserDao implements UserDao {
@@ -62,9 +61,11 @@ public class JDBCUserDao implements UserDao {
             insertUserStatement.executeUpdate();
             var userId = getGeneratedId(insertUserStatement);
 
-            insertRoleStatement.setString(1, CLIENT.getName());
-            insertRoleStatement.setInt(2, userId);
-            insertRoleStatement.executeUpdate();
+            for (var role : user.getRoles()){
+                insertRoleStatement.setString(1, role.getName());
+                insertRoleStatement.setLong(2, userId);
+                insertRoleStatement.executeUpdate();
+            }
             return userId;
         }
     }

@@ -1,7 +1,7 @@
 package com.example.hotel.model.entity.enums;
 
 public enum Role {
-    CLIENT("client"), MANAGER("manager");
+    CLIENT("client"), MANAGER("manager"), ADMIN("admin");
     private final String role;
 
     Role(String role) {
@@ -12,6 +12,7 @@ public enum Role {
         switch (role) {
             case "client": return CLIENT;
             case "manager": return MANAGER;
+            case "admin": return ADMIN;
         }
         return null;
     }

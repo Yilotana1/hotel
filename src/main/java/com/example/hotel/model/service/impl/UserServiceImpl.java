@@ -1,6 +1,7 @@
 package com.example.hotel.model.service.impl;
 
 import com.example.hotel.HelloServlet;
+import com.example.hotel.controller.dto.UserDTO;
 import com.example.hotel.model.dao.factory.DaoFactory;
 import com.example.hotel.model.entity.User;
 import com.example.hotel.model.service.UserService;
@@ -11,9 +12,12 @@ import com.example.hotel.model.service.exception.UserNotFoundException;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Optional;
 
+import static com.example.hotel.model.entity.enums.Role.CLIENT;
 import static com.example.hotel.model.entity.enums.Role.MANAGER;
+import static com.example.hotel.model.entity.enums.UserStatus.NON_BLOCKED;
 import static com.example.hotel.model.service.exception.Messages.LOGIN_IS_NOT_UNIQUE;
 import static com.example.hotel.model.service.exception.Messages.SERVICE_EXCEPTION;
 import static com.example.hotel.model.service.exception.Messages.USER_WITH_SUCH_ID_NOT_FOUND;
@@ -42,13 +46,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User signUp(User user) throws ServiceException {
+    public User signUp(UserDTO userDTO) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
-            var userFromDB = userDao.findByLogin(user.getLogin());
+            var userFromDB = userDao.findByLogin(userDTO.getLogin());
             if (userFromDB.isPresent()) {
-                throw new LoginIsNotUniqueException(String.format(LOGIN_IS_NOT_UNIQUE, user.getLogin()));
+                throw new LoginIsNotUniqueException(String.format(LOGIN_IS_NOT_UNIQUE, userDTO.getLogin()));
             }
+            var user = mapToUser(userDTO);
+            user.getRoles().add(CLIENT);
+            user.setStatus(NON_BLOCKED);
             var generatedId = userDao.create(user);
             var createdUser = userDao.findById(generatedId).get();
             userDao.getConnection().commit();
@@ -59,12 +66,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     @Override
-    public void update(User user) {
+    public void update(UserDTO userDTO, long id) {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
-            var id = user.getId();
+            var user = mapToUser(userDTO);
             userDao.findById(id)
                     .orElseThrow(() -> new UserNotFoundException(String.format(USER_WITH_SUCH_ID_NOT_FOUND, id)));
 
@@ -83,7 +89,7 @@ public class UserServiceImpl implements UserService {
             var user = userDao.findByLogin(userLogin)
                     .orElseThrow(() -> new UserNotFoundException(String.format(USER_WITH_SUCH_LOGIN_NOT_FOUND, userLogin)));
 
-            user.getRoles().clear();
+            user.block();
             userDao.update(user);
             userDao.getConnection().commit();
         } catch (SQLException e) {
@@ -129,5 +135,17 @@ public class UserServiceImpl implements UserService {
             log.error(e.getMessage());
             throw new ServiceException(SERVICE_EXCEPTION, e);
         }
+    }
+
+    private User mapToUser(UserDTO userDTO) {
+        return User.builder()
+                .login(userDTO.getLogin())
+                .firstname(userDTO.getFirstname())
+                .lastname(userDTO.getLastname())
+                .phone(userDTO.getPhone())
+                .password(userDTO.getPassword())
+                .email(userDTO.getEmail())
+                .roles(new HashSet<>())
+                .build();
     }
 }

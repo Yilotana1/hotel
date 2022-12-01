@@ -1,8 +1,11 @@
 package com.example.hotel.model.entity;
 
 import com.example.hotel.model.entity.enums.Role;
+import com.example.hotel.model.entity.enums.UserStatus;
 
 import java.util.Collection;
+
+import static com.example.hotel.model.entity.enums.UserStatus.BLOCKED;
 
 public class User {
     private Long id;
@@ -12,6 +15,7 @@ public class User {
     private String email;
     private String password;
     private String phone;
+    private UserStatus status;
     private Collection<Role> roles;
     private User(){}
 
@@ -25,6 +29,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", phone='" + phone + '\'' +
+                ", status=" + status +
                 ", roles=" + roles +
                 '}';
     }
@@ -41,6 +46,11 @@ public class User {
 
         public UserBuilder id(Long id){
             user.setId(id);
+            return this;
+        }
+
+        public UserBuilder status(UserStatus status){
+            user.setStatus(status);
             return this;
         }
 
@@ -74,6 +84,19 @@ public class User {
             return this;
         }
 
+    }
+
+
+    public void block(){
+        setStatus(BLOCKED);
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
     }
 
     public Collection<Role> getRoles() {
