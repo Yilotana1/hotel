@@ -8,18 +8,19 @@
         <welcome-file>main.jsp</welcome-file>
     </welcome-file-list>
 
-
+<!--Listeners-->
     <listener>
         <listener-class>com.example.hotel.controller.listener.SessionListener</listener-class>
     </listener>
-<!--    <servlet>-->
-<!--        <servlet-name>HelloServlet</servlet-name>-->
-<!--        <servlet-class>com.example.hotel.HelloServlet</servlet-class>-->
-<!--    </servlet>-->
+    <!--    <servlet>-->
+    <!--        <servlet-name>HelloServlet</servlet-name>-->
+    <!--        <servlet-class>com.example.hotel.HelloServlet</servlet-class>-->
+    <!--    </servlet>-->
     <servlet>
         <servlet-name>Servlet</servlet-name>
         <servlet-class>com.example.hotel.controller.Servlet</servlet-class>
     </servlet>
+    <!--    Servlet mappings-->
     <servlet-mapping>
         <servlet-name>Servlet</servlet-name>
         <url-pattern>/signup</url-pattern>
@@ -33,6 +34,16 @@
         <url-pattern>/logout</url-pattern>
     </servlet-mapping>
 
+    <!--Filters-->
+    <filter>
+        <filter-name>LocalizationFilter</filter-name>
+        <filter-class>com.example.hotel.controller.filter.LocalizationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LocalizationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <servlet-name>Servlet</servlet-name>
+    </filter-mapping>
     <filter>
         <filter-name>NoCacheFilter</filter-name>
         <filter-class>com.example.hotel.controller.filter.NoCacheFilter</filter-class>
@@ -60,10 +71,10 @@
         <url-pattern>/*</url-pattern>
         <servlet-name>Servlet</servlet-name>
     </filter-mapping>
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>HelloServlet</servlet-name>-->
-<!--        <url-pattern>/hello</url-pattern>-->
-<!--    </servlet-mapping>-->
+    <!--    <servlet-mapping>-->
+    <!--        <servlet-name>HelloServlet</servlet-name>-->
+    <!--        <url-pattern>/hello</url-pattern>-->
+    <!--    </servlet-mapping>-->
     <resource-ref>
         <description>DB Connection</description>
         <res-ref-name>jdbc/root</res-ref-name>
