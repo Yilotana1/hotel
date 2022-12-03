@@ -161,8 +161,8 @@ public class JDBCUserDao implements UserDao {
         preparedStatement.setString(2, user.getFirstname());
         preparedStatement.setString(3, user.getLastname());
         preparedStatement.setString(4, user.getEmail());
-        preparedStatement.setString(5, user.getPassword());
-        preparedStatement.setString(6, user.getPhone());
+        preparedStatement.setString(5, user.getPhone());
+        preparedStatement.setString(6, user.getPassword());
     }
 
     private ArrayList<User> getUsers(PreparedStatement selectUserStatement, PreparedStatement selectRolesStatement) throws SQLException {

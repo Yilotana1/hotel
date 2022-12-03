@@ -5,6 +5,9 @@
 <html>
 <head>
     <title>Hotel-main</title>
+    <style>
+        <jsp:include page="styles/style.css"/>
+    </style>
 </head>
 <body>
 <fmt:setLocale value="${sessionScope.lang.name()}"/>
@@ -19,11 +22,12 @@
     <a href="login.jsp"><fmt:message key="signin"/></a><br/>
 </c:if>
 <c:if test="${sessionScope.roles != null}">
-    <a href="logout">Sign out!</a>
+    <a href="logout"><fmt:message key="signout"/></a>
 </c:if>
-
+<c:if test="${sessionScope.roles != null}">
+    <a href="profile"><fmt:message key="profile"/></a>
+</c:if>
 <br/>
-<br/>
-<br/>
+<jsp:include page="lists/apartments/apartments_list.jsp"/>
 </body>
 </html>

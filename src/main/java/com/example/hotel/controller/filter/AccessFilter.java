@@ -20,11 +20,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static com.example.hotel.controller.Path.EDIT_PROFILE;
 import static com.example.hotel.controller.Path.ERROR_404_PAGE;
 import static com.example.hotel.controller.Path.LOGIN;
 import static com.example.hotel.controller.Path.LOGIN_PAGE;
 import static com.example.hotel.controller.Path.LOGOUT;
+import static com.example.hotel.controller.Path.MAIN;
 import static com.example.hotel.controller.Path.MAIN_PAGE;
+import static com.example.hotel.controller.Path.PROFILE;
 import static com.example.hotel.controller.Path.SIGNUP;
 import static com.example.hotel.controller.Path.SIGNUP_PAGE;
 import static com.example.hotel.model.dao.Tools.userIsLogged;
@@ -59,31 +62,39 @@ public class AccessFilter implements Filter {
         contextPath = filterConfig.getServletContext().getContextPath();
 
         addPermissionsForBlockedUsers(
-                MAIN_PAGE,
-                ERROR_404_PAGE);
+                MAIN,
+                ERROR_404_PAGE,
+                PROFILE,
+                EDIT_PROFILE);
 
         addPermissionsToUndefinedUser(
                 LOGIN,
                 LOGIN_PAGE,
-                MAIN_PAGE,
+                MAIN,
                 SIGNUP,
                 SIGNUP_PAGE,
                 ERROR_404_PAGE);
 
         addPermissionsTo(Role.CLIENT,
-                MAIN_PAGE,
+                MAIN,
                 ERROR_404_PAGE,
-                LOGOUT);
+                LOGOUT,
+                PROFILE,
+                EDIT_PROFILE);
 
         addPermissionsTo(Role.MANAGER,
-                MAIN_PAGE,
+                MAIN,
                 ERROR_404_PAGE,
-                LOGOUT);
+                LOGOUT,
+                PROFILE,
+                EDIT_PROFILE);
 
         addPermissionsTo(Role.ADMIN,
-                MAIN_PAGE,
+                MAIN,
                 ERROR_404_PAGE,
-                LOGOUT);
+                LOGOUT,
+                PROFILE,
+                EDIT_PROFILE);
 
 
         log.debug("Filter initialized");

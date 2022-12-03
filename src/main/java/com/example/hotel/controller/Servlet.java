@@ -1,8 +1,11 @@
 package com.example.hotel.controller;
 
 import com.example.hotel.controller.command.Command;
+import com.example.hotel.controller.command.EditProfileCommand;
 import com.example.hotel.controller.command.LogOutCommand;
 import com.example.hotel.controller.command.LoginCommand;
+import com.example.hotel.controller.command.MainCommand;
+import com.example.hotel.controller.command.ShowProfileCommand;
 import com.example.hotel.controller.command.SignUpCommand;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -15,8 +18,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import static com.example.hotel.controller.Path.EDIT_PROFILE;
 import static com.example.hotel.controller.Path.LOGIN;
 import static com.example.hotel.controller.Path.LOGOUT;
+import static com.example.hotel.controller.Path.MAIN;
+import static com.example.hotel.controller.Path.PROFILE;
 import static com.example.hotel.controller.Path.SIGNUP;
 
 public class Servlet extends HttpServlet {
@@ -31,14 +37,11 @@ public class Servlet extends HttpServlet {
         commands.put(SIGNUP, new SignUpCommand());
         commands.put(LOGIN, new LoginCommand());
         commands.put(LOGOUT, new LogOutCommand());
+        commands.put(MAIN, new MainCommand());
+        commands.put(PROFILE, new ShowProfileCommand());
+        commands.put(EDIT_PROFILE, new EditProfileCommand());
     }
 
-
-//   TODO Make validation errors to be shown in jsp form
-    //TODO Make LoginCommand as well as SignUpCommand previously
-    //TODO Make main page with login and signup button
-    //TODO Make basic localization
-    //TODO Make basic expiring listener
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         var path = req.getRequestURI();
 

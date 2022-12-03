@@ -8,8 +8,9 @@ import java.util.Optional;
 public interface UserService {
 
     Optional<User> signIn(String login, String password);
+    Optional<User> getByLogin(String login);
     User signUp(UserDTO userDTO);
-    void update(UserDTO userDTO, long id);
+    void update(UserDTO userDTO);
     void block(String userLogin);
     void changeToManager(String userLogin);
     void changeToClient(String userLogin);

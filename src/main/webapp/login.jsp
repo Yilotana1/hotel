@@ -1,3 +1,5 @@
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
   User: Anatoliy
@@ -11,20 +13,25 @@
     <title>Login</title>
 </head>
 <body>
+<fmt:setLocale value="${sessionScope.lang.name()}"/>
+<fmt:setBundle basename="message"/>
+<jsp:include page="locale_buttons.jsp"/>
 <form action="login" method="get">
     <table>
         <tr>
-            <th>Login: </th>
+            <th><fmt:message key="login"/></th>
             <th><input type="text" name="login"/></th>
         </tr>
         <tr>
-            <th>Password: </th>
+            <th><fmt:message key="password"/>
+            </th>
             <th><input type="text" name="password"/></th>
         </tr>
     </table>
-    <input type="submit"/>
+    <fmt:message key="submit" var="submit"/>
+    <input type="submit" value="${submit}"/>
     <c:if test="${!(requestScope.error == null)}">
-        <span style="color:red">${requestScope.error}</span>
+        <span style="color:red"><fmt:message key="${requestScope.error}"/></span>
     </c:if>
 </form>
 </body>

@@ -1,6 +1,5 @@
 package com.example.hotel.controller.command;
 
-import com.example.hotel.controller.Path;
 import com.example.hotel.controller.dto.UserDTO;
 import com.example.hotel.controller.exception.InvalidDataException;
 import com.example.hotel.model.service.exception.LoginIsNotUniqueException;
@@ -13,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import static com.example.hotel.controller.Path.MAIN;
 import static com.example.hotel.controller.Path.SIGNUP_PAGE;
 
 public class SignUpCommand implements Command {
@@ -21,7 +21,7 @@ public class SignUpCommand implements Command {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.trace("Started SignUp command");
-        var userDTO = getUserDTOFromRequest(request);
+        var userDTO = getUserDTO(request);
         try {
             userDTO.throwIfNotValid();
             log.trace("User validation passed successfully");
@@ -32,28 +32,28 @@ public class SignUpCommand implements Command {
 
         } catch (InvalidDataException e) {
             log.error("Validation error: " + e.getMessage());
-            request.setAttribute("error", e.getInvalidField() + " is invalid");
+            request.setAttribute("error", e.getInvalidField() + "_is_invalid");
             request.getRequestDispatcher(SIGNUP_PAGE).forward(request, response);
             return;
         } catch (LoginIsNotUniqueException e) {
             log.error("LoginIsNotUnique exception: " + e.getMessage());
-            request.setAttribute("error", "User with such login already exists");
+            request.setAttribute("error", "user_with_such_login_exists");
             request.getRequestDispatcher(SIGNUP_PAGE).forward(request, response);
             return;
         } catch (ServiceException e) {
             log.error("Service exception: " + e.getMessage());
-            request.setAttribute("error", "Something went wrong. Your data could not be saved.");
+            request.setAttribute("error", "data_could_not_be_saved");
             request.getRequestDispatcher(SIGNUP_PAGE).forward(request, response);
             return;
         }
 
         response.sendRedirect(
-                request.getServletContext().getContextPath() + Path.MAIN_PAGE);
+                request.getServletContext().getContextPath() + MAIN);
         log.debug("Registration passed successfully: redirect to profile");
     }
 
 
-    private UserDTO getUserDTOFromRequest(HttpServletRequest request) {
+    private UserDTO getUserDTO(HttpServletRequest request) {
         return UserDTO.builder()
                 .login(request.getParameter("login"))
                 .firstname(request.getParameter("firstname"))

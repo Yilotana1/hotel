@@ -134,6 +134,7 @@ public class JDBCApartmentDao implements ApartmentDao {
     public int getCount() throws SQLException {
         try (var statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_COUNT_APARTMENTS);
+            resultSet.next();
             return resultSet.getInt("count");
         }
     }

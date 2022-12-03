@@ -1,0 +1,12 @@
+th {
+    border: 1px solid black;
+}
+
+td {
+    border: 1px groove black;
+}
+
+.locale_table {
+    border: 0;
+
+}

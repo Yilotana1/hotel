@@ -1,6 +1,6 @@
 package com.example.hotel.model.service.impl;
 
-import com.example.hotel.HelloServlet;
+import com.example.hotel.controller.Servlet;
 import com.example.hotel.controller.dto.UserDTO;
 import com.example.hotel.model.dao.factory.DaoFactory;
 import com.example.hotel.model.entity.User;
@@ -20,17 +20,20 @@ import static com.example.hotel.model.entity.enums.Role.MANAGER;
 import static com.example.hotel.model.entity.enums.UserStatus.NON_BLOCKED;
 import static com.example.hotel.model.service.exception.Messages.LOGIN_IS_NOT_UNIQUE;
 import static com.example.hotel.model.service.exception.Messages.SERVICE_EXCEPTION;
-import static com.example.hotel.model.service.exception.Messages.USER_WITH_SUCH_ID_NOT_FOUND;
 import static com.example.hotel.model.service.exception.Messages.USER_WITH_SUCH_LOGIN_NOT_FOUND;
 
 public class UserServiceImpl implements UserService {
 
 
-    private final DaoFactory daoFactory = DaoFactory.getInstance();
-    public final static Logger log = Logger.getLogger(HelloServlet.class);
+    private final DaoFactory daoFactory;
+    public final static Logger log = Logger.getLogger(Servlet.class);
+
+    public UserServiceImpl(final DaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
 
     @Override
-    public Optional<User> signIn(String login, String password) throws ServiceException {
+    public Optional<User> signIn(final String login, final String password) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
             var user = userDao.findByLogin(login);
@@ -46,7 +49,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User signUp(UserDTO userDTO) throws ServiceException {
+    public Optional<User> getByLogin(final String login) {
+        try (var userDao = daoFactory.createUserDao()) {
+            return userDao.findByLogin(login);
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new ServiceException(SERVICE_EXCEPTION, e);
+        }
+    }
+
+    @Override
+    public User signUp(final UserDTO userDTO) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
             var userFromDB = userDao.findByLogin(userDTO.getLogin());
@@ -67,13 +80,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(UserDTO userDTO, long id) {
+    public void update(final UserDTO userDTO) {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
-            var user = mapToUser(userDTO);
-            userDao.findById(id)
-                    .orElseThrow(() -> new UserNotFoundException(String.format(USER_WITH_SUCH_ID_NOT_FOUND, id)));
-
+            final var user = userDao.findByLogin(userDTO.getLogin())
+                    .orElseThrow(() -> new UserNotFoundException(String.format(USER_WITH_SUCH_LOGIN_NOT_FOUND, userDTO.getLogin())));
+            user.setLogin(userDTO.getLogin());
+            user.setPhone(userDTO.getPhone());
+            user.setFirstname(userDTO.getFirstname());
+            user.setLastname(userDTO.getLastname());
+            user.setPassword(userDTO.getPassword());
+            user.setEmail(userDTO.getEmail());
             userDao.update(user);
             userDao.getConnection().commit();
         } catch (SQLException e) {
@@ -83,7 +100,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void block(String userLogin) {
+    public void block(final String userLogin) {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
             var user = userDao.findByLogin(userLogin)
@@ -100,7 +117,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void changeToManager(String userLogin) throws ServiceException {
+    public void changeToManager(final String userLogin) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
             var client = userDao
@@ -120,7 +137,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeToClient(String userLogin) {
+    public void changeToClient(final String userLogin) {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
             var client = userDao
@@ -137,7 +154,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private User mapToUser(UserDTO userDTO) {
+    private User mapToUser(final UserDTO userDTO) {
         return User.builder()
                 .login(userDTO.getLogin())
                 .firstname(userDTO.getFirstname())

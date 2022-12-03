@@ -25,7 +25,7 @@ public class Tools {
         return savedLogins.contains(login);
     }
 
-    public static void addUserToLoginCache(String login, HttpServletRequest request) {
+    public static void addloginToLoginCache(String login, HttpServletRequest request) {
         var loggedUsers = (HashSet<String>) request.getServletContext()
                 .getAttribute("loggedUsers");
         loggedUsers.add(login);

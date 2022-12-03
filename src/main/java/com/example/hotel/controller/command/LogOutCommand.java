@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.MAIN_PAGE;
+import static com.example.hotel.controller.Path.MAIN;
 import static com.example.hotel.model.dao.Tools.deleteFromLoginCache;
 
 
@@ -23,7 +23,7 @@ public class LogOutCommand implements Command {
 
         request.getSession().invalidate();
         deleteFromLoginCache(request, request.getParameter("login"));
-        response.sendRedirect(request.getContextPath() + MAIN_PAGE);
+        response.sendRedirect(request.getContextPath() + MAIN);
 
         log.debug("Logout passed successfully");
     }
