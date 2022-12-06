@@ -1,4 +1,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="com.example.hotel.model.entity.enums.Role" %>
 <%--
   Created by IntelliJ IDEA.
   User: Anatoliy
@@ -19,6 +21,14 @@
 <form action="${pageContext.request.contextPath}/main">
     <input type="submit" value="${main}">
 </form>
+<c:if test="${sessionScope.roles.contains(Role.ADMIN)}">
+    <a href="admin/manage-users"><fmt:message key="manage_users"/></a>
+    <br/>
+</c:if>
+<c:if test="${sessionScope.roles.contains(Role.MANAGER)}">
+    <a href="manager/list-users"><fmt:message key="list_users"/></a>
+    <br/>
+</c:if>
 <a href="logout"><fmt:message key="signout"/></a>
 </body>
 </html>

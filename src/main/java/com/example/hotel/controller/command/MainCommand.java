@@ -30,12 +30,12 @@ public class MainCommand implements Command {
     public final static Logger log = Logger.getLogger(MainCommand.class);
     private static final String DEFAULT_SORTING = "price";
     private static final int PAGE_SIZE = 10;
-    public static final String SORTED_BY = "sorted_by";
-    public static final String APARTMENTS = "apartments";
-    public static final String LIST_OF_SORTING_OPTIONS = "sorted_by_list";
-    public static final String PAGE_NUMBER = "page";
-    public static final String TOTAL_PAGES_NUMBER = "count";
-    public static final String DEFAULT_PAGE_NUMBER = "1";
+    private static final String SORTED_BY = "sorted_by";
+    private static final String APARTMENTS = "apartments";
+    private static final String LIST_OF_SORTING_OPTIONS = "sorted_by_list";
+    private static final String PAGE_NUMBER_INPUT = "page";
+    private static final String TOTAL_PAGES_NUMBER = "count";
+    private static final String DEFAULT_PAGE_NUMBER = "1";
     private ApartmentService apartmentService = ServiceFactory.getInstance().createApartmentService();
     private final Map<String, BiFunction<Integer, Integer, List<Apartment>>> sortingMethods = new HashMap<>() {{
         put("price", apartmentService::getApartmentsSortedByPrice);
@@ -54,7 +54,7 @@ public class MainCommand implements Command {
     @Override
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         log.debug("Command started executing");
-        final var pageNumber = parseInt(requireNonNullElse(request.getParameter(PAGE_NUMBER), DEFAULT_PAGE_NUMBER));
+        final var pageNumber = parseInt(requireNonNullElse(request.getParameter(PAGE_NUMBER_INPUT), DEFAULT_PAGE_NUMBER));
         final var skip = (pageNumber - 1) * PAGE_SIZE;
 
         final var requestedSortingOption = request.getParameter(SORTED_BY);
@@ -76,7 +76,7 @@ public class MainCommand implements Command {
 
 
     private void setAttributesForPaging(HttpServletRequest request, String sorted_by, int pageNumber) {
-        request.setAttribute(PAGE_NUMBER, pageNumber);
+        request.setAttribute(PAGE_NUMBER_INPUT, pageNumber);
         request.setAttribute(LIST_OF_SORTING_OPTIONS, sortingMethods.keySet());
         request.setAttribute(SORTED_BY, sorted_by);
     }

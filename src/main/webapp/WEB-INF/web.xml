@@ -8,7 +8,7 @@
         <welcome-file>main.jsp</welcome-file>
     </welcome-file-list>
 
-<!--Listeners-->
+    <!--Listeners-->
     <listener>
         <listener-class>com.example.hotel.controller.listener.SessionListener</listener-class>
     </listener>
@@ -43,9 +43,20 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Servlet</servlet-name>
-        <url-pattern>/edit_profile</url-pattern>
+        <url-pattern>/edit-profile</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/admin/manage-users</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/admin/edit-user</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/manager/list-users</url-pattern>
+    </servlet-mapping>
     <!--Filters-->
     <filter>
         <filter-name>LocalizationFilter</filter-name>

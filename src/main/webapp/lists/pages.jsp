@@ -17,7 +17,7 @@
     <tr>
         <c:forEach begin="1" end="${requestScope.count}" step="1" var="i">
             <th style="border: none">
-                <form action="${pageContext.request.contextPath}/main">
+                <form action="${requestScope.path}">
                     <c:if test="${requestScope.page.equals(i)}">
                         <input style="color: red" type="submit" value="${i}">
                     </c:if>

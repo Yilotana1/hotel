@@ -7,6 +7,9 @@ import com.example.hotel.controller.command.LoginCommand;
 import com.example.hotel.controller.command.MainCommand;
 import com.example.hotel.controller.command.ShowProfileCommand;
 import com.example.hotel.controller.command.SignUpCommand;
+import com.example.hotel.controller.command.admin.EditUserCommand;
+import com.example.hotel.controller.command.admin.ManageUsersCommand;
+import com.example.hotel.controller.command.manager.ListUsersCommand;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,10 +21,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import static com.example.hotel.controller.Path.ADMIN_EDIT_USER;
+import static com.example.hotel.controller.Path.ADMIN_MANAGE_USERS;
 import static com.example.hotel.controller.Path.EDIT_PROFILE;
 import static com.example.hotel.controller.Path.LOGIN;
 import static com.example.hotel.controller.Path.LOGOUT;
 import static com.example.hotel.controller.Path.MAIN;
+import static com.example.hotel.controller.Path.MANAGER_LIST_USERS;
 import static com.example.hotel.controller.Path.PROFILE;
 import static com.example.hotel.controller.Path.SIGNUP;
 
@@ -40,6 +46,9 @@ public class Servlet extends HttpServlet {
         commands.put(MAIN, new MainCommand());
         commands.put(PROFILE, new ShowProfileCommand());
         commands.put(EDIT_PROFILE, new EditProfileCommand());
+        commands.put(ADMIN_MANAGE_USERS, new ManageUsersCommand());
+        commands.put(ADMIN_EDIT_USER, new EditUserCommand());
+        commands.put(MANAGER_LIST_USERS, new ListUsersCommand());
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -54,7 +63,6 @@ public class Servlet extends HttpServlet {
 
         log.trace("doGet finished");
     }
-
     public void destroy() {
     }
 }

@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +22,8 @@ import static com.example.hotel.model.dao.sql.mysql.UserSQL.INSERT_USER_ROLE;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_COUNT_USERS;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_ROLES_BY_USER_ID;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USERS_BY_FULL_NAME;
-import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_ID;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USERS_SORTED_BY_ID_LIMITED;
+import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_ID;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_LOGIN;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.UPDATE_USER;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -61,7 +62,7 @@ public class JDBCUserDao implements UserDao {
             insertUserStatement.executeUpdate();
             var userId = getGeneratedId(insertUserStatement);
 
-            for (var role : user.getRoles()){
+            for (var role : user.getRoles()) {
                 insertRoleStatement.setString(1, role.getName());
                 insertRoleStatement.setLong(2, userId);
                 insertRoleStatement.executeUpdate();
@@ -131,7 +132,7 @@ public class JDBCUserDao implements UserDao {
              var deleteRolesStatement = connection.prepareStatement(DELETE_PREVIOUS_ROLES);
              var insertRolesStatement = connection.prepareStatement(INSERT_UPDATED_ROLES)) {
             setStatementParametersForUser(user, updateUserStatement);
-            updateUserStatement.setLong(7, user.getId());
+            updateUserStatement.setLong(8, user.getId());
             deleteRolesStatement.setLong(1, user.getId());
             updateUserStatement.executeUpdate();
             deleteRolesStatement.executeUpdate();
@@ -161,8 +162,9 @@ public class JDBCUserDao implements UserDao {
         preparedStatement.setString(2, user.getFirstname());
         preparedStatement.setString(3, user.getLastname());
         preparedStatement.setString(4, user.getEmail());
-        preparedStatement.setString(5, user.getPhone());
-        preparedStatement.setString(6, user.getPassword());
+        preparedStatement.setString(5, user.getPassword());
+        preparedStatement.setString(6, user.getPhone());
+        preparedStatement.setInt(7, user.getStatus().getId());
     }
 
     private ArrayList<User> getUsers(PreparedStatement selectUserStatement, PreparedStatement selectRolesStatement) throws SQLException {
@@ -178,7 +180,7 @@ public class JDBCUserDao implements UserDao {
     }
 
     private void addRolesToUser(User user, PreparedStatement selectRolesStatement) throws SQLException {
-        var roles = new ArrayList<Role>();
+        var roles = new HashSet<Role>();
         var rolesSet = selectRolesStatement.executeQuery();
         while (rolesSet.next()) {
             roles.add(roleMapper.extractFromResultSet(rolesSet));
