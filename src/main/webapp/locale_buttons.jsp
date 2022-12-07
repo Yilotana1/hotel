@@ -7,24 +7,29 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>Title</title>
 </head>
 <body>
-<tr>
-  <th>
-    <form>
-      <input value="UA" type="hidden" name="lang"/>
-      <input type="submit" value="ua"/>
-    </form>
-  </th>
-  <th>
-    <form>
-      <input value="EN" type="hidden" name="lang"/>
-      <input type="submit" value="en"/>
-    </form>
-  </th>
-</tr>
+<table align="right" class="locale_table">
+    <tr>
+        <th class="locale_table">
+            <form>
+                <input value="UA" type="submit"/>
+                <input value="UA" type="hidden" name="lang"/>
+                <input value="${param}" name="request_params" type="hidden"/>
+            </form>
+        </th>
+        <th class="locale_table">
+            <form>
+                <input value="EN" type="submit"/>
+                <input value="EN" type="hidden" name="lang"/>
+                <input value="${param}" name="request_params" type="hidden"/>
+            </form>
+        </th>
+    </tr>
+</table>
 </body>
 </html>
