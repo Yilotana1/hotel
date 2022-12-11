@@ -17,15 +17,15 @@
     <tr>
         <th class="locale_table">
             <form>
-                <input value="UA" type="submit"/>
-                <input value="UA" type="hidden" name="lang"/>
+                <input value="ua" type="submit"/>
+                <input value="ua" type="hidden" name="lang"/>
                 <input value="${param}" name="request_params" type="hidden"/>
             </form>
         </th>
         <th class="locale_table">
             <form>
-                <input value="EN" type="submit"/>
-                <input value="EN" type="hidden" name="lang"/>
+                <input value="en" type="submit"/>
+                <input value="en" type="hidden" name="lang"/>
                 <input value="${param}" name="request_params" type="hidden"/>
             </form>
         </th>

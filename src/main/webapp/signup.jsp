@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-<fmt:setLocale value="${sessionScope.lang.name()}"/>
+<fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="locale_buttons.jsp"/>
 <form action="signup" method="get">

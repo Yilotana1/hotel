@@ -13,15 +13,17 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static java.util.Locale.ENGLISH;
 
 
 /**
  * Set locale from request. If it's not presented, set locale from session.
  * If neither request nor session locale is presented set default locale
- * Locale language is presented as {@link  LANG}
+ * Locale language is presented as {@link  Locale}
  */
 public class LocalizationFilter implements Filter {
 
@@ -39,13 +41,12 @@ public class LocalizationFilter implements Filter {
 
         final var request = (HttpServletRequest) servletRequest;
         final var response = (HttpServletResponse) servletResponse;
-        final var langStoredInSession = (LANG) request.getSession().getAttribute(LANGUAGE);
+        final var langStoredInSession = (Locale) request.getSession().getAttribute(LANGUAGE);
 
         log.trace("get locale language from session: " + langStoredInSession);
 
         final var langFromRequest = getLangFromRequest(request);
         log.trace("get locale language from request: " + langFromRequest);
-
         if (langFromRequest != null) {
             request.getSession().setAttribute(LANGUAGE, langFromRequest);
             log.trace("locale language from request not null, set request locale language to session: " + langFromRequest);
@@ -54,7 +55,7 @@ public class LocalizationFilter implements Filter {
             return;
         } else {
             if (langStoredInSession == null) {
-                request.getSession().setAttribute(LANGUAGE, LANG.getDefault());
+                request.getSession().setAttribute(LANGUAGE, ENGLISH);
                 log.trace("locale language from request null, set default locale(en) to session: ");
             }
         }
@@ -99,24 +100,11 @@ public class LocalizationFilter implements Filter {
         log.debug("Filter destroyed");
 
     }
-
-    public enum LANG {
-
-        EN, UA;
-        public static LANG getDefault() {
-            return EN;
-        }
-        public String getLanguageTag(){
-            if (this == EN) return "en";
-            if (this == UA) return "ua";
-            return null;
-        }
-    }
-
-    private LANG getLangFromRequest(HttpServletRequest request) {
-        LANG langFromRequest = null;
-        if (request.getParameter(LANGUAGE) != null) {
-            langFromRequest = LANG.valueOf(request.getParameter(LANGUAGE));
+    private Locale getLangFromRequest(HttpServletRequest request) {
+        Locale langFromRequest = null;
+        final var langTagFromRequest = request.getParameter(LANGUAGE);
+        if (langTagFromRequest != null) {
+            langFromRequest = Locale.forLanguageTag(langTagFromRequest);
         }
         return langFromRequest;
     }

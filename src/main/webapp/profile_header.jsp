@@ -15,7 +15,7 @@
     <title>Title</title>
 </head>
 <body>
-<fmt:setLocale value="${sessionScope.lang.name()}"/>
+<fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="locale_buttons.jsp"/>
 <c:if test="${requestScope.user.status.equals(UserStatus.BLOCKED)}">

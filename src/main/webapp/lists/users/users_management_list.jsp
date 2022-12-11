@@ -12,7 +12,7 @@
 <%@ page import="com.example.hotel.model.entity.enums.Role" %>
 <html>
 <body>
-<fmt:setLocale value="${sessionScope.lang.name()}"/>
+<fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <table>
     <tr>

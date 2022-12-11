@@ -12,7 +12,7 @@
     <title>Title</title>
 </head>
 <body>
-<fmt:setLocale value="${sessionScope.lang.name()}"/>
+<fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="../locale_buttons.jsp"/>
 <h3><fmt:message key="application_saved"/></h3>

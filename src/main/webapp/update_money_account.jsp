@@ -12,7 +12,7 @@
     <title>Title</title>
 </head>
 <body>
-<fmt:setLocale value="${sessionScope.lang.name()}"/>
+<fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <form action="${pageContext.request.contextPath}/client/update-money">
     <fmt:message key="currency_koef" var="koef"/>

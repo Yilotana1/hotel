@@ -1,6 +1,5 @@
 package com.example.hotel.controller.tag.handler;
 
-import com.example.hotel.controller.filter.LocalizationFilter.LANG;
 import com.example.hotel.model.entity.Application;
 import com.example.hotel.model.service.ApplicationService;
 import com.example.hotel.model.service.factory.ServiceFactory;
@@ -55,10 +54,8 @@ public class ShowApprovedApplicationHandler extends TagSupport {
 
 
     private ResourceBundle getResourceBundle() {
-        final var localeFromFilter = (LANG) pageContext.getSession().getAttribute(LANGUAGE);
-        final var locale = Locale.forLanguageTag(localeFromFilter.getLanguageTag());
-        return ResourceBundle
-                .getBundle("message", locale);
+        final var locale = (Locale) pageContext.getSession().getAttribute(LANGUAGE);
+        return ResourceBundle.getBundle("message", locale);
     }
 
     private void writeNothing() {

@@ -14,7 +14,7 @@
 <head>
     <title>Title</title>
 <body>
-<fmt:setLocale value="${sessionScope.lang.name()}"/>
+<fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="profile_header.jsp"/>
 <fmt:message key="main" var="main"/>

@@ -13,7 +13,7 @@
     <title>Title</title>
 </head>
 <body>
-<fmt:setLocale value="${sessionScope.lang.name()}"/>
+<fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <form action="${pageContext.request.contextPath}/main">
     <label for="sorted_by"></label>

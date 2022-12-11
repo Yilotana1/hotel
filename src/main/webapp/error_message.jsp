@@ -13,7 +13,7 @@
     <title>Title</title>
 </head>
 <body>
-<fmt:setLocale value="${sessionScope.lang.name()}"/>
+<fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <c:if test="${!(requestScope.error == null)}">
   <span style="color:red"><fmt:message key="${requestScope.error}"/></span>
