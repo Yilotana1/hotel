@@ -5,8 +5,10 @@ import com.example.hotel.model.entity.Application;
 import com.example.hotel.model.entity.User;
 import com.example.hotel.model.entity.enums.ApplicationStatus;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class ApplicationMapper implements EntityMapper<Application> {
 
@@ -20,6 +22,8 @@ public class ApplicationMapper implements EntityMapper<Application> {
 
     @Override
     public Application extractFromResultSet(ResultSet rs) throws SQLException {
+        final var startDate = Optional.ofNullable(rs.getDate("start_date"));
+        final var endDate = Optional.ofNullable(rs.getDate("end_date"));
         return Application
                 .builder()
                 .id(rs.getLong("application.id"))
@@ -27,10 +31,11 @@ public class ApplicationMapper implements EntityMapper<Application> {
                 .price(rs.getBigDecimal("application.price"))
                 .client(userMapper.extractFromResultSet(rs))
                 .apartment(apartmentMapper.extractFromResultSet(rs))
-                .creationDate(rs.getTimestamp("creation_date").toLocalDateTime())
-                .lastModified(rs.getTimestamp("last_modified").toLocalDateTime())
-                .startDate(rs.getTimestamp("start_date").toLocalDateTime())
-                .endDate(rs.getTimestamp("end_date").toLocalDateTime())
+                .creationDate(rs.getTimestamp("application.creation_date").toLocalDateTime())
+                .lastModified(rs.getTimestamp("application.last_modified").toLocalDateTime())
+                .stayLength(rs.getInt("application.stay_length"))
+                .startDate(startDate.map(Date::toLocalDate).orElse(null))
+                .endDate(endDate.map(Date::toLocalDate).orElse(null))
                 .build();
     }
 

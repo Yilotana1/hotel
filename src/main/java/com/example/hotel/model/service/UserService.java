@@ -6,6 +6,7 @@ import com.example.hotel.model.entity.enums.Role;
 import com.example.hotel.model.entity.enums.UserStatus;
 import com.example.hotel.model.service.exception.ServiceException;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ public interface UserService {
     List<User> getUsers(int skip, int count) throws ServiceException;
 
     int count() throws ServiceException;
+    void updateMoneyAccount(String login, BigDecimal money) throws ServiceException;
 
     User signUp(UserDTO userDTO) throws ServiceException;
 

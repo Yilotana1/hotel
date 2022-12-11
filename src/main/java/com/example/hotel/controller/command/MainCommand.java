@@ -57,9 +57,9 @@ public class MainCommand implements Command {
         final var pageNumber = parseInt(requireNonNullElse(request.getParameter(PAGE_NUMBER_INPUT), DEFAULT_PAGE_NUMBER));
         final var skip = (pageNumber - 1) * PAGE_SIZE;
 
-        final var requestedSortingOption = request.getParameter(SORTED_BY);
+        final var requestedSorting = request.getParameter(SORTED_BY);
         final var sortingMethod = sortingMethods.get(
-                requireNonNullElse(requestedSortingOption, DEFAULT_SORTING));
+                requireNonNullElse(requestedSorting, DEFAULT_SORTING));
         try {
             final var apartments = sortingMethod.apply(skip, PAGE_SIZE);
             request.setAttribute(APARTMENTS, apartments);
@@ -69,7 +69,7 @@ public class MainCommand implements Command {
             log.error(e.getMessage());
             request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
         }
-        setAttributesForPaging(request, requestedSortingOption, pageNumber);
+        setAttributesForPaging(request, requestedSorting, pageNumber);
         request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
         log.debug("Forward to main.jsp");
     }
@@ -79,6 +79,8 @@ public class MainCommand implements Command {
         request.setAttribute(PAGE_NUMBER_INPUT, pageNumber);
         request.setAttribute(LIST_OF_SORTING_OPTIONS, sortingMethods.keySet());
         request.setAttribute(SORTED_BY, sorted_by);
+        request.setAttribute("default_sorting", DEFAULT_SORTING);
+
     }
 
 }

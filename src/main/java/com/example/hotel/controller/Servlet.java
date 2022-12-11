@@ -9,6 +9,11 @@ import com.example.hotel.controller.command.ShowProfileCommand;
 import com.example.hotel.controller.command.SignUpCommand;
 import com.example.hotel.controller.command.admin.EditUserCommand;
 import com.example.hotel.controller.command.admin.ManageUsersCommand;
+import com.example.hotel.controller.command.client.ApplyCommand;
+import com.example.hotel.controller.command.client.ConfirmPaymentCommand;
+import com.example.hotel.controller.command.client.ShowApplicationInvoiceCommand;
+import com.example.hotel.controller.command.client.ShowApplicationPageCommand;
+import com.example.hotel.controller.command.client.UpdateUserMoneyCommand;
 import com.example.hotel.controller.command.manager.ListUsersCommand;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -23,13 +28,19 @@ import java.util.Map;
 
 import static com.example.hotel.controller.Path.ADMIN_EDIT_USER;
 import static com.example.hotel.controller.Path.ADMIN_MANAGE_USERS;
+import static com.example.hotel.controller.Path.APPLICATION_INVOICE;
+import static com.example.hotel.controller.Path.CLIENT_APPLY;
+import static com.example.hotel.controller.Path.CLIENT_APPLY_PAGE;
+import static com.example.hotel.controller.Path.CONFIRM_PAYMENT;
 import static com.example.hotel.controller.Path.EDIT_PROFILE;
 import static com.example.hotel.controller.Path.LOGIN;
 import static com.example.hotel.controller.Path.LOGOUT;
 import static com.example.hotel.controller.Path.MAIN;
 import static com.example.hotel.controller.Path.MANAGER_LIST_USERS;
 import static com.example.hotel.controller.Path.PROFILE;
+import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
 import static com.example.hotel.controller.Path.SIGNUP;
+import static com.example.hotel.controller.Path.UPDATE_MONEY_ACCOUNT;
 
 public class Servlet extends HttpServlet {
     private final Map<String, Command> commands = new HashMap<>();
@@ -49,6 +60,11 @@ public class Servlet extends HttpServlet {
         commands.put(ADMIN_MANAGE_USERS, new ManageUsersCommand());
         commands.put(ADMIN_EDIT_USER, new EditUserCommand());
         commands.put(MANAGER_LIST_USERS, new ListUsersCommand());
+        commands.put(UPDATE_MONEY_ACCOUNT, new UpdateUserMoneyCommand());
+        commands.put(CLIENT_APPLY, new ApplyCommand());
+        commands.put(SHOW_APPLY_PAGE, new ShowApplicationPageCommand());
+        commands.put(APPLICATION_INVOICE, new ShowApplicationInvoiceCommand());
+        commands.put(CONFIRM_PAYMENT, new ConfirmPaymentCommand());
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -63,6 +79,7 @@ public class Servlet extends HttpServlet {
 
         log.trace("doGet finished");
     }
+
     public void destroy() {
     }
 }

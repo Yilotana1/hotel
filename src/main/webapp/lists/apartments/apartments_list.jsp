@@ -16,7 +16,6 @@
 <jsp:include page="selection.jsp"/>
 <table>
     <tr>
-        <th><fmt:message key="number"/></th>
         <th><fmt:message key="floor"/></th>
         <th><fmt:message key="status"/></th>
         <th><fmt:message key="class"/></th>
@@ -26,14 +25,20 @@
     </tr>
     <c:forEach var="apartment" items="${requestScope.apartments}">
         <tr>
-            <th>${apartment.number}</th>
             <th>${apartment.floor}</th>
-            <th>${apartment.apartmentStatus}</th>
+            <th>${apartment.status}</th>
             <th>${apartment.apartmentClass}</th>
             <th>${apartment.numberOfPeople}</th>
             <fmt:message key="currency_koef" var="koef"/>
             <th>${apartment.price * koef} <fmt:message key="currency_sign"/></th>
             <th>${apartment.demand}</th>
+            <th>
+                <form action="${pageContext.request.contextPath}/client/show-application-page">
+                    <fmt:message key="apply" var="apply"/>
+                    <input type="hidden" name="number" value="${apartment.number}">
+                    <input type="submit" value="${apply}">
+                </form>
+            </th>
         </tr>
     </c:forEach>
 </table>

@@ -1,12 +1,14 @@
 package com.example.hotel.model.service.factory;
 
 import com.example.hotel.model.service.ApartmentService;
+import com.example.hotel.model.service.ApplicationService;
 import com.example.hotel.model.service.UserService;
 
 public abstract class ServiceFactory {
     private static ServiceFactory serviceFactory;
 
     public abstract UserService createUserService();
+    public abstract ApplicationService createApplicationService();
     public abstract ApartmentService createApartmentService();
 
 

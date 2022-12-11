@@ -182,7 +182,7 @@ public class JDBCApartmentDao implements ApartmentDao {
             insertApartmentStatement.setLong(1, apartment.getNumber());
             insertApartmentStatement.setLong(2, apartment.getFloor());
             insertApartmentStatement.setLong(3, apartment.getApartmentClass().getId());
-            insertApartmentStatement.setLong(4, apartment.getApartmentStatus().getId());
+            insertApartmentStatement.setLong(4, apartment.getStatus().getId());
             insertApartmentStatement.setInt(5, apartment.getDemand());
             insertApartmentStatement.setBigDecimal(6, apartment.getPrice());
             insertApartmentStatement.setInt(7, apartment.getNumberOfPeople());
@@ -196,7 +196,7 @@ public class JDBCApartmentDao implements ApartmentDao {
         try (var insertApartmentStatement = connection.prepareStatement(UPDATE_APARTMENT)) {
             insertApartmentStatement.setLong(1, apartment.getFloor());
             insertApartmentStatement.setLong(2, apartment.getApartmentClass().getId());
-            insertApartmentStatement.setLong(3, apartment.getApartmentStatus().getId());
+            insertApartmentStatement.setLong(3, apartment.getStatus().getId());
             insertApartmentStatement.setInt(4, apartment.getDemand());
             insertApartmentStatement.setBigDecimal(5, apartment.getPrice());
             insertApartmentStatement.setInt(6, apartment.getNumberOfPeople());

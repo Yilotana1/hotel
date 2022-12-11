@@ -20,9 +20,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.example.hotel.controller.Path.ADMIN_MANAGE_USERS;
-import static com.example.hotel.controller.Path.EDIT_PROFILE;
 import static com.example.hotel.controller.Path.ADMIN_EDIT_USER;
+import static com.example.hotel.controller.Path.ADMIN_MANAGE_USERS;
+import static com.example.hotel.controller.Path.APARTMENT_NOT_AVAILABLE_PAGE;
+import static com.example.hotel.controller.Path.APPLICATION_INVOICE;
+import static com.example.hotel.controller.Path.CLIENT_APPLY;
+import static com.example.hotel.controller.Path.CLIENT_HAS_APPLICATION_PAGE;
+import static com.example.hotel.controller.Path.CONFIRM_PAYMENT;
+import static com.example.hotel.controller.Path.EDIT_PROFILE;
 import static com.example.hotel.controller.Path.ERROR_404_PAGE;
 import static com.example.hotel.controller.Path.LOGIN;
 import static com.example.hotel.controller.Path.LOGIN_PAGE;
@@ -30,9 +35,13 @@ import static com.example.hotel.controller.Path.LOGOUT;
 import static com.example.hotel.controller.Path.MAIN;
 import static com.example.hotel.controller.Path.MAIN_PAGE;
 import static com.example.hotel.controller.Path.MANAGER_LIST_USERS;
+import static com.example.hotel.controller.Path.MONEY_VALUE_IS_INCORRECT;
 import static com.example.hotel.controller.Path.PROFILE;
+import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
 import static com.example.hotel.controller.Path.SIGNUP;
 import static com.example.hotel.controller.Path.SIGNUP_PAGE;
+import static com.example.hotel.controller.Path.SUCCESS_APPLY_PAGE;
+import static com.example.hotel.controller.Path.UPDATE_MONEY_ACCOUNT;
 import static com.example.hotel.model.dao.Tools.userIsLogged;
 import static com.example.hotel.model.entity.enums.UserStatus.BLOCKED;
 import static com.example.hotel.model.entity.enums.UserStatus.NON_BLOCKED;
@@ -68,7 +77,8 @@ public class AccessFilter implements Filter {
                 MAIN,
                 ERROR_404_PAGE,
                 PROFILE,
-                EDIT_PROFILE);
+                EDIT_PROFILE,
+                LOGOUT);
 
         addPermissionsToUndefinedUser(
                 LOGIN,
@@ -83,7 +93,16 @@ public class AccessFilter implements Filter {
                 ERROR_404_PAGE,
                 LOGOUT,
                 PROFILE,
-                EDIT_PROFILE);
+                EDIT_PROFILE,
+                UPDATE_MONEY_ACCOUNT,
+                CLIENT_APPLY,
+                SHOW_APPLY_PAGE,
+                SUCCESS_APPLY_PAGE,
+                APPLICATION_INVOICE,
+                APARTMENT_NOT_AVAILABLE_PAGE,
+                CLIENT_HAS_APPLICATION_PAGE,
+                CONFIRM_PAYMENT,
+                MONEY_VALUE_IS_INCORRECT);
 
         addPermissionsTo(Role.MANAGER,
                 MAIN,

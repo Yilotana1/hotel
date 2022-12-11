@@ -1,5 +1,6 @@
 package com.example.hotel.controller.command;
 
+import com.example.hotel.model.service.ApplicationService;
 import com.example.hotel.model.service.UserService;
 import com.example.hotel.model.service.exception.LoginIsNotFoundException;
 import com.example.hotel.model.service.factory.ServiceFactory;
@@ -16,9 +17,11 @@ import static com.example.hotel.controller.Path.PROFILE_PAGE;
 public class ShowProfileCommand implements Command {
     public final static Logger log = Logger.getLogger(ShowProfileCommand.class);
     public static final String LOGIN_INPUT = "login";
-    public static final String USER_ATRRIBUTE = "user";
+    public static final String USER_ATTRIBUTE = "user";
+    public static final String APPLICATION_ATTRIBUTE = "application";
 
     private UserService userService = ServiceFactory.getInstance().createUserService();
+    private ApplicationService applicationService = ServiceFactory.getInstance().createApplicationService();
 
     public ShowProfileCommand() {
     }
@@ -35,13 +38,14 @@ public class ShowProfileCommand implements Command {
             final var user = userService
                     .getByLogin(login)
                     .orElseThrow(() -> new LoginIsNotFoundException(login + " is not found"));
-
-            request.setAttribute(USER_ATRRIBUTE, user);
+            applicationService
+                    .getNotApprovedApplicationByClientId(user.getId())
+                    .ifPresent(app -> request.setAttribute(APPLICATION_ATTRIBUTE, app));
+            request.setAttribute(USER_ATTRIBUTE, user);
             request.getRequestDispatcher(PROFILE_PAGE).forward(request, response);
-        } catch (LoginIsNotFoundException e) {
+        } catch (final Exception e) {
             log.error(e.getMessage());
             request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
         }
-
     }
 }

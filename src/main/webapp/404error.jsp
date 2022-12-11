@@ -20,6 +20,9 @@
 <form action="${pageContext.request.contextPath}/main">
     <fmt:message key="denied"/>
     <fmt:message key="main" var="main"/>
+    <br/>
+    <br/>
+    <br/>
     <input type="submit" value="${main}">
 </form>
 </body>

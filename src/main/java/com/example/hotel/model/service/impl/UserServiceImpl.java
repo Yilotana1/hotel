@@ -1,27 +1,23 @@
 package com.example.hotel.model.service.impl;
 
-import com.example.hotel.controller.Servlet;
 import com.example.hotel.controller.dto.UserDTO;
 import com.example.hotel.model.dao.factory.DaoFactory;
 import com.example.hotel.model.entity.User;
 import com.example.hotel.model.entity.enums.Role;
 import com.example.hotel.model.entity.enums.UserStatus;
 import com.example.hotel.model.service.UserService;
-import com.example.hotel.model.service.exception.LoginIsNotFoundException;
 import com.example.hotel.model.service.exception.LoginIsNotUniqueException;
 import com.example.hotel.model.service.exception.ServiceException;
 import com.example.hotel.model.service.exception.UserNotFoundException;
 import org.apache.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.hotel.model.entity.enums.Role.CLIENT;
-import static com.example.hotel.model.entity.enums.Role.MANAGER;
-import static com.example.hotel.model.entity.enums.UserStatus.NON_BLOCKED;
 import static com.example.hotel.model.service.exception.Messages.LOGIN_IS_NOT_UNIQUE;
 import static com.example.hotel.model.service.exception.Messages.SERVICE_EXCEPTION;
 import static com.example.hotel.model.service.exception.Messages.USER_WITH_SUCH_ID_NOT_FOUND;
@@ -31,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
 
     private final DaoFactory daoFactory;
-    public final static Logger log = Logger.getLogger(Servlet.class);
+    public final static Logger log = Logger.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(final DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
@@ -54,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getByLogin(final String login) throws ServiceException{
+    public Optional<User> getByLogin(final String login) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             return userDao.findByLogin(login);
         } catch (SQLException e) {
@@ -84,6 +80,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateMoneyAccount(final String login, final BigDecimal money) throws ServiceException {
+        try (var userDao = daoFactory.createUserDao()) {
+            userDao.getConnection().setAutoCommit(false);
+            final var user = userDao.findByLogin(login)
+                    .orElseThrow(() -> new ServiceException(USER_WITH_SUCH_LOGIN_NOT_FOUND));
+            user.updateMoneyAccount(money);
+            userDao.update(user);
+            userDao.getConnection().commit();
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new ServiceException(SERVICE_EXCEPTION, e);
+        }
+    }
+
+    @Override
     public User signUp(final UserDTO userDTO) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
@@ -92,8 +103,7 @@ public class UserServiceImpl implements UserService {
                 throw new LoginIsNotUniqueException(String.format(LOGIN_IS_NOT_UNIQUE, userDTO.getLogin()));
             }
             var user = mapToUser(userDTO);
-            user.getRoles().add(CLIENT);
-            user.setStatus(NON_BLOCKED);
+            user.assignAsClient();
             var generatedId = userDao.create(user);
             var createdUser = userDao.findById(generatedId).get();
             userDao.getConnection().commit();
@@ -105,7 +115,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(final UserDTO userDTO) throws ServiceException{
+    public void update(final UserDTO userDTO) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
             final var user = userDao.findByLogin(userDTO.getLogin())
@@ -139,6 +149,7 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(SERVICE_EXCEPTION, e);
         }
     }
+
     private User mapToUser(final UserDTO userDTO) {
         return User.builder()
                 .login(userDTO.getLogin())
@@ -147,7 +158,6 @@ public class UserServiceImpl implements UserService {
                 .phone(userDTO.getPhone())
                 .password(userDTO.getPassword())
                 .email(userDTO.getEmail())
-                .roles(new HashSet<>())
                 .build();
     }
 }

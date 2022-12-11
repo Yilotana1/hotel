@@ -10,7 +10,7 @@ public interface UserSQL {
     String SELECT_USER_BY_LOGIN = "SELECT * FROM user WHERE login = ?";
     String SELECT_USERS_BY_FULL_NAME = "SELECT * FROM user WHERE firstname = ? AND lastname = ? LIMIT ?, ?";
     String UPDATE_USER = "UPDATE user SET login = ?, firstname = ?, lastname = ?, email = ?," +
-            "password = ?, phone = ?, status_id = ? WHERE id = ?";
+            "password = ?, phone = ?, status_id = ?, money = ? WHERE id = ?";
     String DELETE_PREVIOUS_ROLES = "DELETE FROM role WHERE user_id = ?";
     String INSERT_UPDATED_ROLES = "INSERT INTO role (role, user_id) VALUES (?, ?);";
     String DELETE_USER_BY_ID = "DELETE FROM user WHERE id = ?";

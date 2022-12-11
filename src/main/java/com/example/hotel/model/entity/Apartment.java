@@ -2,14 +2,20 @@ package com.example.hotel.model.entity;
 
 import com.example.hotel.model.entity.enums.ApartmentClass;
 import com.example.hotel.model.entity.enums.ApartmentStatus;
+import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 
+import static com.example.hotel.model.entity.enums.ApartmentStatus.BOOKED;
+import static com.example.hotel.model.entity.enums.ApartmentStatus.FREE;
+import static com.example.hotel.model.entity.enums.ApartmentStatus.UNAVAILABLE;
+
 public class Apartment {
+    public final static Logger log = Logger.getLogger(Apartment.class);
     private Integer number;
     private Integer floor;
     private ApartmentClass apartmentClass;
-    private ApartmentStatus apartmentStatus;
+    private ApartmentStatus status;
     private Integer demand;
     private BigDecimal price;
     private Integer numberOfPeople;
@@ -24,7 +30,7 @@ public class Apartment {
                 "number=" + number +
                 ", floor=" + floor +
                 ", apartmentClass=" + apartmentClass +
-                ", apartmentStatus=" + apartmentStatus +
+                ", apartmentStatus=" + status +
                 ", demand=" + demand +
                 ", price=" + price +
                 ", numberOfPeople=" + numberOfPeople +
@@ -43,6 +49,7 @@ public class Apartment {
             apartment.setNumberOfPeople(numberOfPeople);
             return this;
         }
+
         public ApartmentBuilder price(BigDecimal price) {
             apartment.setPrice(price);
             return this;
@@ -59,7 +66,7 @@ public class Apartment {
         }
 
         public ApartmentBuilder apartmentStatus(ApartmentStatus apartmentStatus) {
-            apartment.setApartmentStatus(apartmentStatus);
+            apartment.setStatus(apartmentStatus);
             return this;
         }
 
@@ -79,6 +86,23 @@ public class Apartment {
 
     }
 
+    public void markAsUnavailable() {
+        log.trace(this + " marked unavailable");
+        setStatus(UNAVAILABLE);
+    }
+
+    public void increaseDemand() {
+        setDemand(getDemand() + 1);
+    }
+
+    public void book() {
+        setStatus(BOOKED);
+    }
+
+    public boolean isNotAvailable() {
+        return getStatus() != FREE;
+    }
+
     public Integer getNumberOfPeople() {
         return numberOfPeople;
     }
@@ -95,12 +119,12 @@ public class Apartment {
         this.price = price;
     }
 
-    public ApartmentStatus getApartmentStatus() {
-        return apartmentStatus;
+    public ApartmentStatus getStatus() {
+        return status;
     }
 
-    public void setApartmentStatus(ApartmentStatus apartmentStatus) {
-        this.apartmentStatus = apartmentStatus;
+    public void setStatus(ApartmentStatus apartmentStatus) {
+        this.status = apartmentStatus;
     }
 
     public Integer getNumber() {

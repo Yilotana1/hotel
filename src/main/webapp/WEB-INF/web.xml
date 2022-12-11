@@ -57,6 +57,26 @@
         <servlet-name>Servlet</servlet-name>
         <url-pattern>/manager/list-users</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/client/update-money</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/client/apply</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/client/show-application-page</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/client/application-invoice</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/client/confirm-payment</url-pattern>
+    </servlet-mapping>
     <!--Filters-->
     <filter>
         <filter-name>LocalizationFilter</filter-name>

@@ -104,6 +104,14 @@ public class UserDTO {
         return false;
     }
 
+//    public BigDecimal getMoney() {
+//        return money;
+//    }
+//
+//    public void setMoney(BigDecimal money) {
+//        this.money = money;
+//    }
+
     public String getLogin() {
         return login;
     }

@@ -22,36 +22,44 @@
 <form action="signup" method="get">
     <table>
         <tr>
-            <th>Login: </th>
+            <th><fmt:message key="login"/>: </th>
             <th><input type="text" name="login"/></th>
         </tr>
         <tr>
-            <th>Firstname: </th>
+            <th><fmt:message key="firstname"/>: </th>
             <th><input type="text" name="firstname"/></th>
         </tr>
         <tr>
-            <th>Lastname: </th>
+            <th><fmt:message key="lastname"/>: </th>
             <th><input type="text" name="lastname"/></th>
         </tr>
         <tr>
-            <th>Email: </th>
+            <th><fmt:message key="email"/>: </th>
             <th><input type="text" name="email"/></th>
         </tr>
         <tr>
-            <th>Phone: </th>
+            <th><fmt:message key="phone"/>: </th>
             <th><input type="text" name="phone"/></th>
         </tr>
         <tr>
-            <th>Password: </th>
+            <th><fmt:message key="password"/>: </th>
             <th><input type="password" name="password"/></th>
         </tr>
     </table>
     <br/>
-    <input type="submit"/>
+    <fmt:message key="submit" var="submit"/>
+    <input type="submit" value="${submit}"/>
     <br/>
     <c:if test="${!(requestScope.error == null)}">
         <span style="color:red"><fmt:message key="${requestScope.error}"/></span>
     </c:if>
+</form>
+<br/>
+<br/>
+<br/>
+<fmt:message key="main" var="main"/>
+<form action="${pageContext.request.contextPath}/main">
+    <input type="submit" value="${main}">
 </form>
 </body>
 </html>

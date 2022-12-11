@@ -1,5 +1,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="custom" uri="custom" %>
 <%@ page import="com.example.hotel.model.entity.enums.UserStatus" %>
 <%--
   Created by IntelliJ IDEA.
@@ -17,12 +18,19 @@
 <fmt:setLocale value="${sessionScope.lang.name()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="locale_buttons.jsp"/>
-
 <c:if test="${requestScope.user.status.equals(UserStatus.BLOCKED)}">
     <b style="color: red"><fmt:message key="you_are_blocked"/></b>
 </c:if>
+<br/>
+<custom:approvedApplication/>
+
+<c:if test="${requestScope.application != null}">
+    <fmt:message key="application_to_confirm"/><br/>
+    <a href="${pageContext.request.contextPath}/client/application-invoice">See</a>
+</c:if>
+<br/>
 <h3><fmt:message key="information_about_you"/>:</h3>
-<form action="${pageContext.request.contextPath}/edit_profile">
+<form action="${pageContext.request.contextPath}/edit-profile">
     <table>
         <input type="hidden" name="status" value="${requestScope.user.status.id}"/>
         <tr>

@@ -1,22 +1,30 @@
 package com.example.hotel.model.entity;
 
 import com.example.hotel.model.entity.enums.ApplicationStatus;
+import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
+import java.util.Optional;
+
+import static com.example.hotel.model.entity.enums.ApplicationStatus.APPROVED;
+import static com.example.hotel.model.entity.enums.ApplicationStatus.CANCELED;
+import static com.example.hotel.model.entity.enums.ApplicationStatus.NOT_APPROVED;
 
 public class Application {
 
+    public final static Logger log = Logger.getLogger(Application.class);
     private Long id;
     private User client;
     private Apartment apartment;
-    private ApplicationStatus status;
+    private ApplicationStatus status = NOT_APPROVED;
     private BigDecimal price;
     private LocalDateTime creationDate;
     private LocalDateTime lastModified;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Integer stayLength;
 
     public static ApplicationBuilder builder() {
         return new ApplicationBuilder();
@@ -63,13 +71,18 @@ public class Application {
             return this;
         }
 
-        public ApplicationBuilder startDate(LocalDateTime startDate) {
+        public ApplicationBuilder startDate(LocalDate startDate) {
             application.setStartDate(startDate);
             return this;
         }
 
-        public ApplicationBuilder endDate(LocalDateTime endDate) {
+        public ApplicationBuilder endDate(LocalDate endDate) {
             application.setEndDate(endDate);
+            return this;
+        }
+
+        public ApplicationBuilder stayLength(Integer stayLength) {
+            application.setStayLength(stayLength);
             return this;
         }
 
@@ -92,27 +105,47 @@ public class Application {
                 ", lastModified=" + lastModified +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", duration=" + getDuration() +
+                ", stayLength=" + stayLength +
                 '}';
     }
 
-    public Period getDuration() {
-        return Period.between(getStartDate().toLocalDate(), getEndDate().toLocalDate());
+    public void approve(final LocalDate startDate, final LocalDate endDate) {
+        setStatus(APPROVED);
+        setStartDate(startDate);
+        setEndDate(endDate);
+        log.trace("application got approved");
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
+    public void cancel() {
+        setStatus(CANCELED);
+        log.trace("application got canceled");
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public String getClientLogin() {
+        return client.getLogin();
+    }
+
+    public Optional<LocalDate> getStartDate() {
+        return Optional.ofNullable(startDate);
+    }
+
+    public Integer getStayLength() {
+        return stayLength;
+    }
+
+    private void setStayLength(Integer stayLength) {
+        this.stayLength = stayLength;
+    }
+
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getEndDate() {
-        return endDate;
+    public Optional<LocalDate> getEndDate() {
+        return Optional.ofNullable(endDate);
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

@@ -132,7 +132,8 @@ public class JDBCUserDao implements UserDao {
              var deleteRolesStatement = connection.prepareStatement(DELETE_PREVIOUS_ROLES);
              var insertRolesStatement = connection.prepareStatement(INSERT_UPDATED_ROLES)) {
             setStatementParametersForUser(user, updateUserStatement);
-            updateUserStatement.setLong(8, user.getId());
+            updateUserStatement.setBigDecimal(8, user.getMoney());
+            updateUserStatement.setLong(9, user.getId());
             deleteRolesStatement.setLong(1, user.getId());
             updateUserStatement.executeUpdate();
             deleteRolesStatement.executeUpdate();

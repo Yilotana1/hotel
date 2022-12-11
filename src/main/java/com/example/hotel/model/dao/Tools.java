@@ -3,6 +3,7 @@ package com.example.hotel.model.dao;
 import com.example.hotel.model.entity.enums.Role;
 import com.example.hotel.model.entity.enums.UserStatus;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +14,8 @@ import java.util.HashSet;
 public class Tools {
 
     private static final int ID_INDEX = 1;
+    private static final String LOGIN_ATTRIBUTE_NAME = "login";
+    private static final String LOGGED_USERS_ATTRIBUTE = "loggedUsers";
 
     public static int getGeneratedId(PreparedStatement statement) throws SQLException {
         ResultSet keys = statement.getGeneratedKeys();
@@ -38,7 +41,7 @@ public class Tools {
 
     public static void addLoginToSession(String login, HttpServletRequest request) {
         var session = request.getSession();
-        session.setAttribute("login", login);
+        session.setAttribute(LOGIN_ATTRIBUTE_NAME, login);
     }
     public static void addUserStatusToSession(UserStatus userStatus, HttpServletRequest request) {
         var session = request.getSession();
@@ -49,8 +52,12 @@ public class Tools {
 //        setUserRole(request, Role.UNKNOWN);
 //    }
 //
+
+    public static String getLoginFromSession(HttpSession session) {
+        return String.valueOf(session.getAttribute(LOGIN_ATTRIBUTE_NAME));
+    }
     public static void deleteFromLoginCache(HttpServletRequest request, String login){
-        var loggedUsers = (HashSet<String>)request.getServletContext().getAttribute("loggedUsers");
+        var loggedUsers = (HashSet<String>)request.getServletContext().getAttribute(LOGGED_USERS_ATTRIBUTE);
         loggedUsers.remove(login);
     }
 }

@@ -3,6 +3,7 @@ package com.example.hotel.model.dao.mapper;
 import com.example.hotel.model.entity.User;
 import com.example.hotel.model.entity.enums.UserStatus;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -18,6 +19,7 @@ public class UserMapper implements EntityMapper<User> {
                 .email(rs.getString("user.email"))
                 .phone(rs.getString("user.phone"))
                 .status(UserStatus.getById(rs.getInt("user.status_id")))
+                .money(new BigDecimal(rs.getString("user.money")))
                 .build();
     }
 }

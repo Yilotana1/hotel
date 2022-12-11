@@ -19,17 +19,21 @@
     <label for="sorted_by"></label>
     Sort by:
     <select name="sorted_by" id="sorted_by">
-        <c:forEach var="sorted_by_option" items="${requestScope.sorted_by_list}">
+        <c:forEach var="sorted_by_item" items="${requestScope.sorted_by_list}">
 
-            <c:if test="${sorted_by_option.equals(requestScope.sorted_by)}">
-                <option value="${sorted_by_option}" selected="selected"><fmt:message key="${sorted_by_option}"/></option>
+            <c:if test="${sorted_by_item.equals(requestScope.sorted_by)}">
+                <option value="${sorted_by_item}" selected="selected"><fmt:message key="${sorted_by_item}"/></option>
             </c:if>
-            <c:if test="${!sorted_by_option.equals(requestScope.sorted_by)}">
-                <option value="${sorted_by_option}"><fmt:message key="${sorted_by_option}"/></option>
+            <c:if test="${!sorted_by_item.equals(requestScope.sorted_by)}">
+                <option value="${sorted_by_item}"><fmt:message key="${sorted_by_item}"/></option>
+            </c:if>
+            <c:if test="${requestScope.sorted_by == null && sorted_by_item.equals(requestScope.default_sorting)}">
+                <option value="${requestScope.default_sorting}" selected="selected"><fmt:message key="${requestScope.default_sorting}"/></option>
             </c:if>
         </c:forEach>
     </select>
-    <input type="submit" value="sort">
+    <fmt:message key="sort" var="sort"/>
+    <input type="submit" value="${sort}">
 </form>
 </body>
 </html>

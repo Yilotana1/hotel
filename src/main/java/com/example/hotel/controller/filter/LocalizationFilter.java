@@ -101,10 +101,15 @@ public class LocalizationFilter implements Filter {
     }
 
     public enum LANG {
-        EN, UA;
 
+        EN, UA;
         public static LANG getDefault() {
             return EN;
+        }
+        public String getLanguageTag(){
+            if (this == EN) return "en";
+            if (this == UA) return "ua";
+            return null;
         }
     }
 
