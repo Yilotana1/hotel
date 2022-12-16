@@ -23,23 +23,34 @@ import java.util.Set;
 import static com.example.hotel.controller.Path.ADMIN_EDIT_USER;
 import static com.example.hotel.controller.Path.ADMIN_MANAGE_USERS;
 import static com.example.hotel.controller.Path.APARTMENT_NOT_AVAILABLE_PAGE;
+import static com.example.hotel.controller.Path.APPLICATION_CANCELED;
 import static com.example.hotel.controller.Path.APPLICATION_INVOICE;
+import static com.example.hotel.controller.Path.APPLY_FOR_CLIENT;
+import static com.example.hotel.controller.Path.CANCEL_APPLICATION;
 import static com.example.hotel.controller.Path.CLIENT_APPLY;
 import static com.example.hotel.controller.Path.CLIENT_HAS_APPLICATION_PAGE;
+import static com.example.hotel.controller.Path.CLIENT_HAS_ASSIGNED_APPLICATION_PAGE;
 import static com.example.hotel.controller.Path.CONFIRM_PAYMENT;
 import static com.example.hotel.controller.Path.EDIT_PROFILE;
 import static com.example.hotel.controller.Path.ERROR_404_PAGE;
+import static com.example.hotel.controller.Path.ERROR_503_PAGE;
 import static com.example.hotel.controller.Path.LOGIN;
 import static com.example.hotel.controller.Path.LOGIN_PAGE;
 import static com.example.hotel.controller.Path.LOGOUT;
 import static com.example.hotel.controller.Path.MAIN;
 import static com.example.hotel.controller.Path.MAIN_PAGE;
+import static com.example.hotel.controller.Path.MAKE_TEMPORARY_APPLICATION;
+import static com.example.hotel.controller.Path.MAKE_TEMPORARY_APPLICATION_PAGE;
 import static com.example.hotel.controller.Path.MANAGER_LIST_USERS;
 import static com.example.hotel.controller.Path.MONEY_VALUE_IS_INCORRECT;
+import static com.example.hotel.controller.Path.PREFERRED_APARTMENTS_PAGE;
 import static com.example.hotel.controller.Path.PROFILE;
 import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
+import static com.example.hotel.controller.Path.SHOW_PREFERRED_APARTMENTS;
+import static com.example.hotel.controller.Path.SHOW_TEMPORARY_APPLICATIONS;
 import static com.example.hotel.controller.Path.SIGNUP;
 import static com.example.hotel.controller.Path.SIGNUP_PAGE;
+import static com.example.hotel.controller.Path.SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE;
 import static com.example.hotel.controller.Path.SUCCESS_APPLY_PAGE;
 import static com.example.hotel.controller.Path.UPDATE_MONEY_ACCOUNT;
 import static com.example.hotel.model.dao.Tools.userIsLogged;
@@ -76,6 +87,7 @@ public class AccessFilter implements Filter {
         addPermissionsForBlockedUsers(
                 MAIN,
                 ERROR_404_PAGE,
+                ERROR_503_PAGE,
                 PROFILE,
                 EDIT_PROFILE,
                 LOGOUT);
@@ -86,11 +98,13 @@ public class AccessFilter implements Filter {
                 MAIN,
                 SIGNUP,
                 SIGNUP_PAGE,
-                ERROR_404_PAGE);
+                ERROR_404_PAGE,
+                ERROR_503_PAGE);
 
         addPermissionsTo(Role.CLIENT,
                 MAIN,
                 ERROR_404_PAGE,
+                ERROR_503_PAGE,
                 LOGOUT,
                 PROFILE,
                 EDIT_PROFILE,
@@ -102,26 +116,36 @@ public class AccessFilter implements Filter {
                 APARTMENT_NOT_AVAILABLE_PAGE,
                 CLIENT_HAS_APPLICATION_PAGE,
                 CONFIRM_PAYMENT,
-                MONEY_VALUE_IS_INCORRECT);
+                MONEY_VALUE_IS_INCORRECT,
+                CANCEL_APPLICATION,
+                APPLICATION_CANCELED,
+                MAKE_TEMPORARY_APPLICATION,
+                MAKE_TEMPORARY_APPLICATION_PAGE);
 
         addPermissionsTo(Role.MANAGER,
                 MAIN,
                 ERROR_404_PAGE,
+                ERROR_503_PAGE,
                 LOGOUT,
                 PROFILE,
                 EDIT_PROFILE,
-                MANAGER_LIST_USERS);
+                MANAGER_LIST_USERS,
+                SHOW_PREFERRED_APARTMENTS,
+                PREFERRED_APARTMENTS_PAGE,
+                APPLY_FOR_CLIENT,
+                CLIENT_HAS_ASSIGNED_APPLICATION_PAGE,
+                SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE,
+                SHOW_TEMPORARY_APPLICATIONS);
 
         addPermissionsTo(Role.ADMIN,
                 MAIN,
                 ERROR_404_PAGE,
+                ERROR_503_PAGE,
                 LOGOUT,
                 PROFILE,
                 EDIT_PROFILE,
                 ADMIN_MANAGE_USERS,
                 ADMIN_EDIT_USER);
-
-
         log.debug("Filter initialized");
     }
 
@@ -159,7 +183,9 @@ public class AccessFilter implements Filter {
 
     }
 
-    private boolean actionIsForbidden(UserStatus userStatus, Collection<Role> roles, String URI) {
+    private boolean actionIsForbidden(final UserStatus userStatus,
+                                      final Collection<Role> roles,
+                                      final String URI) {
         if (roles == null && undefinedUserPermissionsSet.contains(URI)) {
             return false;
         }

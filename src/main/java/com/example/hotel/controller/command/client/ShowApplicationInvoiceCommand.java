@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
 import static com.example.hotel.controller.Path.APPLICATION_INVOICE_PAGE;
 import static com.example.hotel.controller.Path.ERROR_503_PAGE;
@@ -37,12 +36,11 @@ public class ShowApplicationInvoiceCommand implements Command {
             final var application = applicationService
                     .getApplicationToConfirm(login)
                     .orElseThrow(() -> new ApplicationNotFoundException(format(APPLICATION_NOT_FOND_MESSAGE, login)));
-            application.setStartDate(LocalDate.now());
             request.setAttribute(APPLICATION_ATTRIBUTE, application);
             request.getRequestDispatcher(APPLICATION_INVOICE_PAGE).forward(request, response);
         } catch (final Exception e) {
             log.error(e);
-            request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
+            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }
 }

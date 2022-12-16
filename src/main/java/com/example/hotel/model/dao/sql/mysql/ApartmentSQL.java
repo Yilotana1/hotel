@@ -26,7 +26,16 @@ public interface ApartmentSQL {
     String SELECT_APARTMENTS_BY_STATUS = "SELECT * FROM Apartment WHERE status_id = ? LIMIT ?, ?";
     String SELECT_APARTMENTS_BY_NUMBER_OF_PEOPLE = "SELECT * FROM Apartment WHERE number_of_people = ? LIMIT ?, ?";
     String SELECT_APARTMENTS_BY_FLOOR = "SELECT * FROM Apartment WHERE floor = ? LIMIT ?, ?";
+    String SELECT_APARTMENTS_BY_CLIENT_PREFERENCES = "SELECT * FROM Apartment WHERE" +
+            " number_of_people = ? AND class_id = ? AND status_id = " + FREE.getId() + " ORDER BY Apartment.demand DESC LIMIT ?, ?";
     String SELECT_COUNT_APARTMENTS = "SELECT COUNT(number) AS count FROM Apartment";
+    String SELECT_COUNT_PREFERRED_APARTMENTS = "SELECT COUNT(number)" +
+            " AS count FROM Apartment JOIN Temporary_application" +
+            " ON Apartment.class_id = Temporary_application.class_id" +
+            " AND Apartment.number_of_people = Temporary_application.number_of_people" +
+            " WHERE Temporary_application.client_login = ?";
+    String SELECT_COUNT_APARTMENT_BY_CLASS_AND_NUMBER_OF_PEOPLE = "SELECT COUNT(number)" +
+            "AS count FROM Apartment WHERE class_id = ? AND number_of_people = ?";
     //DML QUERIES
     String INSERT_APARTMENT = "INSERT INTO Apartment (number, floor, class_id, status_id, demand, price, number_of_people)" +
             " VALUES (?, ?, ?, ?, ?, ?, ?)";

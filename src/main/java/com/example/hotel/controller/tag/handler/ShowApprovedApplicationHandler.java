@@ -15,7 +15,7 @@ import static com.example.hotel.controller.filter.LocalizationFilter.LANGUAGE;
 import static com.example.hotel.model.dao.Tools.getLoginFromSession;
 
 public class ShowApprovedApplicationHandler extends TagSupport {
-    public final static Logger log = Logger.getLogger(ShowApprovedApplicationHandler.class);
+    public static final Logger log = Logger.getLogger(ShowApprovedApplicationHandler.class);
     private final ApplicationService applicationService = ServiceFactory.getInstance().createApplicationService();
 
     @Override

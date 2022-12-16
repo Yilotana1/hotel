@@ -1,16 +1,21 @@
 package com.example.hotel.model.service.impl;
 
 import com.example.hotel.controller.dto.ApplicationDTO;
+import com.example.hotel.controller.dto.TemporaryApplicationDTO;
+import com.example.hotel.controller.exception.ApplicationNotFoundException;
 import com.example.hotel.model.ConnectionPoolHolder;
 import com.example.hotel.model.dao.ApartmentDao;
 import com.example.hotel.model.dao.ApplicationDao;
+import com.example.hotel.model.dao.TemporaryApplicationDao;
 import com.example.hotel.model.dao.UserDao;
 import com.example.hotel.model.dao.factory.DaoFactory;
 import com.example.hotel.model.entity.Apartment;
 import com.example.hotel.model.entity.Application;
+import com.example.hotel.model.entity.TemporaryApplication;
 import com.example.hotel.model.entity.User;
 import com.example.hotel.model.service.ApplicationService;
 import com.example.hotel.model.service.exception.ApartmentIsNotAvailableException;
+import com.example.hotel.model.service.exception.ApartmentsNotFoundException;
 import com.example.hotel.model.service.exception.ClientHasNotCanceledApplicationException;
 import com.example.hotel.model.service.exception.LoginIsNotFoundException;
 import com.example.hotel.model.service.exception.NotEnoughMoneyToConfirmException;
@@ -21,6 +26,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.hotel.model.service.exception.Messages.NO_APPLICATION_FOUND;
@@ -39,32 +45,104 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public void apply(final ApplicationDTO applicationDTO) throws ServiceException {
         final var connection = ConnectionPoolHolder.getConnection();
-        try (final var userDao = daoFactory.createUserDao(connection);
-             final var apartmentDao = daoFactory.createApartmentDao(connection);
-             final var applicationDao = daoFactory.createApplicationDao(connection)) {
+        try (var userDao = daoFactory.createUserDao(connection);
+             var apartmentDao = daoFactory.createApartmentDao(connection);
+             var applicationDao = daoFactory.createApplicationDao(connection);
+             var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao(connection)) {
             connection.setAutoCommit(false);
-            throwIfClientAlreadyHasApplication(applicationDTO, applicationDao);
+            temporaryApplicationDao.delete(applicationDTO.getClientLogin());
+            throwIfClientHasApplication(applicationDTO.getClientLogin(), applicationDao, temporaryApplicationDao);
             final var apartment = getApartmentOrThrow(applicationDTO, apartmentDao);
             throwIfNotAvailable(apartment);
             final var application = mapToApplication(applicationDTO, userDao, apartment);
             updateApartmentBeforeApply(apartment);
             pushChangesToDB(apartmentDao, applicationDao, apartment, application);
             connection.commit();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             log.error(e.getMessage());
             throw new ServiceException(SERVICE_EXCEPTION, e);
         }
     }
 
     @Override
+    public long temporaryApplicationsCount() {
+        try (var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao()) {
+            return temporaryApplicationDao.getCount();
+        } catch (final SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(SERVICE_EXCEPTION, e);
+        }
+    }
+
+    @Override
+    public List<TemporaryApplication> getTemporaryApplications(final int skip, final int count) throws ServiceException {
+        try (var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao()) {
+            return temporaryApplicationDao.findSortedById(skip, count);
+        } catch (final SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(SERVICE_EXCEPTION, e);
+        }
+    }
+
+    //TODO Substitute List with Collection everywhere
+    @Override
+    public Optional<TemporaryApplication> getTemporaryApplicationByLogin(final String clientLogin) {
+        try (var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao()) {
+            return temporaryApplicationDao.findByClientLogin(clientLogin);
+        } catch (final SQLException e) {
+            log.error(e.getMessage(), e);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public void makeTemporaryApplication(final TemporaryApplicationDTO temporaryApplicationDTO) {
+        final var connection = ConnectionPoolHolder.getConnection();
+        try (var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao(connection);
+             var apartmentDao = daoFactory.createApartmentDao(connection);
+             var applicationDao = daoFactory.createApplicationDao(connection)) {
+            connection.setAutoCommit(false);
+            final var clientLogin = temporaryApplicationDTO.getClientLogin();
+            throwIfClientHasApplication(clientLogin, applicationDao, temporaryApplicationDao);
+            throwIfApartmentsDontExist(temporaryApplicationDTO, apartmentDao);
+            final var temporaryApplication = mapToTemporaryApplication(temporaryApplicationDTO);
+            temporaryApplicationDao.create(temporaryApplication);
+            connection.commit();
+        } catch (final SQLException e) {
+            log.error(e.getMessage());
+            throw new ServiceException(SERVICE_EXCEPTION, e);
+        }
+    }
+
+    private static void throwIfApartmentsDontExist(TemporaryApplicationDTO temporaryApplicationDTO, ApartmentDao apartmentDao) throws SQLException {
+        if (!apartmentDao.existsByClassAndNumberOfPeople(
+                temporaryApplicationDTO.getApartmentClass(),
+                temporaryApplicationDTO.getNumberOfPeople())) {
+            final var message = "Apartments with classId = %d and number of People = %d not found";
+            throw new ApartmentsNotFoundException(
+                    format(message,
+                            temporaryApplicationDTO.getApartmentClass().getId(),
+                            temporaryApplicationDTO.getNumberOfPeople()));
+        }
+    }
+
+    private TemporaryApplication mapToTemporaryApplication(final TemporaryApplicationDTO temporaryApplicationDTO) {
+        return TemporaryApplication.builder()
+                .numberOfPeople(temporaryApplicationDTO.getNumberOfPeople())
+                .stayLength(temporaryApplicationDTO.getStayLength())
+                .apartmentClass(temporaryApplicationDTO.getApartmentClass())
+                .clientLogin(temporaryApplicationDTO.getClientLogin())
+                .build();
+    }
+
+    @Override
     public void confirmPayment(final long applicationId, final LocalDate startDate, final LocalDate endDate) throws ServiceException {
         final var connection = ConnectionPoolHolder.getConnection();
-        try (final var applicationDao = daoFactory.createApplicationDao(connection);
-             final var userDao = daoFactory.createUserDao(connection);
-             final var apartmentDao = daoFactory.createApartmentDao(connection)) {
+        try (var applicationDao = daoFactory.createApplicationDao(connection);
+             var userDao = daoFactory.createUserDao(connection);
+             var apartmentDao = daoFactory.createApartmentDao(connection)) {
             connection.setAutoCommit(false);
             final var application = getApplicationFromDb(applicationId, applicationDao);
-
             application.approve(startDate, endDate);
             final var apartment = application.getApartment();
             apartment.book();
@@ -87,13 +165,13 @@ public class ApplicationServiceImpl implements ApplicationService {
         client.payForApartment(application);
     }
 
-    private User getClient(UserDao userDao, Application application) throws SQLException {
+    private User getClient(final UserDao userDao, final Application application) throws SQLException {
         return userDao
                 .findByLogin(application.getClientLogin())
                 .orElseThrow(LoginIsNotFoundException::new);
     }
 
-    private Application getApplicationFromDb(long applicationId, ApplicationDao applicationDao) throws SQLException {
+    private Application getApplicationFromDb(final long applicationId, final ApplicationDao applicationDao) throws SQLException {
         return applicationDao
                 .findById(applicationId)
                 .orElseThrow(() -> new ServiceException(format(NO_APPLICATION_FOUND, applicationId)));
@@ -107,51 +185,52 @@ public class ApplicationServiceImpl implements ApplicationService {
         applicationDao.create(application);
     }
 
-    private void throwIfNotAvailable(Apartment apartment) {
+    private void throwIfNotAvailable(final Apartment apartment) {
         if (apartment.isNotAvailable()) {
             log.error("Apartment is not available");
             throw new ApartmentIsNotAvailableException();
         }
     }
 
-    private Apartment getApartmentOrThrow(ApplicationDTO applicationDTO, ApartmentDao apartmentDao) throws SQLException {
+    private Apartment getApartmentOrThrow(final ApplicationDTO applicationDTO, final ApartmentDao apartmentDao) throws SQLException {
         return apartmentDao
                 .findById(applicationDTO.getApartmentNumber())
                 .orElseThrow(ServiceException::new);
     }
 
-    private void throwIfClientAlreadyHasApplication(ApplicationDTO applicationDTO, ApplicationDao applicationDao) throws SQLException {
-        final var clientLogin = applicationDTO.getClientLogin();
+    private void throwIfClientHasApplication(final String clientLogin,
+                                             final ApplicationDao applicationDao,
+                                             final TemporaryApplicationDao temporaryApplicationDao) throws SQLException {
         final var notCanceledApplication = applicationDao
                 .findNotCanceledByLogin(clientLogin);
-        if (notCanceledApplication.isPresent()) {
+        final var temporaryApplication = temporaryApplicationDao.findByClientLogin(clientLogin);
+        if (notCanceledApplication.isPresent() || temporaryApplication.isPresent()) {
             throw new ClientHasNotCanceledApplicationException();
         }
     }
 
-    private void updateApartmentBeforeApply(Apartment apartment) {
-        apartment.markAsUnavailable();
+    private void updateApartmentBeforeApply(final Apartment apartment) {
+        apartment.makeUnavailable();
         apartment.increaseDemand();
     }
 
-    //TODO Make a notification in profile that client has paid application and startDATE,endDate
-    //TODO Add "cancel" button in application-invoice and cancel functionality. Application must change status to cancel. Apartment must become available.
+    //TODO Create list of all client's temporaryApplications so manager and admin could choose them and then redirect them to preferredApartments.
     //TODO Read about ServletContextListener. Try to implement checking if confirmation time is expired and then cancel application.
     //TODO Also you need to check if endDate is expired and then cancel application if needed.
-    public Optional<Application> getNotApprovedApplicationByClientId(long id) throws ServiceException {
-        try (final var applicationDao = daoFactory.createApplicationDao()) {
+    public Optional<Application> getNotApprovedApplicationByClientId(final long id) throws ServiceException {
+        try (var applicationDao = daoFactory.createApplicationDao()) {
             return applicationDao.findNotApprovedByClientId(id);
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             log.error(e.getMessage());
             throw new ServiceException(SERVICE_EXCEPTION);
         }
     }
 
     @Override
-    public Optional<Application> getApprovedApplicationByLogin(String login) {
+    public Optional<Application> getApprovedApplicationByLogin(final String login) {
         try (final var applicationDao = daoFactory.createApplicationDao()) {
             return applicationDao.findApprovedByLogin(login);
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             log.error(e.getMessage());
             throw new ServiceException(SERVICE_EXCEPTION);
         }
@@ -175,13 +254,33 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
     }
 
-    private static LocalDate getEndDate(Application application, LocalDate startDate) {
-        return LocalDate
-                .ofYearDay(startDate.getYear(), startDate.getDayOfYear() + application.getStayLength());
+    @Override
+    public void cancel(long applicationId) throws ServiceException {
+        final var connection = ConnectionPoolHolder.getConnection();
+        try (final var applicationDao = daoFactory.createApplicationDao(connection);
+             final var apartmentDao = daoFactory.createApartmentDao(connection)) {
+            connection.setAutoCommit(false);
+            final var application = applicationDao
+                    .findById(applicationId)
+                    .orElseThrow(() -> new ApplicationNotFoundException(NO_APPLICATION_FOUND));
+            application.cancel();
+            final var apartment = application.getApartment();
+            apartment.makeFree();
+            apartmentDao.update(apartment);
+            applicationDao.update(application);
+            connection.commit();
+        } catch (final SQLException e) {
+            log.error(e.getMessage());
+            throw new ServiceException(SERVICE_EXCEPTION);
+        }
+    }
+
+    private static LocalDate getEndDate(final Application application, final LocalDate startDate) {
+        return startDate.plusDays(application.getStayLength());
     }
 
     @Override
-    public Optional<Application> getNotApprovedApplicationByLogin(String login) {
+    public Optional<Application> getNotApprovedApplicationByLogin(final String login) {
         try (final var applicationDao = daoFactory.createApplicationDao()) {
             return applicationDao.findNotApprovedByLogin(login);
         } catch (SQLException e) {

@@ -2,12 +2,15 @@ package com.example.hotel.model.dao.factory;
 
 import com.example.hotel.model.ConnectionPoolHolder;
 import com.example.hotel.model.dao.ApartmentDao;
+import com.example.hotel.model.dao.TemporaryApplicationDao;
 import com.example.hotel.model.dao.ApplicationDao;
 import com.example.hotel.model.dao.UserDao;
 import com.example.hotel.model.dao.impl.JDBCApartmentDao;
+import com.example.hotel.model.dao.impl.JDBCTemporaryApplicationDao;
 import com.example.hotel.model.dao.impl.JDBCApplicationDao;
 import com.example.hotel.model.dao.impl.JDBCUserDao;
 import com.example.hotel.model.dao.mapper.ApartmentMapper;
+import com.example.hotel.model.dao.mapper.TemporaryApplicationMapper;
 import com.example.hotel.model.dao.mapper.ApplicationMapper;
 import com.example.hotel.model.dao.mapper.RoleMapper;
 import com.example.hotel.model.dao.mapper.UserMapper;
@@ -17,13 +20,23 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class JDBCDaoFactory extends DaoFactory {
+public class JDBCDaoFactory extends  DaoFactory {
 
     private final DataSource dataSource = ConnectionPoolHolder.getDataSource();
 
     @Override
     public UserDao createUserDao() {
         return new JDBCUserDao(getConnection(), new UserMapper(), new RoleMapper());
+    }
+
+    @Override
+    public TemporaryApplicationDao createTemporaryApplicationDao() {
+        return new JDBCTemporaryApplicationDao(getConnection(), new TemporaryApplicationMapper());
+    }
+
+    @Override
+    public TemporaryApplicationDao createTemporaryApplicationDao(final Connection connection) {
+        return new JDBCTemporaryApplicationDao(connection, new TemporaryApplicationMapper());
     }
 
     @Override
@@ -37,7 +50,7 @@ public class JDBCDaoFactory extends DaoFactory {
     }
 
     @Override
-    public ApartmentDao createApartmentDao(Connection connection) {
+    public ApartmentDao createApartmentDao(final Connection connection) {
         return new JDBCApartmentDao(connection, new ApartmentMapper());
     }
 
@@ -47,7 +60,7 @@ public class JDBCDaoFactory extends DaoFactory {
     }
 
     @Override
-    public ApplicationDao createApplicationDao(Connection connection) {
+    public ApplicationDao createApplicationDao(final Connection connection) {
         return new JDBCApplicationDao(connection, new ApplicationMapper(new ApartmentMapper(), new UserMapper()));
     }
 

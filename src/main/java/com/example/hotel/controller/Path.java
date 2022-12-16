@@ -29,4 +29,15 @@ public interface Path {
     String CLIENT_HAS_APPLICATION_PAGE = "/client/client-has-application.jsp";
     String CONFIRM_PAYMENT = "/client/confirm-payment";
     String MONEY_VALUE_IS_INCORRECT = "/client/wrong-money-value-exception.jsp";
+    String CANCEL_APPLICATION = "/client/cancel-application";
+    String APPLICATION_CANCELED = "/client/application-canceled.jsp";
+    String MAKE_TEMPORARY_APPLICATION = "/client/make-temporary-application";
+    String MAKE_TEMPORARY_APPLICATION_PAGE = "/client/make-temporary-application.jsp";
+    String PREFERRED_APARTMENTS_PAGE = "/manager/preferred-apartments.jsp";
+    String SHOW_PREFERRED_APARTMENTS = "/manager/show-preferred-apartments";
+    String CLIENT_HAS_ASSIGNED_APPLICATION_PAGE = "/manager/client-has-assigned-application.jsp";
+    String SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE = "/manager/successful-application-assignment.jsp";
+    String APPLY_FOR_CLIENT = "/manager/apply-for-client";
+    String SHOW_TEMPORARY_APPLICATIONS = "/manager/show-temporary-applications";
+    String TEMPORARY_APPLICATIONS_PAGE = "/manager/temporary-applications.jsp";
 }

@@ -3,12 +3,12 @@ package com.example.hotel.model.dao.impl;
 import com.example.hotel.model.dao.ApartmentDao;
 import com.example.hotel.model.dao.mapper.EntityMapper;
 import com.example.hotel.model.entity.Apartment;
+import com.example.hotel.model.entity.TemporaryApplication;
 import com.example.hotel.model.entity.enums.ApartmentClass;
 import com.example.hotel.model.entity.enums.ApartmentStatus;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,7 @@ import java.util.Optional;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.DELETE_APARTMENT_BY_NUMBER;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.INSERT_APARTMENT;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_CLASS;
+import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_CLIENT_PREFERENCES;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_FLOOR;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_NUMBER_OF_PEOPLE;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_STATUS;
@@ -31,6 +32,8 @@ import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMEN
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_STATUS;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENT_BY_NUMBER;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_COUNT_APARTMENTS;
+import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_COUNT_APARTMENT_BY_CLASS_AND_NUMBER_OF_PEOPLE;
+import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_COUNT_PREFERRED_APARTMENTS;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.UPDATE_APARTMENT;
 
 public class JDBCApartmentDao implements ApartmentDao {
@@ -43,8 +46,50 @@ public class JDBCApartmentDao implements ApartmentDao {
     }
 
     @Override
-    public Connection getConnection(){
+    public Connection getConnection() {
         return connection;
+    }
+
+    @Override
+    public boolean existsByClassAndNumberOfPeople(ApartmentClass apartmentClass, int numberOfPeople) throws SQLException {
+        try (var statement = connection
+                .prepareStatement(SELECT_COUNT_APARTMENT_BY_CLASS_AND_NUMBER_OF_PEOPLE)) {
+            statement.setInt(1, apartmentClass.getId());
+            statement.setInt(2, numberOfPeople);
+            final var resultSet = statement.executeQuery();
+            resultSet.next();
+            return resultSet.getInt("count") > 0;
+        }
+    }
+
+    @Override
+    public int getPreferredApartmentsCount(final String clientLogin) throws SQLException {
+        try (var statement = connection.prepareStatement(SELECT_COUNT_PREFERRED_APARTMENTS)) {
+            statement.setString(1, clientLogin);
+            final var resultSet = statement.executeQuery();
+            resultSet.next();
+            return resultSet.getInt("count");
+        }
+    }
+
+    @Override
+    public List<Apartment> findByTemporaryApplication(TemporaryApplication temporaryApplication, int skip, int count) throws SQLException {
+        try (var selectApartmentStatement = connection.prepareStatement(SELECT_APARTMENTS_BY_CLIENT_PREFERENCES)) {
+            selectApartmentStatement.setInt(1, temporaryApplication.getNumberOfPeople());
+            selectApartmentStatement.setInt(2, temporaryApplication.getApartmentClass().getId());
+            selectApartmentStatement.setInt(3, skip);
+            selectApartmentStatement.setInt(4, count);
+            return getApartmentsFromStatement(selectApartmentStatement);
+        }
+    }
+
+    private List<Apartment> getApartmentsFromStatement(final PreparedStatement selectApartmentStatement) throws SQLException {
+        final var resultSet = selectApartmentStatement.executeQuery();
+        final var apartments = new ArrayList<Apartment>();
+        while (resultSet.next()) {
+            apartments.add(apartmentMapper.extractFromResultSet(resultSet));
+        }
+        return apartments;
     }
 
     @Override
@@ -133,7 +178,7 @@ public class JDBCApartmentDao implements ApartmentDao {
     @Override
     public int getCount() throws SQLException {
         try (var statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(SELECT_COUNT_APARTMENTS);
+            final var resultSet = statement.executeQuery(SELECT_COUNT_APARTMENTS);
             resultSet.next();
             return resultSet.getInt("count");
         }
@@ -155,24 +200,14 @@ public class JDBCApartmentDao implements ApartmentDao {
     private List<Apartment> getListOfApartments(int skip, int count, PreparedStatement selectApartmentStatement) throws SQLException {
         selectApartmentStatement.setInt(2, skip);
         selectApartmentStatement.setInt(3, count);
-        var resultSet = selectApartmentStatement.executeQuery();
-        var apartments = new ArrayList<Apartment>();
-        while (resultSet.next()) {
-            apartments.add(apartmentMapper.extractFromResultSet(resultSet));
-        }
-        return apartments;
+        return getApartmentsFromStatement(selectApartmentStatement);
     }
 
     private List<Apartment> getSortedListOfApartments(int skip, int count, String sortingSql) throws SQLException {
         try (var selectApartmentStatement = connection.prepareStatement(sortingSql)) {
             selectApartmentStatement.setInt(1, skip);
             selectApartmentStatement.setInt(2, count);
-            var resultSet = selectApartmentStatement.executeQuery();
-            var apartments = new ArrayList<Apartment>();
-            while (resultSet.next()) {
-                apartments.add(apartmentMapper.extractFromResultSet(resultSet));
-            }
-            return apartments;
+            return getApartmentsFromStatement(selectApartmentStatement);
         }
     }
 

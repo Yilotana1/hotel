@@ -7,5 +7,5 @@ public interface Messages {
     String NO_APPLICATION_FOUND = "Application with id = %d not found";
     String USER_WITH_SUCH_LOGIN_NOT_FOUND = "User with login = %s is not found.";
     String UPDATING_USERS_MONEY_FAILED = "Updating user's money process failed";
-
+    String TEMPORARY_APPLICATION_NOT_FOUND = "TemporaryApplication not found";
 }

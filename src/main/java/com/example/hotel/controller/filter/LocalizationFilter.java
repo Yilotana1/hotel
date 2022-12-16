@@ -50,8 +50,8 @@ public class LocalizationFilter implements Filter {
         if (langFromRequest != null) {
             request.getSession().setAttribute(LANGUAGE, langFromRequest);
             log.trace("locale language from request not null, set request locale language to session: " + langFromRequest);
-            final var urlToForward = getUrlWithParameters(request.getRequestURI(), parseStringIntoMap(request.getParameter("request_params")));
-            response.sendRedirect(urlToForward);
+            final var uriToRedirect = getUrlWithParameters(request.getRequestURI(), parseStringIntoMap(request.getParameter("request_params")));
+            response.sendRedirect(uriToRedirect);
             return;
         } else {
             if (langStoredInSession == null) {

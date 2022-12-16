@@ -51,13 +51,26 @@
     </table>
 </fieldset>
 <br/>
-<form action="${pageContext.request.contextPath}/client/confirm-payment">
-    <input type="hidden" name="application_id" value="${requestScope.application.id}">
-    <input type="hidden" name="start_date" value="${requestScope.application.startDate.get()}">
-    <input type="hidden" name="end_date" value="${requestScope.application.endDate.get()}">
-    <fmt:message key="confirm" var="confirm"/>
-    <input type="submit" value="${confirm}"/>
-</form>
+<table>
+    <tr>
+        <th>
+            <form action="${pageContext.request.contextPath}/client/confirm-payment">
+                <input type="hidden" name="application_id" value="${requestScope.application.id}">
+                <input type="hidden" name="start_date" value="${requestScope.application.startDate.get()}">
+                <input type="hidden" name="end_date" value="${requestScope.application.endDate.get()}">
+                <fmt:message key="confirm" var="confirm"/>
+                <input type="submit" value="${confirm}"/>
+            </form>
+        </th>
+        <th>
+            <form action="${pageContext.request.contextPath}/client/cancel-application">
+                <input type="hidden" name="application_id" value="${requestScope.application.id}">
+                <fmt:message key="cancel" var="cancel"/>
+                <input type="submit" value="${cancel}"/>
+            </form>
+        </th>
+    </tr>
+</table>
 <c:if test="${!(requestScope.error == null)}">
     <span style="color:red"><fmt:message key="${requestScope.error}"/></span>
 </c:if>

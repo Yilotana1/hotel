@@ -1,7 +1,6 @@
 package com.example.hotel.controller.command.client;
 
 import com.example.hotel.controller.command.Command;
-import com.example.hotel.controller.dto.ApplicationDTO;
 import com.example.hotel.controller.exception.InvalidDataException;
 import com.example.hotel.model.service.ApplicationService;
 import com.example.hotel.model.service.exception.ApartmentIsNotAvailableException;
@@ -13,15 +12,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 
 import static com.example.hotel.controller.Path.APARTMENT_NOT_AVAILABLE_PAGE;
 import static com.example.hotel.controller.Path.CLIENT_HAS_APPLICATION_PAGE;
 import static com.example.hotel.controller.Path.ERROR_503_PAGE;
 import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
 import static com.example.hotel.controller.Path.SUCCESS_APPLY_PAGE;
+import static com.example.hotel.model.dao.Tools.getApplicationDTOFromRequest;
 import static com.example.hotel.model.dao.Tools.getLoginFromSession;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
@@ -41,6 +38,7 @@ public class ApplyCommand implements Command {
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         try {
             final var applicationDTO = getApplicationDTOFromRequest(request);
+            applicationDTO.throwIfNotValid();
             applicationService.apply(applicationDTO);
             request.getRequestDispatcher(SUCCESS_APPLY_PAGE).forward(request, response);
 
@@ -64,24 +62,5 @@ public class ApplyCommand implements Command {
     private static void forwardToApplyPage(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("number", request.getParameter("number"));
         request.getRequestDispatcher(SHOW_APPLY_PAGE).forward(request, response);
-    }
-
-
-    private ApplicationDTO getApplicationDTOFromRequest(final HttpServletRequest request) throws InvalidDataException {
-        final var stayLength = request.getParameter("stay_length");
-        if (stayLength == null || stayLength.isBlank()) {
-            throw new InvalidDataException("Stay length must be specified", "stay_length");
-        }
-        final var applicationDTO = ApplicationDTO.builder()
-                .apartmentNumber(parseInt(request.getParameter("number")))
-                .clientLogin(getLoginFromSession(request.getSession()))
-                .stayLength(parseInt(stayLength))
-                .build();
-        applicationDTO.throwIfNotValid();
-        return applicationDTO;
-    }
-
-    private static LocalDate getLocalDate(final Date date) {
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }

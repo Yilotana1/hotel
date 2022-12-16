@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import static com.example.hotel.controller.Path.ERROR_503_PAGE;
 import static com.example.hotel.controller.Path.MAIN;
 import static com.example.hotel.controller.Path.SIGNUP_PAGE;
 
@@ -21,8 +22,8 @@ public class SignUpCommand implements Command {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.trace("Started SignUp command");
-        var userDTO = getUserDTO(request);
         try {
+            var userDTO = getUserDTO(request);
             userDTO.throwIfNotValid();
             log.trace("User validation passed successfully");
 
@@ -45,6 +46,9 @@ public class SignUpCommand implements Command {
             request.setAttribute("error", "data_could_not_be_saved");
             request.getRequestDispatcher(SIGNUP_PAGE).forward(request, response);
             return;
+        } catch (final Exception e) {
+            log.error(e.getMessage());
+            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
 
         response.sendRedirect(
@@ -54,13 +58,19 @@ public class SignUpCommand implements Command {
 
 
     private UserDTO getUserDTO(HttpServletRequest request) {
+        final var login = request.getParameter("login");
+        final var firstname = request.getParameter("firstname");
+        final var lastname = request.getParameter("lastname");
+        final var email = request.getParameter("email");
+        final var phone = request.getParameter("phone");
+        final var password = request.getParameter("password");
         return UserDTO.builder()
-                .login(request.getParameter("login"))
-                .firstname(request.getParameter("firstname"))
-                .lastname(request.getParameter("lastname"))
-                .email(request.getParameter("email"))
-                .phone(request.getParameter("phone"))
-                .password(request.getParameter("password"))
+                .login(login)
+                .firstname(firstname)
+                .lastname(lastname)
+                .email(email)
+                .phone(phone)
+                .password(password)
                 .build();
     }
 }

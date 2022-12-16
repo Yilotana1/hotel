@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import static com.example.hotel.controller.Path.ERROR_503_PAGE;
 import static com.example.hotel.controller.Path.PROFILE;
 import static com.example.hotel.model.dao.Tools.addloginToLoginCache;
 
@@ -32,8 +33,8 @@ public class EditProfileCommand implements Command {
 
     @Override
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        final var userDTO = getUserDTO(request);
         try {
+            final var userDTO = getUserDTO(request);
             userDTO.throwIfNotValid();
             userService.update(userDTO);
             addloginToLoginCache(userDTO.getLogin(), request);
@@ -48,6 +49,9 @@ public class EditProfileCommand implements Command {
         } catch (ServiceException e) {
             log.error(e.getMessage());
             request.setAttribute(ERROR_ATTRIBUTE, "data_could_not_be_saved");
+        } catch (final Exception e) {
+            log.error(e.getMessage());
+            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         } finally {
             request.getRequestDispatcher(PROFILE).forward(request, response);
         }

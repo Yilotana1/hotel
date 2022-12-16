@@ -1,7 +1,7 @@
 package com.example.hotel.controller.command.manager;
 
 import com.example.hotel.controller.command.Command;
-import com.example.hotel.controller.command.admin.ManageUsersCommand;
+import com.example.hotel.controller.command.admin.ShowUsersManagmentCommand;
 import com.example.hotel.model.service.UserService;
 import com.example.hotel.model.service.exception.ServiceException;
 import com.example.hotel.model.service.factory.ServiceFactory;
@@ -19,7 +19,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Objects.requireNonNullElse;
 
 public class ListUsersCommand implements Command {
-    public final static Logger log = Logger.getLogger(ManageUsersCommand.class);
+    public final static Logger log = Logger.getLogger(ShowUsersManagmentCommand.class);
 
     private UserService userService = ServiceFactory.getInstance().createUserService();
     private final String PAGE_NUMBER_INPUT = "page";

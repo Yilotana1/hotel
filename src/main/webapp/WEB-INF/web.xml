@@ -77,6 +77,26 @@
         <servlet-name>Servlet</servlet-name>
         <url-pattern>/client/confirm-payment</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/client/cancel-application</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/client/make-temporary-application</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/manager/show-preferred-apartments</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/manager/apply-for-client</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Servlet</servlet-name>
+        <url-pattern>/manager/show-temporary-applications</url-pattern>
+    </servlet-mapping>
     <!--Filters-->
     <filter>
         <filter-name>LocalizationFilter</filter-name>

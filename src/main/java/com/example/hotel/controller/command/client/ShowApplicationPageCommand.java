@@ -39,7 +39,7 @@ public class ShowApplicationPageCommand implements Command {
             }
             request.setAttribute("apartment", apartment.get());
             request.getRequestDispatcher(CLIENT_APPLY_PAGE).forward(request, response);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error(e);
             request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
         }

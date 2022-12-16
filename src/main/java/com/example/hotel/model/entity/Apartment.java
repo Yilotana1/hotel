@@ -86,11 +86,14 @@ public class Apartment {
 
     }
 
-    public void markAsUnavailable() {
-        log.trace(this + " marked unavailable");
+    public void makeUnavailable() {
+        log.trace(this + " made unavailable");
         setStatus(UNAVAILABLE);
     }
-
+    public void makeFree(){
+        log.trace(this + " made free");
+        setStatus(FREE);
+    }
     public void increaseDemand() {
         setDemand(getDemand() + 1);
     }

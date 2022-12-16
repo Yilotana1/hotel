@@ -29,5 +29,10 @@
 </c:if>
 <br/>
 <jsp:include page="lists/apartments/apartments_list.jsp"/>
+<br/>
+<form action="${pageContext.request.contextPath}/client/make-temporary-application.jsp">
+    <fmt:message key="specify_preferred" var="specify_preferences"/>
+    <input type="submit" value="${specify_preferences}">
+</form>
 </body>
 </html>

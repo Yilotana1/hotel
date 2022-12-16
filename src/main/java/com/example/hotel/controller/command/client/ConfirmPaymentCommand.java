@@ -53,7 +53,7 @@ public class ConfirmPaymentCommand implements Command {
             request.getRequestDispatcher(APPLICATION_INVOICE).forward(request, response);
         } catch (Exception e) {
             log.error(e.getMessage());
-            response.sendRedirect(ERROR_503_PAGE);
+            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }
 

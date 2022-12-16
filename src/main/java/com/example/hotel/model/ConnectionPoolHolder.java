@@ -1,5 +1,7 @@
 package com.example.hotel.model;
 
+import org.apache.log4j.Logger;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -8,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class ConnectionPoolHolder {
+    public final static Logger log = Logger.getLogger(ConnectionPoolHolder.class);
     private static volatile DataSource dataSource;
 
     public static DataSource getDataSource() {
@@ -31,7 +34,8 @@ public class ConnectionPoolHolder {
     public static Connection getConnection() {
         try {
             return dataSource.getConnection();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

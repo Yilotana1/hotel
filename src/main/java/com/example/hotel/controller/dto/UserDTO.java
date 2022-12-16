@@ -71,7 +71,7 @@ public class UserDTO {
         if (hasNotAllowedNulls()) {
             throw new InvalidDataException("Some of user dto fields are null");
         }
-        if (login.length() > MAX_LOGIN_LENGTH || login.isEmpty()) {
+        if (login.length() > MAX_LOGIN_LENGTH || login.isBlank()) {
             throw new InvalidDataException("Login must be of appropriate size", "login");
         }
         if (firstname.length() > MAX_FIRSTNAME_LENGTH || !firstname.matches(FIRSTNAME_REGEX)) {
