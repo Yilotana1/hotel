@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import static com.example.hotel.controller.Path.ERROR_503_PAGE;
 import static com.example.hotel.controller.Path.PROFILE;
-import static com.example.hotel.model.dao.Tools.addloginToLoginCache;
+import static com.example.hotel.model.dao.Tools.addLoginToCache;
 
 public class EditProfileCommand implements Command {
 
@@ -34,10 +34,10 @@ public class EditProfileCommand implements Command {
     @Override
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         try {
+            UserDTO.throwIfNotValid(request);
             final var userDTO = getUserDTO(request);
-            userDTO.throwIfNotValid();
             userService.update(userDTO);
-            addloginToLoginCache(userDTO.getLogin(), request);
+            addLoginToCache(userDTO.getLogin(), request);
             request.getSession().setAttribute(LOGIN_ATTRIBUTE, userDTO.getLogin());
 
         } catch (InvalidDataException e) {

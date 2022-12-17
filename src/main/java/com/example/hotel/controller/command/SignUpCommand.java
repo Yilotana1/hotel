@@ -17,37 +17,40 @@ import static com.example.hotel.controller.Path.MAIN;
 import static com.example.hotel.controller.Path.SIGNUP_PAGE;
 
 public class SignUpCommand implements Command {
-    public final static Logger log = Logger.getLogger(SignUpCommand.class);
+    public static final Logger log = Logger.getLogger(SignUpCommand.class);
+    public static final String USER_WITH_SUCH_LOGIN_EXISTS = "user_with_such_login_exists";
+    public static final String DATA_COULD_NOT_BE_SAVED = "data_could_not_be_saved";
+    public static final String ERROR_ATTRIBUTE = "error";
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         log.trace("Started SignUp command");
         try {
-            var userDTO = getUserDTO(request);
-            userDTO.throwIfNotValid();
+            UserDTO.throwIfNotValid(request);
+            final var userDTO = getUserDTO(request);
             log.trace("User validation passed successfully");
 
-            var userService = ServiceFactory.getInstance().createUserService();
+            final var userService = ServiceFactory.getInstance().createUserService();
             userService.signUp(userDTO);
             log.trace("User has been signed up");
 
-        } catch (InvalidDataException e) {
-            log.error("Validation error: " + e.getMessage());
-            request.setAttribute("error", e.getInvalidField() + "_is_invalid");
+        } catch (final InvalidDataException e) {
+            log.error(e.getMessage());
+            request.setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
             request.getRequestDispatcher(SIGNUP_PAGE).forward(request, response);
             return;
-        } catch (LoginIsNotUniqueException e) {
-            log.error("LoginIsNotUnique exception: " + e.getMessage());
-            request.setAttribute("error", "user_with_such_login_exists");
+        } catch (final LoginIsNotUniqueException e) {
+            log.error(e.getMessage());
+            request.setAttribute(ERROR_ATTRIBUTE, USER_WITH_SUCH_LOGIN_EXISTS);
             request.getRequestDispatcher(SIGNUP_PAGE).forward(request, response);
             return;
-        } catch (ServiceException e) {
-            log.error("Service exception: " + e.getMessage());
-            request.setAttribute("error", "data_could_not_be_saved");
+        } catch (final ServiceException e) {
+            log.error(e.getMessage(), e);
+            request.setAttribute(ERROR_ATTRIBUTE, DATA_COULD_NOT_BE_SAVED);
             request.getRequestDispatcher(SIGNUP_PAGE).forward(request, response);
             return;
         } catch (final Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
 
@@ -57,7 +60,7 @@ public class SignUpCommand implements Command {
     }
 
 
-    private UserDTO getUserDTO(HttpServletRequest request) {
+    private UserDTO getUserDTO(final HttpServletRequest request) {
         final var login = request.getParameter("login");
         final var firstname = request.getParameter("firstname");
         final var lastname = request.getParameter("lastname");

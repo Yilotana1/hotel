@@ -75,7 +75,7 @@ public class AccessFilter implements Filter {
     private final Set<String> blockedUsersPermission = new HashSet<>();
     private String contextPath;
 
-    public final static Logger log = Logger.getLogger(AccessFilter.class);
+    public static final Logger log = Logger.getLogger(AccessFilter.class);
 
     /**
      * Defines user roles and pages with permission to get into

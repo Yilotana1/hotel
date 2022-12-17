@@ -1,6 +1,7 @@
 package com.example.hotel.controller.command.client;
 
 import com.example.hotel.controller.command.Command;
+import com.example.hotel.controller.dto.ApplicationDTO;
 import com.example.hotel.controller.exception.InvalidDataException;
 import com.example.hotel.model.service.ApplicationService;
 import com.example.hotel.model.service.exception.ApartmentIsNotAvailableException;
@@ -18,13 +19,12 @@ import static com.example.hotel.controller.Path.CLIENT_HAS_APPLICATION_PAGE;
 import static com.example.hotel.controller.Path.ERROR_503_PAGE;
 import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
 import static com.example.hotel.controller.Path.SUCCESS_APPLY_PAGE;
-import static com.example.hotel.model.dao.Tools.getApplicationDTOFromRequest;
 import static com.example.hotel.model.dao.Tools.getLoginFromSession;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
 
 public class ApplyCommand implements Command {
-    public final static Logger log = Logger.getLogger(ApplyCommand.class);
+    public static final Logger log = Logger.getLogger(ApplyCommand.class);
     private ApplicationService applicationService = ServiceFactory.getInstance().createApplicationService();
 
     public ApplyCommand() {
@@ -37,26 +37,36 @@ public class ApplyCommand implements Command {
     @Override
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         try {
+            ApplicationDTO.throwIfNotValid(request);
             final var applicationDTO = getApplicationDTOFromRequest(request);
-            applicationDTO.throwIfNotValid();
             applicationService.apply(applicationDTO);
             request.getRequestDispatcher(SUCCESS_APPLY_PAGE).forward(request, response);
 
-        } catch (InvalidDataException e) {
+        } catch (final InvalidDataException e) {
             log.error("Validation error: " + e.getMessage());
             request.setAttribute("error", e.getInvalidField() + "_is_invalid");
             forwardToApplyPage(request, response);
-        } catch (ClientHasNotCanceledApplicationException e) {
+        } catch (final ClientHasNotCanceledApplicationException e) {
             log.error("Client already has application which is not canceled");
             response.sendRedirect(request.getContextPath() + CLIENT_HAS_APPLICATION_PAGE);
         } catch (ApartmentIsNotAvailableException e) {
             final var apartmentNumber = parseInt(request.getParameter("number"));
-            log.error(format("Request apartment(number = %d) not available", apartmentNumber));
+            log.error(format("Request apartment(number = %d) not available", apartmentNumber), e);
             response.sendRedirect(request.getContextPath() + APARTMENT_NOT_AVAILABLE_PAGE);
-        } catch (Exception e) {
-            log.error("Exception: " + e.getMessage());
+        } catch (final Exception e) {
+            log.error(e.getMessage(), e);
             request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
         }
+    }
+
+    private static ApplicationDTO getApplicationDTOFromRequest(final HttpServletRequest request) throws InvalidDataException {
+        final var stayLength = request.getParameter("stay_length");
+        final var apartmentNumber = request.getParameter("number");
+        return ApplicationDTO.builder()
+                .apartmentNumber(parseInt(apartmentNumber))
+                .clientLogin(getLoginFromSession(request.getSession()))
+                .stayLength(parseInt(stayLength))
+                .build();
     }
 
     private static void forwardToApplyPage(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {

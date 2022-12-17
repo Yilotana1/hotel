@@ -13,7 +13,7 @@ import static com.example.hotel.controller.Path.PROFILE;
 import static com.example.hotel.model.dao.Tools.addLoginToSession;
 import static com.example.hotel.model.dao.Tools.addRolesToSession;
 import static com.example.hotel.model.dao.Tools.addUserStatusToSession;
-import static com.example.hotel.model.dao.Tools.addloginToLoginCache;
+import static com.example.hotel.model.dao.Tools.addLoginToCache;
 import static com.example.hotel.model.dao.Tools.userIsLogged;
 
 public class LoginCommand implements Command {
@@ -46,7 +46,7 @@ public class LoginCommand implements Command {
             request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
             return;
         }
-        addloginToLoginCache(login, request);
+        addLoginToCache(login, request);
         addRolesToSession(user.get().getRoles(), request);
         addLoginToSession(login, request);
         addUserStatusToSession(user.get().getStatus(), request);

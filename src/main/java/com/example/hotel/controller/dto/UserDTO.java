@@ -1,10 +1,13 @@
 package com.example.hotel.controller.dto;
 
 import com.example.hotel.controller.exception.InvalidDataException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.log4j.Logger;
 
 import static java.util.Objects.requireNonNull;
 
 public class UserDTO {
+    public final static Logger log = Logger.getLogger(UserDTO.class);
     private static final int MAX_LOGIN_LENGTH = 16;
     private static final int MAX_FIRSTNAME_LENGTH = 20;
     private static final int MAX_LASTNAME_LENGTH = 20;
@@ -36,42 +39,48 @@ public class UserDTO {
             return userDTO;
         }
 
-        public UserDTO.UserDTOBuilder login(String login) {
+        public UserDTO.UserDTOBuilder login(final String login) {
             userDTO.setLogin(login);
             return this;
         }
 
-        public UserDTO.UserDTOBuilder firstname(String firstname) {
+        public UserDTO.UserDTOBuilder firstname(final String firstname) {
             userDTO.setFirstname(firstname);
             return this;
         }
 
-        public UserDTO.UserDTOBuilder lastname(String lastname) {
+        public UserDTO.UserDTOBuilder lastname(final String lastname) {
             userDTO.setLastname(lastname);
             return this;
         }
 
-        public UserDTO.UserDTOBuilder email(String email) {
+        public UserDTO.UserDTOBuilder email(final String email) {
             userDTO.setEmail(email);
             return this;
         }
 
-        public UserDTO.UserDTOBuilder password(String password) {
+        public UserDTO.UserDTOBuilder password(final String password) {
             userDTO.setPassword(password);
             return this;
         }
 
-        public UserDTO.UserDTOBuilder phone(String phone) {
+        public UserDTO.UserDTOBuilder phone(final String phone) {
             userDTO.setPhone(phone);
             return this;
         }
     }
 
-    public void throwIfNotValid() throws InvalidDataException {
-        if (hasNotAllowedNulls()) {
-            throw new InvalidDataException("Some of user dto fields are null");
-        }
-        if (login.length() > MAX_LOGIN_LENGTH || login.isBlank()) {
+    public static void throwIfNotValid(final HttpServletRequest request) throws InvalidDataException {
+        final var login = request.getParameter("login");
+        final var firstname = request.getParameter("firstname");
+        final var lastname = request.getParameter("lastname");
+        final var email = request.getParameter("email");
+        final var password = request.getParameter("password");
+        final var phone = request.getParameter("phone");
+        throwIfNulls(login, firstname,
+                lastname, email,
+                password, phone);
+        if (login.length() > MAX_LOGIN_LENGTH || login.isEmpty()) {
             throw new InvalidDataException("Login must be of appropriate size", "login");
         }
         if (firstname.length() > MAX_FIRSTNAME_LENGTH || !firstname.matches(FIRSTNAME_REGEX)) {
@@ -91,26 +100,19 @@ public class UserDTO {
         }
     }
 
-    private boolean hasNotAllowedNulls() throws InvalidDataException {
+    private static void throwIfNulls(final String... args) throws InvalidDataException{
         try {
-            requireNonNull(login);
-            requireNonNull(firstname);
-            requireNonNull(lastname);
-            requireNonNull(phone);
-            requireNonNull(password);
-        } catch (NullPointerException e) {
-            return true;
+            for (final var arg : args) {
+                requireNonNull(arg);
+            }
+        } catch (final NullPointerException e) {
+            final var message = "Some of the required parameters for UserDTO are missing.";
+            log.error(message, e);
+            throw new InvalidDataException(message);
         }
-        return false;
+
     }
 
-//    public BigDecimal getMoney() {
-//        return money;
-//    }
-//
-//    public void setMoney(BigDecimal money) {
-//        this.money = money;
-//    }
 
     public String getLogin() {
         return login;

@@ -1,17 +1,16 @@
 package com.example.hotel.controller.dto;
 
 import com.example.hotel.controller.exception.InvalidDataException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.log4j.Logger;
 
 import java.time.LocalDate;
 
-import static java.lang.String.format;
+import static java.lang.Long.parseLong;
 import static java.util.Objects.requireNonNull;
 
 public class ApplicationDTO {
-    private static final int MAX_LOGIN_LENGTH = 16;
-    public static final int MAX_APARTMENT_NUMBER = 30;
-    public static final int MIN_APARTMENT_NUMBER = 1;
-    public static final int MIN_STAY_LENGTH = 1;
+    public final static Logger log = Logger.getLogger(ApplicationDTO.class);
     private String clientLogin;
     private Integer apartmentNumber;
     private final LocalDate creationDate = LocalDate.now();
@@ -36,6 +35,7 @@ public class ApplicationDTO {
             applicationDTO.setApartmentNumber(apartmentNumber);
             return this;
         }
+
         public ApplicationDTOBuilder stayLength(final Integer stayLength) {
             applicationDTO.setStayLength(stayLength);
             return this;
@@ -47,36 +47,35 @@ public class ApplicationDTO {
 
     }
 
-    public void throwIfNotValid() throws InvalidDataException {
-        if (hasNotAllowedNulls()) {
-            throw new InvalidDataException("Some of application dto fields are null");
+    public static void throwIfNotValid(final HttpServletRequest request) throws InvalidDataException {
+        final var apartmentNumber = request.getParameter("number");
+        final var stayLength = request.getParameter("stay_length");
+        throwIfNulls(apartmentNumber, stayLength);
+        if (!apartmentNumber.matches("[0-9]+")) {
+            throw new InvalidDataException("apartmentNumber must be a number", "number");
         }
-        if (clientLogin.length() > MAX_LOGIN_LENGTH || clientLogin.isEmpty()) {
-            throw new InvalidDataException("Login must be of appropriate size", "login");
+        if (!stayLength.matches("[0-9]+")) {
+            throw new InvalidDataException("stayLength must be a number");
         }
-        if (apartmentNumber > MAX_APARTMENT_NUMBER || apartmentNumber < MIN_APARTMENT_NUMBER) {
-            throw new InvalidDataException(
-                    format("Apartment number must be between %d-%d", MIN_APARTMENT_NUMBER, MAX_APARTMENT_NUMBER),
-                    "apartment_number");
+        if (parseLong(apartmentNumber) <= 0) {
+            throw new InvalidDataException("apartmentNumber must be more that 0");
         }
-        if (stayLength < MIN_STAY_LENGTH) {
-            throw new InvalidDataException(
-                    format("stayLength must no less than %d", MIN_STAY_LENGTH),
-                    "stay_length");
+        if (parseLong(stayLength) <= 0) {
+            throw new InvalidDataException("stayLength must be more that 0");
         }
     }
 
-    private boolean hasNotAllowedNulls() {
+    private static void throwIfNulls(final String... args) throws InvalidDataException {
         try {
-            requireNonNull(clientLogin);
-            requireNonNull(apartmentNumber);
-            requireNonNull(stayLength);
-        } catch (NullPointerException e) {
-            return true;
+            for (final var arg : args) {
+                requireNonNull(arg);
+            }
+        } catch (final NullPointerException e) {
+            final var message = "Some of the required parameters for ApplicationDTO are missing.";
+            log.error(message, e);
+            throw new InvalidDataException(message);
         }
-        return false;
     }
-
     public LocalDate getCreationDate() {
         return creationDate;
     }

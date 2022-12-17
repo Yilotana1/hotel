@@ -2,8 +2,10 @@ package com.example.hotel.controller.dto;
 
 import com.example.hotel.controller.exception.InvalidDataException;
 import com.example.hotel.model.entity.enums.ApartmentClass;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 
+import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
@@ -56,39 +58,44 @@ public class TemporaryApplicationDTO {
         }
     }
 
-    public void throwIfNotValid() throws InvalidDataException{
-        if (hasNotAllowedNulls()) {
-            log.error("Some fields are null");
-            throw new InvalidDataException("Some of TemporaryApplicationDTO fields are null");
+    public static void throwIfNotValid(final HttpServletRequest request) throws InvalidDataException {
+        final var clientLogin = request.getParameter("client_login");
+        final var stayLength = request.getParameter("stay_length");
+        final var apartmentClass = request.getParameter("apartment_class_id");
+        final var numberOfPeople = request.getParameter("number_of_people");
+        throwIfNulls(clientLogin, stayLength, apartmentClass, numberOfPeople);
+        if (clientLogin.isEmpty() || clientLogin.length() > MAX_LOGIN_LENGTH) {
+            final var message = "Login must be of appropriate size";
+            log.error(message);
+            throw new InvalidDataException(message, "login");
         }
-        if (clientLogin.isBlank() || clientLogin.length() > MAX_LOGIN_LENGTH) {
-            log.error("clientLogin == " + clientLogin);
-            throw new InvalidDataException("Login must be of appropriate size", "login");
-        }
-        if (stayLength <= MIN_STAY_LENGTH || stayLength > MAX_STAY_LENGTH) {
-            log.error("stayLength == " + stayLength);
+        if (parseInt(stayLength) <= MIN_STAY_LENGTH || parseInt(stayLength) > MAX_STAY_LENGTH) {
+            final var message = format("Stay Length must be between %d and %d", MIN_STAY_LENGTH, MAX_STAY_LENGTH);
+            log.error(message);
             throw new InvalidDataException(
-                    format("stayLength must be between %d and %d", MIN_STAY_LENGTH, MAX_STAY_LENGTH),
+                    message,
                     "stay_length");
         }
-        if (numberOfPeople <= MIN_NUMBER_OF_PEOPLE || numberOfPeople > MAX_NUMBER_OF_PEOPLE) {
-            log.error("numberOfPeople == " + numberOfPeople);
+        if (parseInt(numberOfPeople) <= MIN_NUMBER_OF_PEOPLE || parseInt(numberOfPeople) > MAX_NUMBER_OF_PEOPLE) {
+            final var message = format("numberOfPeople must be between %d and %d", MIN_NUMBER_OF_PEOPLE, MAX_NUMBER_OF_PEOPLE);
+            log.error(message);
             throw new InvalidDataException(
-                    format("numberOfPeople must be between %d and %d", MIN_NUMBER_OF_PEOPLE, MAX_NUMBER_OF_PEOPLE),
+                    message,
                     "number_of_people");
         }
     }
 
-    private boolean hasNotAllowedNulls() throws InvalidDataException {
+    private static void throwIfNulls(final String... args) throws InvalidDataException {
         try {
-            requireNonNull(clientLogin);
-            requireNonNull(stayLength);
-            requireNonNull(apartmentClass);
-            requireNonNull(numberOfPeople);
-        } catch (NullPointerException e) {
-            return true;
+            for (final var arg : args) {
+                requireNonNull(arg);
+            }
+        } catch (final NullPointerException e) {
+            final var message = "Some of the required parameters for TemporaryApplicationDTO are missing.";
+            log.error(message, e);
+            throw new InvalidDataException(message);
         }
-        return false;
+
     }
 
     public Integer getStayLength() {

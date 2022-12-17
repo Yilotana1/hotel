@@ -37,8 +37,8 @@ public class MakeTemporaryApplicationCommand implements Command {
     @Override
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         try {
+            TemporaryApplicationDTO.throwIfNotValid(request);
             final var temporaryApplicationDTO = getTemporaryApplicationDTOFromRequest(request);
-            temporaryApplicationDTO.throwIfNotValid();
             applicationService.makeTemporaryApplication(temporaryApplicationDTO);
             response.sendRedirect(request.getContextPath() + SUCCESS_APPLY_PAGE);
         } catch (final InvalidDataException e) {
@@ -62,11 +62,6 @@ public class MakeTemporaryApplicationCommand implements Command {
         final var stayLength = request.getParameter("stay_length");
         final var apartmentClass = request.getParameter("apartment_class_id");
         final var numberOfPeople = request.getParameter("number_of_people");
-        if (stayLength == null || apartmentClass == null || numberOfPeople == null) {
-            final var message = "Some of TemporaryApplicationDTO fields were not specified";
-            log.error(message);
-            throw new InvalidDataException(message);
-        }
         return TemporaryApplicationDTO.builder()
                 .stayLength(parseInt(stayLength))
                 .apartmentClass(ApartmentClass.getById(parseInt(apartmentClass)))
@@ -75,6 +70,3 @@ public class MakeTemporaryApplicationCommand implements Command {
                 .build();
     }
 }
-//TODO Create ApplyApartmentForClientCommand where admin,manager applies best apartment for client considering client's preferences
-//TODO Create custom tag that shows a list(table) of all TemporaryApplications that have been made by users. You can choose one of them and make a request to list of all respective apartments(see below)
-//TODO Create custom tag that shows a list of all apartments that are respective to client's preferences. You can choose one of them and make a request to ApplyApartmentForClientCommand
