@@ -23,10 +23,13 @@
 <c:if test="${sessionScope.roles.contains(Role.ADMIN)}">
     <a href="admin/manage-users"><fmt:message key="manage_users"/></a>
     <br/>
+    <a href="admin/show-apartment-management"><fmt:message key="manage_apartments"/></a>
     <br/>
 </c:if>
 <c:if test="${sessionScope.roles.contains(Role.MANAGER) && !sessionScope.roles.contains(Role.ADMIN)}">
     <a href="manager/list-users"><fmt:message key="list_users"/></a>
+    <br/>
+    <a href="manager/show-apartments"><fmt:message key="list_apartments"/></a>
     <br/>
 </c:if>
 <c:if test="${sessionScope.roles.contains(Role.MANAGER)}">

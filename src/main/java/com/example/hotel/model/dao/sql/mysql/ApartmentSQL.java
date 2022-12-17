@@ -1,6 +1,7 @@
 package com.example.hotel.model.dao.sql.mysql;
 
 import static com.example.hotel.model.entity.enums.ApartmentStatus.FREE;
+import static com.example.hotel.model.entity.enums.ApplicationStatus.CANCELED;
 
 public interface ApartmentSQL {
     //SORTED IN ASCENDING ORDER
@@ -36,6 +37,15 @@ public interface ApartmentSQL {
             " WHERE Temporary_application.client_login = ?";
     String SELECT_COUNT_APARTMENT_BY_CLASS_AND_NUMBER_OF_PEOPLE = "SELECT COUNT(number)" +
             "AS count FROM Apartment WHERE class_id = ? AND number_of_people = ?";
+    String SELECT_APARTMENTS_AND_RESIDENTS_LOGINS = "SELECT Apartment.floor, Apartment.number, Apartment.class_id," +
+            " Apartment.demand, Apartment.price, Apartment.status_id," +
+            " Apartment.number_of_people,User.login" +
+            " FROM Apartment LEFT JOIN Application ON  Apartment.number = Application.apartment_id" +
+            " LEFT JOIN User ON Application.client_id = User.id LIMIT ?, ?";
+    String SELECT_APARTMENT_BY_RESIDENT_LOGIN = "SELECT Apartment.floor,Apartment.number,Apartment.class_id," +
+            "Apartment.demand,Apartment.price,Apartment.status_id,Apartment.number_of_people" +
+            " FROM Apartment JOIN Application ON Application.apartment_id = Apartment.number JOIN User ON" +
+            " Application.client_id = User.id WHERE Application.status_id != " + CANCELED.getId();
     //DML QUERIES
     String INSERT_APARTMENT = "INSERT INTO Apartment (number, floor, class_id, status_id, demand, price, number_of_people)" +
             " VALUES (?, ?, ?, ?, ?, ?, ?)";

@@ -40,4 +40,9 @@ public interface Path {
     String APPLY_FOR_CLIENT = "/manager/apply-for-client";
     String SHOW_TEMPORARY_APPLICATIONS = "/manager/show-temporary-applications";
     String TEMPORARY_APPLICATIONS_PAGE = "/manager/temporary-applications.jsp";
+    String SHOW_APARTMENTS_MANAGEMENT = "/admin/show-apartment-management";
+    String APARTMENTS_MANAGEMENT_PAGE = "/admin/manage-apartments.jsp";
+    String APARTMENTS_PAGE = "/manager/apartments.jsp";
+    String SHOW_APARTMENTS = "/manager/show-apartments";
+    String EDIT_APARTMENT = "/admin/edit-apartment";
 }

@@ -7,9 +7,14 @@ import com.example.hotel.model.entity.enums.ApartmentStatus;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ApartmentDao extends GenericDao<Apartment> {
+    Map<Apartment, String> findApartmentsWithResidentsLogins(int skip, int count) throws SQLException;
+
+    Optional<Apartment> findApartmentByResidentLogin(String login) throws SQLException;
+
     boolean existsByClassAndNumberOfPeople(ApartmentClass apartmentClass, int numberOfPeople) throws SQLException;
 
     int getPreferredApartmentsCount(String clientLogin) throws SQLException;

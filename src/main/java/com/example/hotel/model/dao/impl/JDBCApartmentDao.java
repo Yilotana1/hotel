@@ -11,11 +11,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.DELETE_APARTMENT_BY_NUMBER;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.INSERT_APARTMENT;
+import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_AND_RESIDENTS_LOGINS;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_CLASS;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_CLIENT_PREFERENCES;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_FLOOR;
@@ -31,6 +34,7 @@ import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMEN
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_PRICE_DESC;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_STATUS;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENT_BY_NUMBER;
+import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENT_BY_RESIDENT_LOGIN;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_COUNT_APARTMENTS;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_COUNT_APARTMENT_BY_CLASS_AND_NUMBER_OF_PEOPLE;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_COUNT_PREFERRED_APARTMENTS;
@@ -48,6 +52,33 @@ public class JDBCApartmentDao implements ApartmentDao {
     @Override
     public Connection getConnection() {
         return connection;
+    }
+
+    @Override
+    public Map<Apartment, String> findApartmentsWithResidentsLogins(int skip, int count) throws SQLException {
+        try (var statement = connection.prepareStatement(SELECT_APARTMENTS_AND_RESIDENTS_LOGINS)) {
+            statement.setInt(1, skip);
+            statement.setInt(2, count);
+            final var resultSet = statement.executeQuery();
+            final var map = new LinkedHashMap<Apartment, String>();
+            while (resultSet.next()) {
+                final var apartment = apartmentMapper.extractFromResultSet(resultSet);
+                final var login = resultSet.getString("User.login");
+                map.put(apartment, login);
+            }
+            return map;
+        }
+    }
+
+    @Override
+    public Optional<Apartment> findApartmentByResidentLogin(final String login) throws SQLException {
+        try (var statement = connection.prepareStatement(SELECT_APARTMENT_BY_RESIDENT_LOGIN)) {
+            final var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(apartmentMapper.extractFromResultSet(resultSet));
+            }
+        }
+        return Optional.empty();
     }
 
     @Override

@@ -7,8 +7,10 @@ import com.example.hotel.controller.command.LoginCommand;
 import com.example.hotel.controller.command.MainCommand;
 import com.example.hotel.controller.command.ShowProfileCommand;
 import com.example.hotel.controller.command.SignUpCommand;
+import com.example.hotel.controller.command.admin.EditApartmentCommand;
 import com.example.hotel.controller.command.admin.EditUserCommand;
-import com.example.hotel.controller.command.admin.ShowUsersManagmentCommand;
+import com.example.hotel.controller.command.admin.ShowApartmentsManagementCommand;
+import com.example.hotel.controller.command.admin.ShowUsersManagementCommand;
 import com.example.hotel.controller.command.client.ApplyCommand;
 import com.example.hotel.controller.command.client.CancelApplicationCommand;
 import com.example.hotel.controller.command.client.ConfirmPaymentCommand;
@@ -17,7 +19,8 @@ import com.example.hotel.controller.command.client.ShowApplicationInvoiceCommand
 import com.example.hotel.controller.command.client.ShowApplicationPageCommand;
 import com.example.hotel.controller.command.client.UpdateUserMoneyCommand;
 import com.example.hotel.controller.command.manager.ApplyForClientCommand;
-import com.example.hotel.controller.command.manager.ListUsersCommand;
+import com.example.hotel.controller.command.manager.ShowApartmentsCommand;
+import com.example.hotel.controller.command.manager.ShowUsersCommand;
 import com.example.hotel.controller.command.manager.ShowPreferredApartmentsCommand;
 import com.example.hotel.controller.command.manager.ShowTemporaryApplicationsCommand;
 import jakarta.servlet.ServletException;
@@ -38,6 +41,7 @@ import static com.example.hotel.controller.Path.APPLY_FOR_CLIENT;
 import static com.example.hotel.controller.Path.CANCEL_APPLICATION;
 import static com.example.hotel.controller.Path.CLIENT_APPLY;
 import static com.example.hotel.controller.Path.CONFIRM_PAYMENT;
+import static com.example.hotel.controller.Path.EDIT_APARTMENT;
 import static com.example.hotel.controller.Path.EDIT_PROFILE;
 import static com.example.hotel.controller.Path.LOGIN;
 import static com.example.hotel.controller.Path.LOGOUT;
@@ -45,6 +49,8 @@ import static com.example.hotel.controller.Path.MAIN;
 import static com.example.hotel.controller.Path.MAKE_TEMPORARY_APPLICATION;
 import static com.example.hotel.controller.Path.MANAGER_LIST_USERS;
 import static com.example.hotel.controller.Path.PROFILE;
+import static com.example.hotel.controller.Path.SHOW_APARTMENTS;
+import static com.example.hotel.controller.Path.SHOW_APARTMENTS_MANAGEMENT;
 import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
 import static com.example.hotel.controller.Path.SHOW_PREFERRED_APARTMENTS;
 import static com.example.hotel.controller.Path.SHOW_TEMPORARY_APPLICATIONS;
@@ -66,9 +72,9 @@ public class Servlet extends HttpServlet {
         commands.put(MAIN, new MainCommand());
         commands.put(PROFILE, new ShowProfileCommand());
         commands.put(EDIT_PROFILE, new EditProfileCommand());
-        commands.put(ADMIN_MANAGE_USERS, new ShowUsersManagmentCommand());
+        commands.put(ADMIN_MANAGE_USERS, new ShowUsersManagementCommand());
         commands.put(ADMIN_EDIT_USER, new EditUserCommand());
-        commands.put(MANAGER_LIST_USERS, new ListUsersCommand());
+        commands.put(MANAGER_LIST_USERS, new ShowUsersCommand());
         commands.put(UPDATE_MONEY_ACCOUNT, new UpdateUserMoneyCommand());
         commands.put(CLIENT_APPLY, new ApplyCommand());
         commands.put(SHOW_APPLY_PAGE, new ShowApplicationPageCommand());
@@ -79,6 +85,9 @@ public class Servlet extends HttpServlet {
         commands.put(SHOW_PREFERRED_APARTMENTS, new ShowPreferredApartmentsCommand());
         commands.put(APPLY_FOR_CLIENT, new ApplyForClientCommand());
         commands.put(SHOW_TEMPORARY_APPLICATIONS, new ShowTemporaryApplicationsCommand());
+        commands.put(SHOW_APARTMENTS_MANAGEMENT, new ShowApartmentsManagementCommand());
+        commands.put(EDIT_APARTMENT, new EditApartmentCommand());
+        commands.put(SHOW_APARTMENTS, new ShowApartmentsCommand());
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {

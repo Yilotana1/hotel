@@ -1,7 +1,7 @@
 package com.example.hotel.controller.command.manager;
 
 import com.example.hotel.controller.command.Command;
-import com.example.hotel.controller.command.admin.ShowUsersManagmentCommand;
+import com.example.hotel.controller.command.admin.ShowUsersManagementCommand;
 import com.example.hotel.model.service.UserService;
 import com.example.hotel.model.service.exception.ServiceException;
 import com.example.hotel.model.service.factory.ServiceFactory;
@@ -18,21 +18,21 @@ import static com.example.hotel.controller.Path.MANAGER_LIST_USERS_PAGE;
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.requireNonNullElse;
 
-public class ListUsersCommand implements Command {
-    public final static Logger log = Logger.getLogger(ShowUsersManagmentCommand.class);
+public class ShowUsersCommand implements Command {
+    public final static Logger log = Logger.getLogger(ShowUsersManagementCommand.class);
 
     private UserService userService = ServiceFactory.getInstance().createUserService();
-    private final String PAGE_NUMBER_INPUT = "page";
-    private final String DEFAULT_PAGE_NUMBER = "1";
-    private final int PAGE_SIZE = 10;
+    private static final String PAGE_NUMBER_INPUT = "page";
+    private static final String DEFAULT_PAGE_NUMBER = "1";
+    private static final int PAGE_SIZE = 10;
     private final String USERS = "users";
     private static final String TOTAL_PAGES_NUMBER = "count";
 
 
-    public ListUsersCommand() {
+    public ShowUsersCommand() {
     }
 
-    public ListUsersCommand(final ServiceFactory serviceFactory) {
+    public ShowUsersCommand(final ServiceFactory serviceFactory) {
         userService = serviceFactory.createUserService();
     }
 

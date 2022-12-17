@@ -67,7 +67,8 @@ public class MainCommand implements Command {
             request.setAttribute(TOTAL_PAGES_NUMBER, totalPagesNumber);
         } catch (ServiceException e) {
             log.error(e.getMessage());
-            request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
+            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
+            return;
         }
         setAttributesForPaging(request, requestedSorting, pageNumber);
         request.getRequestDispatcher(MAIN_PAGE).forward(request, response);

@@ -16,9 +16,9 @@ import static com.example.hotel.controller.Path.ERROR_503_PAGE;
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.requireNonNullElse;
 
-public class ShowUsersManagmentCommand implements Command {
+public class ShowUsersManagementCommand implements Command {
 
-    public static final Logger log = Logger.getLogger(ShowUsersManagmentCommand.class);
+    public static final Logger log = Logger.getLogger(ShowUsersManagementCommand.class);
 
     private UserService userService = ServiceFactory.getInstance().createUserService();
     private static final String PAGE_NUMBER_INPUT = "page";
@@ -28,10 +28,10 @@ public class ShowUsersManagmentCommand implements Command {
     private static final String TOTAL_PAGES_NUMBER = "count";
 
 
-    public ShowUsersManagmentCommand() {
+    public ShowUsersManagementCommand() {
     }
 
-    public ShowUsersManagmentCommand(final ServiceFactory serviceFactory) {
+    public ShowUsersManagementCommand(final ServiceFactory serviceFactory) {
         userService = serviceFactory.createUserService();
     }
 
@@ -40,8 +40,8 @@ public class ShowUsersManagmentCommand implements Command {
         try {
             final var pageNumber = parseInt(requireNonNullElse(request.getParameter(PAGE_NUMBER_INPUT), DEFAULT_PAGE_NUMBER));
             final var skip = (pageNumber - 1) * PAGE_SIZE;
-            if (request.getParameter("by_login") != null) {
-                final var login = request.getParameter("login");
+            final var login = request.getParameter("login");
+            if (login != null && !login.isEmpty()) {
                 final var user = userService.getByLogin(login);
                 user.ifPresent(u -> request.setAttribute(USERS, List.of(u)));
                 request.setAttribute(TOTAL_PAGES_NUMBER, user.map(u -> 1).orElse(0));

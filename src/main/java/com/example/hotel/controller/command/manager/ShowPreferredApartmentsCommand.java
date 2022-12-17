@@ -47,7 +47,7 @@ public class ShowPreferredApartmentsCommand implements Command {
             request.setAttribute(APARTMENTS_ATTRIBUTE, apartments);
             request.setAttribute(STAY_LENGTH_ATTRIBUTE, request.getParameter(STAY_LENGTH_ATTRIBUTE));
             request.setAttribute(CLIENT_LOGIN_PARAMETER, request.getParameter(CLIENT_LOGIN_PARAMETER));
-            final var apartmentsCount = apartmentService.preferedApartmentsCount(clientLogin);
+            final var apartmentsCount = apartmentService.preferredApartmentsCount(clientLogin);
             request.setAttribute(TOTAL_PAGES_NUMBER, apartmentsCount / PAGE_SIZE);
             request.getRequestDispatcher(PREFERRED_APARTMENTS_PAGE).forward(request, response);
         } catch (final Exception e) {

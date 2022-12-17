@@ -1,17 +1,22 @@
 package com.example.hotel.model.service.impl;
 
-import com.example.hotel.model.ConnectionPoolHolder;
+import com.example.hotel.controller.dto.UpdateApartmentDTO;
 import com.example.hotel.model.dao.factory.DaoFactory;
 import com.example.hotel.model.entity.Apartment;
+import com.example.hotel.model.entity.enums.ApartmentStatus;
 import com.example.hotel.model.service.ApartmentService;
+import com.example.hotel.model.service.exception.ApartmentNotAllowedToUpdateException;
+import com.example.hotel.model.service.exception.ApartmentNotFoundException;
 import com.example.hotel.model.service.exception.ServiceException;
 import com.example.hotel.model.service.exception.TemporaryApplicationNotFound;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static com.example.hotel.model.ConnectionPoolHolder.getConnection;
 import static com.example.hotel.model.service.exception.Messages.SERVICE_EXCEPTION;
 import static com.example.hotel.model.service.exception.Messages.TEMPORARY_APPLICATION_NOT_FOUND;
 
@@ -25,11 +30,31 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
+    public Map<Apartment, String> getApartmentsWithResidentLogins(final int skip, final int count) {
+        try (var apartmentDao = daoFactory.createApartmentDao()) {
+            return apartmentDao.findApartmentsWithResidentsLogins(skip, count);
+        } catch (final SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(SERVICE_EXCEPTION, e);
+        }
+    }
+
+    @Override
+    public Optional<Apartment> getApartmentByResidentLogin(final String login) {
+        try (var apartmentDao = daoFactory.createApartmentDao()) {
+            return apartmentDao.findApartmentByResidentLogin(login);
+        } catch (final SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(SERVICE_EXCEPTION, e);
+        }
+    }
+
+    @Override
     public List<Apartment> getPreferredApartments(final String clientLogin,
                                                   final int skip,
                                                   final int count) {
-        final var connection = ConnectionPoolHolder.getConnection();
-        try (var apartmentDao = daoFactory.createApartmentDao(connection);
+        try (var connection = getConnection();
+             var apartmentDao = daoFactory.createApartmentDao(connection);
              var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao(connection)) {
             connection.setAutoCommit(false);
             final var temporaryApplication = temporaryApplicationDao
@@ -96,7 +121,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public int preferedApartmentsCount(final String clientLogin) {
+    public int preferredApartmentsCount(final String clientLogin) {
         try (var apartmentDao = daoFactory.createApartmentDao()) {
             return apartmentDao.getPreferredApartmentsCount(clientLogin);
         } catch (final SQLException e) {
@@ -112,5 +137,34 @@ public class ApartmentServiceImpl implements ApartmentService {
             log.error(e.getMessage());
             throw new ServiceException(SERVICE_EXCEPTION, e);
         }
+    }
+
+    @Override
+    public void update(final UpdateApartmentDTO updateApartmentDTO) throws ServiceException {
+        try (var apartmentDao = daoFactory.createApartmentDao()) {
+            final var connection = apartmentDao.getConnection();
+            connection.setAutoCommit(false);
+            final var number = updateApartmentDTO.getNumber();
+            final var apartment = apartmentDao
+                    .findByNumber(number)
+                    .orElseThrow(() -> new ApartmentNotFoundException("Apartment " + number + "not found"));
+            if (apartment.isBooked() || apartment.isNotAvailable()) {
+                throw new ApartmentNotAllowedToUpdateException("Apartment is " + apartment.getStatus());
+            }
+            setUpdatedFields(updateApartmentDTO, apartment);
+            apartmentDao.update(apartment);
+            connection.commit();
+        } catch (final SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(SERVICE_EXCEPTION, e);
+        }
+    }
+
+    private static void setUpdatedFields(final UpdateApartmentDTO updateApartmentDTO, final Apartment apartment) {
+        if (updateApartmentDTO.getStatus() == ApartmentStatus.BUSY) {
+            apartment.setStatus(updateApartmentDTO.getStatus());
+        }
+        apartment.setPrice(updateApartmentDTO.getPrice());
+        apartment.setApartmentClass(updateApartmentDTO.getApartmentClass());
     }
 }

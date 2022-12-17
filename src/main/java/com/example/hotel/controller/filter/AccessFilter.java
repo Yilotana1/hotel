@@ -31,6 +31,7 @@ import static com.example.hotel.controller.Path.CLIENT_APPLY;
 import static com.example.hotel.controller.Path.CLIENT_HAS_APPLICATION_PAGE;
 import static com.example.hotel.controller.Path.CLIENT_HAS_ASSIGNED_APPLICATION_PAGE;
 import static com.example.hotel.controller.Path.CONFIRM_PAYMENT;
+import static com.example.hotel.controller.Path.EDIT_APARTMENT;
 import static com.example.hotel.controller.Path.EDIT_PROFILE;
 import static com.example.hotel.controller.Path.ERROR_404_PAGE;
 import static com.example.hotel.controller.Path.ERROR_503_PAGE;
@@ -45,6 +46,8 @@ import static com.example.hotel.controller.Path.MANAGER_LIST_USERS;
 import static com.example.hotel.controller.Path.MONEY_VALUE_IS_INCORRECT;
 import static com.example.hotel.controller.Path.PREFERRED_APARTMENTS_PAGE;
 import static com.example.hotel.controller.Path.PROFILE;
+import static com.example.hotel.controller.Path.SHOW_APARTMENTS;
+import static com.example.hotel.controller.Path.SHOW_APARTMENTS_MANAGEMENT;
 import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
 import static com.example.hotel.controller.Path.SHOW_PREFERRED_APARTMENTS;
 import static com.example.hotel.controller.Path.SHOW_TEMPORARY_APPLICATIONS;
@@ -135,7 +138,8 @@ public class AccessFilter implements Filter {
                 APPLY_FOR_CLIENT,
                 CLIENT_HAS_ASSIGNED_APPLICATION_PAGE,
                 SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE,
-                SHOW_TEMPORARY_APPLICATIONS);
+                SHOW_TEMPORARY_APPLICATIONS,
+                SHOW_APARTMENTS);
 
         addPermissionsTo(Role.ADMIN,
                 MAIN,
@@ -145,21 +149,25 @@ public class AccessFilter implements Filter {
                 PROFILE,
                 EDIT_PROFILE,
                 ADMIN_MANAGE_USERS,
-                ADMIN_EDIT_USER);
+                ADMIN_EDIT_USER,
+                SHOW_APARTMENTS_MANAGEMENT,
+                EDIT_APARTMENT);
         log.debug("Filter initialized");
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(final ServletRequest servletRequest,
+                         final ServletResponse servletResponse,
+                         final FilterChain filterChain) throws IOException, ServletException {
         log.debug("doFilter started");
-        var httpRequest = (HttpServletRequest) servletRequest;
-        var httpResponse = (HttpServletResponse) servletResponse;
+        final var httpRequest = (HttpServletRequest) servletRequest;
+        final var httpResponse = (HttpServletResponse) servletResponse;
 
-        var roles = getRolesFromSession(httpRequest.getSession());
-        var login = getLoginFromSession(httpRequest.getSession());
-        var userStatus = getUserStatusFromSession(httpRequest.getSession());
+        final var roles = getRolesFromSession(httpRequest.getSession());
+        final var login = getLoginFromSession(httpRequest.getSession());
+        final var userStatus = getUserStatusFromSession(httpRequest.getSession());
         log.trace("login = " + login + ", roles = " + roles + ", userStatus = " + userStatus);
-        var URI = httpRequest.getRequestURI();
+        final var URI = httpRequest.getRequestURI();
         if (actionIsForbidden(userStatus, roles, URI)) {
             log.trace("actionIsForbidden URI = " + URI);
             httpResponse.sendRedirect(contextPath + ERROR_404_PAGE);

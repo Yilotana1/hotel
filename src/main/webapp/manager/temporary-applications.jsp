@@ -12,6 +12,15 @@
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="../locale_buttons.jsp"/>
+<form action="${pageContext.request.contextPath}/manager/show-temporary-applications">
+    <fmt:message key="login"/>: <input type="text" name="client_login"/>
+    <fmt:message key="search" var="search"/>
+    <input type="submit" value="${search}"/>
+</form>
+<form action="${pageContext.request.contextPath}/manager/show-temporary-applications">
+    <fmt:message key="list_all" var="list_all"/>
+    <input type="submit" value="${list_all}"/>
+</form>
 <table>
     <tr>
         <th><fmt:message key="client_login"/></th>
@@ -38,7 +47,7 @@
 </table>
 <br/>
 <c:if test="${sessionScope.roles != null}">
-    <a href="profile"><fmt:message key="profile"/></a>
+    <a href="${pageContext.request.contextPath}/profile"><fmt:message key="profile"/></a>
 </c:if>
 </body>
 </html>

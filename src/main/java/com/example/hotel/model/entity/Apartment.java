@@ -86,14 +86,20 @@ public class Apartment {
 
     }
 
+    public boolean isBooked() {
+        return getStatus() == BOOKED;
+    }
+
     public void makeUnavailable() {
         log.trace(this + " made unavailable");
         setStatus(UNAVAILABLE);
     }
-    public void makeFree(){
+
+    public void makeFree() {
         log.trace(this + " made free");
         setStatus(FREE);
     }
+
     public void increaseDemand() {
         setDemand(getDemand() + 1);
     }

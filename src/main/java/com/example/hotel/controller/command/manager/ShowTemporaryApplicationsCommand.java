@@ -42,7 +42,7 @@ public class ShowTemporaryApplicationsCommand implements Command {
                     requireNonNullElse(request.getParameter(PAGE_NUMBER_INPUT), DEFAULT_PAGE_NUMBER));
             final var skip = (pageNumber - 1) * PAGE_SIZE;
             final var clientLogin = request.getParameter(CLIENT_LOGIN_PARAMETER);
-            if (clientLogin != null) {
+            if (clientLogin != null && !clientLogin.isEmpty()) {
                 final var temporaryApplication = applicationService.getTemporaryApplicationByLogin(clientLogin);
                 temporaryApplication
                         .ifPresent(tempApp -> request.setAttribute(TEMPORARY_APPLICATIONS, List.of(tempApp)));
