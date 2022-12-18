@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface ApplicationService {
 
+    void removeOutdatedTemporaryApplications();
+    void cancelOutdatedApprovedApplications();
     void apply(ApplicationDTO applicationDTO);
     long temporaryApplicationsCount();
     List<TemporaryApplication> getTemporaryApplications(int skip, int count);

@@ -1,5 +1,6 @@
 package com.example.hotel.model.dao.sql.mysql;
 
+
 import static com.example.hotel.model.entity.enums.ApplicationStatus.APPROVED;
 import static com.example.hotel.model.entity.enums.ApplicationStatus.CANCELED;
 import static com.example.hotel.model.entity.enums.ApplicationStatus.NOT_APPROVED;
@@ -19,11 +20,11 @@ public interface ApplicationSQL {
             " Application.client_id = ?, Application.apartment_id = ?," +
             " Application.status_id = ?, price = ?, last_modified = ?," +
             " start_date = ?, end_date = ?, stay_length = ? WHERE Application.id = ?";
-    String SELECT_APPLICATIONS_BY_CLIENT_ID = "SELECT * FROM Application" +
+    String SELECT_OUTDATED_APPLICATIONS = "SELECT * FROM Application" +
             " JOIN Application_status on Application.status_id = Application_status.id" +
             " JOIN User on Application.client_id = User.id" +
             " JOIN Apartment on Apartment.number = Application.apartment_id" +
-            " WHERE Application.client_id = ? LIMIT ?, ?";
+            " WHERE Application.status_id = " + APPROVED.getId() + " AND Application.end_date < curdate()";
     String SELECT_NOT_CANCELED_APPLICATION_BY_CLIENT_LOGIN = "SELECT * FROM Application" +
             " JOIN Application_status on Application.status_id = Application_status.id" +
             " JOIN User on Application.client_id = User.id" +

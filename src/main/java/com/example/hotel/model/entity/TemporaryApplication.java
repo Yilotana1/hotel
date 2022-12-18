@@ -2,14 +2,25 @@ package com.example.hotel.model.entity;
 
 import com.example.hotel.model.entity.enums.ApartmentClass;
 
+import java.time.LocalDate;
+
 public class TemporaryApplication {
     private Long id;
     private Integer stayLength;
     private Integer numberOfPeople;
     private ApartmentClass apartmentClass;
     private String clientLogin;
+    private LocalDate creationDate;
 
     private TemporaryApplication() {
+    }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
     }
 
     public String getClientLogin() {
@@ -81,6 +92,10 @@ public class TemporaryApplication {
 
         public ApartmentRequestBuilder clientLogin(final String login) {
             temporaryApplication.setClientLogin(login);
+            return this;
+        }
+        public ApartmentRequestBuilder creationDate(final LocalDate creationDate) {
+            temporaryApplication.setCreationDate(creationDate);
             return this;
         }
 

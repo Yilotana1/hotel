@@ -35,6 +35,7 @@ import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_COUNT_
 import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_NOT_APPROVED_APPLICATION_BY_CLIENT_ID;
 import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_NOT_APPROVED_APPLICATION_BY_CLIENT_LOGIN;
 import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_NOT_CANCELED_APPLICATION_BY_CLIENT_LOGIN;
+import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_OUTDATED_APPLICATIONS;
 import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.UPDATE_APPLICATION;
 import static com.example.hotel.model.entity.enums.ApplicationStatus.NOT_APPROVED;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -142,19 +143,6 @@ public class JDBCApplicationDao implements ApplicationDao {
 //        }
 //    }
 
-    private List<Application> getSortedListOfApartments(int skip, int count, String sortingSql) throws SQLException {
-        try (var selectApplicationsStatement = connection.prepareStatement(sortingSql)) {
-            selectApplicationsStatement.setLong(1, skip);
-            selectApplicationsStatement.setLong(2, count);
-            var resultSet = selectApplicationsStatement.executeQuery();
-            var applications = new ArrayList<Application>();
-            while (resultSet.next()) {
-                applications.add(applicationMapper.extractFromResultSet(resultSet));
-            }
-            return applications;
-        }
-    }
-
     @Override
     public Optional<Application> findNotApprovedByClientId(long clientId) throws SQLException {
         try (var selectApplicationsStatement = connection.prepareStatement(SELECT_NOT_APPROVED_APPLICATION_BY_CLIENT_ID)) {
@@ -172,6 +160,7 @@ public class JDBCApplicationDao implements ApplicationDao {
     public Optional<Application> findNotApprovedByLogin(final String login) throws SQLException {
         return getApplicationByLogin(login, SELECT_NOT_APPROVED_APPLICATION_BY_CLIENT_LOGIN);
     }
+
     @Override
     public Optional<Application> findApprovedByLogin(final String login) throws SQLException {
         return getApplicationByLogin(login, SELECT_APPROVED_APPLICATION_BY_CLIENT_LOGIN);
@@ -183,50 +172,62 @@ public class JDBCApplicationDao implements ApplicationDao {
     }
 
     @Override
+    public List<Application> findOutdatedApproved() throws SQLException {
+        try (var statement = connection.createStatement()) {
+            final var resultSet = statement.executeQuery(SELECT_OUTDATED_APPLICATIONS);
+            final var applications = new ArrayList<Application>();
+            while (resultSet.next()) {
+                applications.add(applicationMapper.extractFromResultSet(resultSet));
+            }
+            return applications;
+        }
+    }
+
+    @Override
     public List<Application> findSortedById(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APPLICATIONS_SORTED_BY_ID);
+        return getApplicationsBySql(skip, count, SELECT_APPLICATIONS_SORTED_BY_ID);
     }
 
     @Override
     public List<Application> findSortedByCreationDate(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APPLICATIONS_SORTED_BY_CREATION_DATE);
+        return getApplicationsBySql(skip, count, SELECT_APPLICATIONS_SORTED_BY_CREATION_DATE);
     }
 
     @Override
     public List<Application> findSortedByCreationDateDescending(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APPLICATIONS_SORTED_BY_CREATION_DATE_DESC);
+        return getApplicationsBySql(skip, count, SELECT_APPLICATIONS_SORTED_BY_CREATION_DATE_DESC);
     }
 
     @Override
     public List<Application> findSortedByLastModification(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APPLICATIONS_SORTED_BY_LAST_MODIFIED_DATE);
+        return getApplicationsBySql(skip, count, SELECT_APPLICATIONS_SORTED_BY_LAST_MODIFIED_DATE);
     }
 
     @Override
     public List<Application> findSortedByLastModificationDescending(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APPLICATIONS_SORTED_BY_LAST_MODIFIED_DATE_DESC);
+        return getApplicationsBySql(skip, count, SELECT_APPLICATIONS_SORTED_BY_LAST_MODIFIED_DATE_DESC);
     }
 
 
     @Override
     public List<Application> findSortedByStartDate(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APPLICATIONS_SORTED_BY_START_DATE);
+        return getApplicationsBySql(skip, count, SELECT_APPLICATIONS_SORTED_BY_START_DATE);
     }
 
     @Override
     public List<Application> findSortedByStartDateDescending(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APPLICATIONS_SORTED_BY_START_DATE_DESC);
+        return getApplicationsBySql(skip, count, SELECT_APPLICATIONS_SORTED_BY_START_DATE_DESC);
     }
 
 
     @Override
     public List<Application> findSortedByEndDate(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APPLICATIONS_SORTED_BY_END_DATE);
+        return getApplicationsBySql(skip, count, SELECT_APPLICATIONS_SORTED_BY_END_DATE);
     }
 
     @Override
     public List<Application> findSortedByEndDateDescending(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APPLICATIONS_SORTED_BY_END_DATE_DESC);
+        return getApplicationsBySql(skip, count, SELECT_APPLICATIONS_SORTED_BY_END_DATE_DESC);
     }
 
 
@@ -234,7 +235,7 @@ public class JDBCApplicationDao implements ApplicationDao {
     public List<Application> findByStatus(ApplicationStatus status, int skip, int count) throws SQLException {
         try (var selectApplicationsStatement = connection.prepareStatement(SELECT_APPLICATIONS_BY_STATUS_ID)) {
             selectApplicationsStatement.setLong(1, status.getId());
-            return getListOfApplications(skip, count, selectApplicationsStatement);
+            return getApplicationsByStatement(skip, count, selectApplicationsStatement);
         }
     }
 
@@ -243,11 +244,13 @@ public class JDBCApplicationDao implements ApplicationDao {
     public List<Application> findByApartmentId(long apartmentId, int skip, int count) throws SQLException {
         try (var selectApplicationsStatement = connection.prepareStatement(SELECT_APPLICATIONS_BY_APARTMENT_ID)) {
             selectApplicationsStatement.setLong(1, apartmentId);
-            return getListOfApplications(skip, count, selectApplicationsStatement);
+            return getApplicationsByStatement(skip, count, selectApplicationsStatement);
         }
     }
 
-    private List<Application> getListOfApplications(int skip, int count, PreparedStatement selectApplicationsStatement) throws SQLException {
+    private List<Application> getApplicationsByStatement(final int skip,
+                                                         final int count,
+                                                         final PreparedStatement selectApplicationsStatement) throws SQLException {
         selectApplicationsStatement.setLong(2, skip);
         selectApplicationsStatement.setLong(3, count);
         var resultSet = selectApplicationsStatement.executeQuery();
@@ -257,6 +260,7 @@ public class JDBCApplicationDao implements ApplicationDao {
         }
         return applications;
     }
+
     private Optional<Application> getApplicationByLogin(final String login, final String sqlQuery) throws SQLException {
         try (var selectApplicationsStatement = connection.prepareStatement(sqlQuery)) {
             selectApplicationsStatement.setString(1, login);
@@ -265,6 +269,21 @@ public class JDBCApplicationDao implements ApplicationDao {
                 return Optional.of(applicationMapper.extractFromResultSet(resultSet));
             }
             return Optional.empty();
+        }
+    }
+
+    private List<Application> getApplicationsBySql(final int skip,
+                                                   final int count,
+                                                   final String sql) throws SQLException {
+        try (var selectApplicationsStatement = connection.prepareStatement(sql)) {
+            selectApplicationsStatement.setLong(1, skip);
+            selectApplicationsStatement.setLong(2, count);
+            var resultSet = selectApplicationsStatement.executeQuery();
+            var applications = new ArrayList<Application>();
+            while (resultSet.next()) {
+                applications.add(applicationMapper.extractFromResultSet(resultSet));
+            }
+            return applications;
         }
     }
 }

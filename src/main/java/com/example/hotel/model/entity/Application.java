@@ -118,7 +118,8 @@ public class Application {
 
     public void cancel() {
         setStatus(CANCELED);
-        log.trace("application got canceled");
+        getApartment().makeFree();
+        log.trace("application(id = " + this.getId() + " ) got canceled");
     }
 
     public String getClientLogin() {

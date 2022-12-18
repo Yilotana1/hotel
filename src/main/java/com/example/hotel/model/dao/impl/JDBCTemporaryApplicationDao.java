@@ -5,20 +5,22 @@ import com.example.hotel.model.dao.mapper.EntityMapper;
 import com.example.hotel.model.entity.TemporaryApplication;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static com.example.hotel.model.dao.Tools.getGeneratedId;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentRequestSQL.DELETE_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentRequestSQL.DELETE_TEMPORARY_APPLICATION_BY_ID;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentRequestSQL.INSERT_TEMPORARY_APPLICATION;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentRequestSQL.SELECT_APARTMENT_REQUESTS_SORTED_BY_NUMBER;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentRequestSQL.SELECT_APARTMENT_REQUEST_BY_ID;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentRequestSQL.SELECT_COUNT_TEMPORARY_APPLICATION;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentRequestSQL.SELECT_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentRequestSQL.UPDATE_APARTMENT_REQUEST;
+import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN;
+import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_DELAY_FROM_CREATION_DATE;
+import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_ID;
+import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.INSERT_TEMPORARY_APPLICATION;
+import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.SELECT_APARTMENT_REQUESTS_SORTED_BY_NUMBER;
+import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.SELECT_APARTMENT_REQUEST_BY_ID;
+import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.SELECT_COUNT_TEMPORARY_APPLICATION;
+import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.SELECT_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN;
+import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.UPDATE_APARTMENT_REQUEST;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class JDBCTemporaryApplicationDao implements TemporaryApplicationDao {
@@ -29,6 +31,14 @@ public class JDBCTemporaryApplicationDao implements TemporaryApplicationDao {
                                        final EntityMapper<TemporaryApplication> apartmentRequestMapper) {
         this.connection = connection;
         this.apartmentRequestMapper = apartmentRequestMapper;
+    }
+
+    @Override
+    public void deleteByDaysFromCreationDate(final int delayInDays) throws SQLException {
+        try (var deleteStatement = connection.prepareStatement(DELETE_TEMPORARY_APPLICATION_BY_DELAY_FROM_CREATION_DATE)) {
+            deleteStatement.setInt(1, delayInDays);
+            deleteStatement.executeUpdate();
+        }
     }
 
     @Override
@@ -81,6 +91,7 @@ public class JDBCTemporaryApplicationDao implements TemporaryApplicationDao {
             insertTemporaryApplicationStatement.setInt(2, temporaryApplication.getNumberOfPeople());
             insertTemporaryApplicationStatement.setInt(3, temporaryApplication.getStayLength());
             insertTemporaryApplicationStatement.setString(4, temporaryApplication.getClientLogin());
+            insertTemporaryApplicationStatement.setDate(5, Date.valueOf(temporaryApplication.getCreationDate()));
             insertTemporaryApplicationStatement.executeUpdate();
             return getGeneratedId(insertTemporaryApplicationStatement);
         }

@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface TemporaryApplicationDao extends GenericDao<TemporaryApplication> {
 
+    void deleteByDaysFromCreationDate(int delayInDays)throws SQLException;
     List<TemporaryApplication> findSortedById(int skip, int count) throws SQLException;
 
     Optional<TemporaryApplication> findByClientLogin(String clientLogin) throws SQLException;

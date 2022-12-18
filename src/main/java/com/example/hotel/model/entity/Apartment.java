@@ -96,7 +96,7 @@ public class Apartment {
     }
 
     public void makeFree() {
-        log.trace(this + " made free");
+        log.trace("Apartment (number = " + this.getNumber() + ") marked free");
         setStatus(FREE);
     }
 

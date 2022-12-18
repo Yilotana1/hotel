@@ -3,7 +3,6 @@ package com.example.hotel.model.service.impl;
 import com.example.hotel.controller.dto.ApplicationDTO;
 import com.example.hotel.controller.dto.TemporaryApplicationDTO;
 import com.example.hotel.controller.exception.ApplicationNotFoundException;
-import com.example.hotel.model.ConnectionPoolHolder;
 import com.example.hotel.model.dao.ApartmentDao;
 import com.example.hotel.model.dao.ApplicationDao;
 import com.example.hotel.model.dao.TemporaryApplicationDao;
@@ -29,23 +28,57 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.hotel.model.ConnectionPoolHolder.getConnection;
 import static com.example.hotel.model.service.exception.Messages.NO_APPLICATION_FOUND;
 import static com.example.hotel.model.service.exception.Messages.SERVICE_EXCEPTION;
 import static java.lang.String.format;
 
 public class ApplicationServiceImpl implements ApplicationService {
 
+    public static final int MAX_DURATION_OF_TEMP_APPLICATION = 2;
     private final DaoFactory daoFactory;
-    public final static Logger log = Logger.getLogger(ApplicationServiceImpl.class);
+    public static final Logger log = Logger.getLogger(ApplicationServiceImpl.class);
 
     public ApplicationServiceImpl(final DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
     @Override
+    public void removeOutdatedTemporaryApplications() {
+        try (var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao()) {
+            final var connection = temporaryApplicationDao.getConnection();
+            connection.setAutoCommit(false);
+            temporaryApplicationDao.deleteByDaysFromCreationDate(MAX_DURATION_OF_TEMP_APPLICATION);
+            connection.commit();
+        } catch (final SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(SERVICE_EXCEPTION);
+        }
+    }
+
+    @Override
+    public void cancelOutdatedApprovedApplications() throws ServiceException {
+        try (var connection = getConnection();
+             var applicationDao = daoFactory.createApplicationDao(connection);
+             var apartmentDao = daoFactory.createApartmentDao(connection)) {
+            connection.setAutoCommit(false);
+            final var applications = applicationDao.findOutdatedApproved();
+            for (final var application : applications) {
+                application.cancel();
+                applicationDao.update(application);
+                apartmentDao.update(application.getApartment());
+            }
+            connection.commit();
+        } catch (final SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(SERVICE_EXCEPTION);
+        }
+    }
+
+    @Override
     public void apply(final ApplicationDTO applicationDTO) throws ServiceException {
-        final var connection = ConnectionPoolHolder.getConnection();
-        try (var userDao = daoFactory.createUserDao(connection);
+        try (var connection = getConnection();
+             var userDao = daoFactory.createUserDao(connection);
              var apartmentDao = daoFactory.createApartmentDao(connection);
              var applicationDao = daoFactory.createApplicationDao(connection);
              var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao(connection)) {
@@ -97,8 +130,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public void makeTemporaryApplication(final TemporaryApplicationDTO temporaryApplicationDTO) {
-        final var connection = ConnectionPoolHolder.getConnection();
-        try (var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao(connection);
+        try (var connection = getConnection();
+             var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao(connection);
              var apartmentDao = daoFactory.createApartmentDao(connection);
              var applicationDao = daoFactory.createApplicationDao(connection)) {
             connection.setAutoCommit(false);
@@ -132,13 +165,14 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .stayLength(temporaryApplicationDTO.getStayLength())
                 .apartmentClass(temporaryApplicationDTO.getApartmentClass())
                 .clientLogin(temporaryApplicationDTO.getClientLogin())
+                .creationDate(LocalDate.now())
                 .build();
     }
 
     @Override
     public void confirmPayment(final long applicationId, final LocalDate startDate, final LocalDate endDate) throws ServiceException {
-        final var connection = ConnectionPoolHolder.getConnection();
-        try (var applicationDao = daoFactory.createApplicationDao(connection);
+        try (var connection = getConnection();
+             var applicationDao = daoFactory.createApplicationDao(connection);
              var userDao = daoFactory.createUserDao(connection);
              var apartmentDao = daoFactory.createApartmentDao(connection)) {
             connection.setAutoCommit(false);
@@ -228,7 +262,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Optional<Application> getApprovedApplicationByLogin(final String login) {
-        try (final var applicationDao = daoFactory.createApplicationDao()) {
+        try (var applicationDao = daoFactory.createApplicationDao()) {
             return applicationDao.findApprovedByLogin(login);
         } catch (final SQLException e) {
             log.error(e.getMessage());
@@ -238,7 +272,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Optional<Application> getApplicationToConfirm(final String login) throws ServiceException {
-        try (final var applicationDao = daoFactory.createApplicationDao()) {
+        try (var applicationDao = daoFactory.createApplicationDao()) {
             final var application = applicationDao.findNotApprovedByLogin(login);
             if (application.isEmpty()) {
                 return Optional.empty();
@@ -255,10 +289,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public void cancel(long applicationId) throws ServiceException {
-        final var connection = ConnectionPoolHolder.getConnection();
-        try (final var applicationDao = daoFactory.createApplicationDao(connection);
-             final var apartmentDao = daoFactory.createApartmentDao(connection)) {
+    public void cancel(final long applicationId) throws ServiceException {
+        final var connection = getConnection();
+        try (var applicationDao = daoFactory.createApplicationDao(connection);
+             var apartmentDao = daoFactory.createApartmentDao(connection)) {
             connection.setAutoCommit(false);
             final var application = applicationDao
                     .findById(applicationId)
@@ -281,7 +315,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Optional<Application> getNotApprovedApplicationByLogin(final String login) {
-        try (final var applicationDao = daoFactory.createApplicationDao()) {
+        try (var applicationDao = daoFactory.createApplicationDao()) {
             return applicationDao.findNotApprovedByLogin(login);
         } catch (SQLException e) {
             log.error(e.getMessage());

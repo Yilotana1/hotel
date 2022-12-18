@@ -14,7 +14,6 @@ public class TemporaryApplicationDTO {
 
     private static final Integer MAX_STAY_LENGTH = 100;
     private static final Integer MAX_NUMBER_OF_PEOPLE = 4;
-    private static final Integer MAX_LOGIN_LENGTH = 16;
     private static final int MIN_STAY_LENGTH = 0;
     private static final int MIN_NUMBER_OF_PEOPLE = 0;
 
@@ -59,16 +58,10 @@ public class TemporaryApplicationDTO {
     }
 
     public static void throwIfNotValid(final HttpServletRequest request) throws InvalidDataException {
-        final var clientLogin = request.getParameter("client_login");
         final var stayLength = request.getParameter("stay_length");
         final var apartmentClass = request.getParameter("apartment_class_id");
         final var numberOfPeople = request.getParameter("number_of_people");
-        throwIfNulls(clientLogin, stayLength, apartmentClass, numberOfPeople);
-        if (clientLogin.isEmpty() || clientLogin.length() > MAX_LOGIN_LENGTH) {
-            final var message = "Login must be of appropriate size";
-            log.error(message);
-            throw new InvalidDataException(message, "login");
-        }
+        throwIfNulls(stayLength, apartmentClass, numberOfPeople);
         if (parseInt(stayLength) <= MIN_STAY_LENGTH || parseInt(stayLength) > MAX_STAY_LENGTH) {
             final var message = format("Stay Length must be between %d and %d", MIN_STAY_LENGTH, MAX_STAY_LENGTH);
             log.error(message);
