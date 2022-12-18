@@ -25,9 +25,6 @@ public interface ApplicationService {
     Optional<Application> getNotApprovedApplicationByClientId(long id);
 
     Optional<Application> getApprovedApplicationByLogin(String login);
-
-    Optional<Application> getNotApprovedApplicationByLogin(String login);
-
     Optional<Application> getApplicationToConfirm(String login);
 
     void cancel(long applicationId);

@@ -5,7 +5,6 @@ import com.example.hotel.model.dao.mapper.EntityMapper;
 import com.example.hotel.model.entity.Apartment;
 import com.example.hotel.model.entity.TemporaryApplication;
 import com.example.hotel.model.entity.enums.ApartmentClass;
-import com.example.hotel.model.entity.enums.ApartmentStatus;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,19 +18,10 @@ import java.util.Optional;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.DELETE_APARTMENT_BY_NUMBER;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.INSERT_APARTMENT;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_AND_RESIDENTS_LOGINS;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_CLASS;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_CLIENT_PREFERENCES;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_FLOOR;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_NUMBER_OF_PEOPLE;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_STATUS;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_CLASS;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_CLASS_DESC;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_NUMBER;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_NUMBER_DESC;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_NUMBER_OF_PEOPLE;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_NUMBER_OF_PEOPLE_DESC;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_PRICE;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_PRICE_DESC;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_STATUS;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENT_BY_NUMBER;
 import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENT_BY_RESIDENT_LOGIN;
@@ -124,62 +114,14 @@ public class JDBCApartmentDao implements ApartmentDao {
     }
 
     @Override
-    public List<Apartment> findByFloor(int floor, int skip, int count) throws SQLException {
-        try (var selectApartmentStatement = connection.prepareStatement(SELECT_APARTMENTS_BY_FLOOR)) {
-            selectApartmentStatement.setInt(1, floor);
-            return getListOfApartments(skip, count, selectApartmentStatement);
-        }
-    }
-
-    @Override
-    public List<Apartment> findByClass(ApartmentClass apartmentClass, int skip, int count) throws SQLException {
-        try (var selectApartmentStatement = connection.prepareStatement(SELECT_APARTMENTS_BY_CLASS)) {
-            selectApartmentStatement.setInt(1, apartmentClass.getId());
-            return getListOfApartments(skip, count, selectApartmentStatement);
-        }
-    }
-
-    @Override
-    public List<Apartment> findByStatus(ApartmentStatus apartmentStatus, int skip, int count) throws SQLException {
-        try (var selectApartmentStatement = connection.prepareStatement(SELECT_APARTMENTS_BY_STATUS)) {
-            selectApartmentStatement.setInt(1, apartmentStatus.getId());
-            return getListOfApartments(skip, count, selectApartmentStatement);
-        }
-    }
-
-    @Override
-    public List<Apartment> findByNumberOfPeople(int numberOfPeople, int skip, int count) throws SQLException {
-        try (var selectApartmentStatement = connection.prepareStatement(SELECT_APARTMENTS_BY_NUMBER_OF_PEOPLE)) {
-            selectApartmentStatement.setInt(1, numberOfPeople);
-            return getListOfApartments(skip, count, selectApartmentStatement);
-        }
-    }
-
-    @Override
     public Optional<Apartment> findByNumber(long number) throws SQLException {
         return findById(number);
-    }
-
-    @Override
-    public List<Apartment> findSortedByNumber(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_NUMBER);
-    }
-
-    @Override
-    public List<Apartment> findSortedByNumberDescending(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_NUMBER_DESC);
     }
 
     @Override
     public List<Apartment> findSortedByClass(int skip, int count) throws SQLException {
         return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_CLASS);
     }
-
-    @Override
-    public List<Apartment> findSortedByClassDescending(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_CLASS_DESC);
-    }
-
 
     @Override
     public List<Apartment> findSortedByStatus(int skip, int count) throws SQLException {
@@ -192,18 +134,8 @@ public class JDBCApartmentDao implements ApartmentDao {
     }
 
     @Override
-    public List<Apartment> findSortedByPriceDescending(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_PRICE_DESC);
-    }
-
-    @Override
     public List<Apartment> findSortedByNumberOfPeople(int skip, int count) throws SQLException {
         return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_NUMBER_OF_PEOPLE);
-    }
-
-    @Override
-    public List<Apartment> findSortedByNumberOfPeopleDescending(int skip, int count) throws SQLException {
-        return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_NUMBER_OF_PEOPLE_DESC);
     }
 
     @Override
@@ -227,13 +159,6 @@ public class JDBCApartmentDao implements ApartmentDao {
         }
         return Optional.empty();
     }
-
-    private List<Apartment> getListOfApartments(int skip, int count, PreparedStatement selectApartmentStatement) throws SQLException {
-        selectApartmentStatement.setInt(2, skip);
-        selectApartmentStatement.setInt(3, count);
-        return getApartmentsFromStatement(selectApartmentStatement);
-    }
-
     private List<Apartment> getSortedListOfApartments(int skip, int count, String sortingSql) throws SQLException {
         try (var selectApartmentStatement = connection.prepareStatement(sortingSql)) {
             selectApartmentStatement.setInt(1, skip);

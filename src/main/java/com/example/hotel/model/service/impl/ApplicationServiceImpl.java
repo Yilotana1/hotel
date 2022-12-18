@@ -248,9 +248,6 @@ public class ApplicationServiceImpl implements ApplicationService {
         apartment.increaseDemand();
     }
 
-    //TODO Create list of all client's temporaryApplications so manager and admin could choose them and then redirect them to preferredApartments.
-    //TODO Read about ServletContextListener. Try to implement checking if confirmation time is expired and then cancel application.
-    //TODO Also you need to check if endDate is expired and then cancel application if needed.
     public Optional<Application> getNotApprovedApplicationByClientId(final long id) throws ServiceException {
         try (var applicationDao = daoFactory.createApplicationDao()) {
             return applicationDao.findNotApprovedByClientId(id);
@@ -312,17 +309,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     private static LocalDate getEndDate(final Application application, final LocalDate startDate) {
         return startDate.plusDays(application.getStayLength());
     }
-
-    @Override
-    public Optional<Application> getNotApprovedApplicationByLogin(final String login) {
-        try (var applicationDao = daoFactory.createApplicationDao()) {
-            return applicationDao.findNotApprovedByLogin(login);
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            throw new ServiceException(SERVICE_EXCEPTION);
-        }
-    }
-
 
     private Application mapToApplication(final ApplicationDTO applicationDTO,
                                          final UserDao userDao,

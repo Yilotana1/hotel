@@ -21,7 +21,6 @@ import static com.example.hotel.model.dao.sql.mysql.UserSQL.INSERT_USER;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.INSERT_USER_ROLE;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_COUNT_USERS;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_ROLES_BY_USER_ID;
-import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USERS_BY_FULL_NAME;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USERS_SORTED_BY_ID_LIMITED;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_ID;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.SELECT_USER_BY_LOGIN;
@@ -112,20 +111,6 @@ public class JDBCUserDao implements UserDao {
             return getUsers(selectUserStatement, selectRolesStatement);
         }
     }
-
-    @Override
-    public List<User> findByFullName(String firstname, String lastname, int skip, int count) throws SQLException {
-        try (var selectUserStatement = connection.prepareStatement(SELECT_USERS_BY_FULL_NAME);
-             var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
-            selectUserStatement.setString(1, firstname);
-            selectUserStatement.setString(2, lastname);
-            selectUserStatement.setInt(3, skip);
-            selectUserStatement.setInt(4, count);
-            return getUsers(selectUserStatement, selectRolesStatement);
-        }
-    }
-
-
     @Override
     public void update(User user) throws SQLException {
         try (var updateUserStatement = connection.prepareStatement(UPDATE_USER);

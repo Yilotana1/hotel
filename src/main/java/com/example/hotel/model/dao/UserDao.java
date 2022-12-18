@@ -9,5 +9,4 @@ import java.util.Optional;
 public interface UserDao extends GenericDao<User>{
     List<User> findSortedById(int skip, int count) throws SQLException;
     Optional<User> findByLogin(String login) throws SQLException;
-    List<User> findByFullName(String firstname, String lastname, int skip, int count) throws SQLException;
 }
