@@ -33,7 +33,7 @@ public class CancelApplicationCommand implements Command {
             applicationService.cancel(applicationId);
             response.sendRedirect(request.getContextPath() + APPLICATION_CANCELED);
         } catch (final Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }

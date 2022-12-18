@@ -42,18 +42,18 @@ public class MakeTemporaryApplicationCommand implements Command {
             applicationService.makeTemporaryApplication(temporaryApplicationDTO);
             response.sendRedirect(request.getContextPath() + SUCCESS_APPLY_PAGE);
         } catch (final InvalidDataException e) {
-            log.error("Validation error: " + e.getMessage());
+            log.error("Validation error: " + e.getMessage(), e);
             request.setAttribute("error", e.getInvalidField() + "_is_invalid");
             request.getRequestDispatcher(MAKE_TEMPORARY_APPLICATION_PAGE).forward(request, response);
         } catch (final ClientHasNotCanceledApplicationException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + CLIENT_HAS_APPLICATION_PAGE);
         } catch (final ApartmentsNotFoundException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             request.setAttribute("error", ERROR_PROPERTY_NAME);
             request.getRequestDispatcher(MAKE_TEMPORARY_APPLICATION_PAGE).forward(request, response);
         } catch (final Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }

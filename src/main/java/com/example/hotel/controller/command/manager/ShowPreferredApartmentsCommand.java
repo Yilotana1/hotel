@@ -51,7 +51,7 @@ public class ShowPreferredApartmentsCommand implements Command {
             request.setAttribute(TOTAL_PAGES_NUMBER, apartmentsCount / PAGE_SIZE);
             request.getRequestDispatcher(PREFERRED_APARTMENTS_PAGE).forward(request, response);
         } catch (final Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }

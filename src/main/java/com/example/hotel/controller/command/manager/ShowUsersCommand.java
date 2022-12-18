@@ -3,7 +3,6 @@ package com.example.hotel.controller.command.manager;
 import com.example.hotel.controller.command.Command;
 import com.example.hotel.controller.command.admin.ShowUsersManagementCommand;
 import com.example.hotel.model.service.UserService;
-import com.example.hotel.model.service.exception.ServiceException;
 import com.example.hotel.model.service.factory.ServiceFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,9 +51,9 @@ public class ShowUsersCommand implements Command {
                 final var totalPagesNumber = userService.count() / PAGE_SIZE;
                 request.setAttribute(TOTAL_PAGES_NUMBER, totalPagesNumber);
             }
-        } catch (final ServiceException e) {
-            log.error(e.getMessage());
-            request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
+        } catch (final Exception e) {
+            log.error(e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
         request.getRequestDispatcher(MANAGER_LIST_USERS_PAGE).forward(request, response);
     }

@@ -12,7 +12,7 @@ public interface TemporaryApplicationSQL {
     String DELETE_TEMPORARY_APPLICATION_BY_ID = "DELETE FROM Temporary_application WHERE id = ?";
     String DELETE_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN = "DELETE FROM Temporary_application" +
             " WHERE Temporary_application.client_login = ?";
-    String SELECT_APARTMENT_REQUEST_BY_ID = "SELECT * FROM Temporary_application WHERE id = ?";
+    String SELECT_TEMPORARY_APPLICATION_BY_ID = "SELECT * FROM Temporary_application WHERE id = ?";
     String SELECT_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN = "SELECT * FROM Temporary_application WHERE client_login = ?";
     String SELECT_APARTMENT_REQUESTS_SORTED_BY_NUMBER = "SELECT * FROM Temporary_application ORDER BY id LIMIT ?,?";
 }

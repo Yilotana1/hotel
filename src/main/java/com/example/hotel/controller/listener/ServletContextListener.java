@@ -21,7 +21,7 @@ public class ServletContextListener implements jakarta.servlet.ServletContextLis
 
     private final Collection<Runnable> commandsToExecute = new HashSet<>() {{
         add(applicationService::removeOutdatedTemporaryApplications);
-        add(applicationService::cancelOutdatedApprovedApplications);
+        add(applicationService::cancelFinishedApprovedApplications);
     }};
 
     @Override

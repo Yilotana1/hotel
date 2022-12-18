@@ -21,7 +21,6 @@ import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
 import static com.example.hotel.controller.Path.SUCCESS_APPLY_PAGE;
 import static com.example.hotel.model.dao.Tools.getLoginFromSession;
 import static java.lang.Integer.parseInt;
-import static java.lang.String.format;
 
 public class ApplyCommand implements Command {
     public static final Logger log = Logger.getLogger(ApplyCommand.class);
@@ -47,11 +46,10 @@ public class ApplyCommand implements Command {
             request.setAttribute("error", e.getInvalidField() + "_is_invalid");
             forwardToApplyPage(request, response);
         } catch (final ClientHasNotCanceledApplicationException e) {
-            log.error("Client already has application which is not canceled");
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + CLIENT_HAS_APPLICATION_PAGE);
         } catch (ApartmentIsNotAvailableException e) {
-            final var apartmentNumber = parseInt(request.getParameter("number"));
-            log.error(format("Request apartment(number = %d) not available", apartmentNumber), e);
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + APARTMENT_NOT_AVAILABLE_PAGE);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);

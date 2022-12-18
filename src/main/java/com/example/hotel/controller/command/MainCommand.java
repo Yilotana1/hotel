@@ -3,7 +3,6 @@ package com.example.hotel.controller.command;
 
 import com.example.hotel.model.entity.Apartment;
 import com.example.hotel.model.service.ApartmentService;
-import com.example.hotel.model.service.exception.ServiceException;
 import com.example.hotel.model.service.factory.ServiceFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,26 +52,28 @@ public class MainCommand implements Command {
 
     @Override
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        log.debug("Command started executing");
-        final var pageNumber = parseInt(requireNonNullElse(request.getParameter(PAGE_NUMBER_INPUT), DEFAULT_PAGE_NUMBER));
-        final var skip = (pageNumber - 1) * PAGE_SIZE;
-
-        final var requestedSorting = request.getParameter(SORTED_BY);
-        final var sortingMethod = sortingMethods.get(
-                requireNonNullElse(requestedSorting, DEFAULT_SORTING));
         try {
+            log.debug("Command started executing");
+            final var pageNumber = parseInt(requireNonNullElse(request.getParameter(PAGE_NUMBER_INPUT), DEFAULT_PAGE_NUMBER));
+            final var skip = (pageNumber - 1) * PAGE_SIZE;
+
+            final var requestedSorting = request.getParameter(SORTED_BY);
+            final var sortingMethod = sortingMethods.get(
+                    requireNonNullElse(requestedSorting, DEFAULT_SORTING));
+
             final var apartments = sortingMethod.apply(skip, PAGE_SIZE);
             request.setAttribute(APARTMENTS, apartments);
             final var totalPagesNumber = apartmentService.count() / PAGE_SIZE;
             request.setAttribute(TOTAL_PAGES_NUMBER, totalPagesNumber);
-        } catch (ServiceException e) {
-            log.error(e.getMessage());
+
+            setAttributesForPaging(request, requestedSorting, pageNumber);
+            request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
+            log.debug("Forward to main.jsp");
+        } catch (final Exception e) {
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
-            return;
         }
-        setAttributesForPaging(request, requestedSorting, pageNumber);
-        request.getRequestDispatcher(MAIN_PAGE).forward(request, response);
-        log.debug("Forward to main.jsp");
+
     }
 
 

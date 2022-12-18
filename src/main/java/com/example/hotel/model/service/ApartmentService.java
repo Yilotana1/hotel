@@ -2,6 +2,7 @@ package com.example.hotel.model.service;
 
 import com.example.hotel.controller.dto.UpdateApartmentDTO;
 import com.example.hotel.model.entity.Apartment;
+import com.example.hotel.model.service.exception.ServiceException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -9,23 +10,25 @@ import java.util.Optional;
 
 public interface ApartmentService {
 
-    Map<Apartment, String> getApartmentsWithResidentLogins(int skip, int count);
-    Optional<Apartment> getApartmentByResidentLogin(String login);
-    Collection<Apartment> getPreferredApartments(String clientLogin, int skip, int count);
+    Map<Apartment, String> getApartmentsWithResidentLogins(int skip, int count) throws ServiceException;
 
-    Collection<Apartment> getApartmentsSortedByPrice(int skip, int count);
+    Optional<Apartment> getApartmentByResidentLogin(String login) throws ServiceException;
 
-    Collection<Apartment> getApartmentsSortedByPeople(int skip, int count);
+    Collection<Apartment> getPreferredApartments(String clientLogin, int skip, int count) throws ServiceException;
 
-    Collection<Apartment> getApartmentsSortedByClass(int skip, int count);
+    Collection<Apartment> getApartmentsSortedByPrice(int skip, int count) throws ServiceException;
 
-    Collection<Apartment> getApartmentsSortedByStatus(int skip, int count);
+    Collection<Apartment> getApartmentsSortedByPeople(int skip, int count) throws ServiceException;
 
-    Optional<Apartment> getByNumber(long number);
+    Collection<Apartment> getApartmentsSortedByClass(int skip, int count) throws ServiceException;
 
-    int preferredApartmentsCount(String clientLogin);
+    Collection<Apartment> getApartmentsSortedByStatus(int skip, int count) throws ServiceException;
 
-    int count();
+    Optional<Apartment> getByNumber(long number) throws ServiceException;
 
-    void update(UpdateApartmentDTO updateApartmentDTO);
+    int preferredApartmentsCount(String clientLogin) throws ServiceException;
+
+    int count() throws ServiceException;
+
+    void update(UpdateApartmentDTO updateApartmentDTO) throws ServiceException;
 }

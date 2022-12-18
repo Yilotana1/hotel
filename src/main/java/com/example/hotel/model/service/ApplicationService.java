@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ApplicationService {
 
     void removeOutdatedTemporaryApplications();
-    void cancelOutdatedApprovedApplications();
+    void cancelFinishedApprovedApplications();
     void apply(ApplicationDTO applicationDTO);
     long temporaryApplicationsCount();
     Collection<TemporaryApplication> getTemporaryApplications(int skip, int count);

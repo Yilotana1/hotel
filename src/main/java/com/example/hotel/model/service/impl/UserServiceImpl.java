@@ -1,6 +1,7 @@
 package com.example.hotel.model.service.impl;
 
 import com.example.hotel.controller.dto.UserDTO;
+import com.example.hotel.model.dao.exception.DaoException;
 import com.example.hotel.model.dao.factory.DaoFactory;
 import com.example.hotel.model.entity.User;
 import com.example.hotel.model.entity.enums.Role;
@@ -16,11 +17,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
 
-import static com.example.hotel.model.service.exception.Messages.LOGIN_IS_NOT_UNIQUE;
-import static com.example.hotel.model.service.exception.Messages.SERVICE_EXCEPTION;
-import static com.example.hotel.model.service.exception.Messages.USER_WITH_SUCH_ID_NOT_FOUND;
-import static com.example.hotel.model.service.exception.Messages.USER_WITH_SUCH_LOGIN_NOT_FOUND;
-
 public class UserServiceImpl implements UserService {
 
 
@@ -35,15 +31,15 @@ public class UserServiceImpl implements UserService {
     public Optional<User> signIn(final String login, final String password) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
-            var user = userDao.findByLogin(login);
+            final var user = userDao.findByLogin(login);
             if (user.isPresent() && user.get().getPassword().equals(password)) {
                 userDao.getConnection().commit();
                 return user;
             }
             return Optional.empty();
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            throw new ServiceException(SERVICE_EXCEPTION, e);
+        } catch (final DaoException | SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException("Sign in process has failed", e);
         }
     }
 
@@ -51,19 +47,19 @@ public class UserServiceImpl implements UserService {
     public Optional<User> getByLogin(final String login) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             return userDao.findByLogin(login);
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            throw new ServiceException(SERVICE_EXCEPTION, e);
+        } catch (final DaoException | SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException("Searching for user by login has failed", e);
         }
     }
 
     @Override
-    public Collection<User> getUsers(int skip, int count) throws ServiceException {
+    public Collection<User> getUsers(final int skip, final int count) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             return userDao.findSortedById(skip, count);
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            throw new ServiceException(SERVICE_EXCEPTION, e);
+        } catch (final DaoException | SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException("Getting users has failed", e);
         }
     }
 
@@ -71,9 +67,9 @@ public class UserServiceImpl implements UserService {
     public int count() throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             return userDao.getCount();
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            throw new ServiceException(SERVICE_EXCEPTION, e);
+        } catch (final DaoException | SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException("Counting of all users has failed", e);
         }
     }
 
@@ -82,13 +78,13 @@ public class UserServiceImpl implements UserService {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
             final var user = userDao.findByLogin(login)
-                    .orElseThrow(() -> new ServiceException(USER_WITH_SUCH_LOGIN_NOT_FOUND));
+                    .orElseThrow(() -> new ServiceException("User with login = " + login + " not found"));
             user.updateMoneyAccount(money);
             userDao.update(user);
             userDao.getConnection().commit();
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            throw new ServiceException(SERVICE_EXCEPTION, e);
+        } catch (final DaoException | SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException("User's money account couldn't get updated", e);
         }
     }
 
@@ -96,19 +92,20 @@ public class UserServiceImpl implements UserService {
     public User signUp(final UserDTO userDTO) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
-            var userFromDB = userDao.findByLogin(userDTO.getLogin());
+            final var userFromDB = userDao.findByLogin(userDTO.getLogin());
             if (userFromDB.isPresent()) {
-                throw new LoginIsNotUniqueException(String.format(LOGIN_IS_NOT_UNIQUE, userDTO.getLogin()));
+                throw new LoginIsNotUniqueException(
+                        String.format("Login = %s is already present in the system", userDTO.getLogin()));
             }
-            var user = mapToUser(userDTO);
+            final var user = mapToUser(userDTO);
             user.assignAsClient();
-            var generatedId = userDao.create(user);
-            var createdUser = userDao.findById(generatedId).get();
+            final var generatedId = userDao.create(user);
+            final var createdUser = userDao.findById(generatedId).get();
             userDao.getConnection().commit();
             return createdUser;
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            throw new ServiceException(SERVICE_EXCEPTION, e);
+        } catch (final DaoException | SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException("Sign up process has failed", e);
         }
     }
 
@@ -116,8 +113,10 @@ public class UserServiceImpl implements UserService {
     public void update(final UserDTO userDTO) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
-            final var user = userDao.findByLogin(userDTO.getLogin())
-                    .orElseThrow(() -> new UserNotFoundException(String.format(USER_WITH_SUCH_LOGIN_NOT_FOUND, userDTO.getLogin())));
+            final var user = userDao
+                    .findByLogin(userDTO.getLogin())
+                    .orElseThrow(() -> new UserNotFoundException(
+                            "User with login = " + userDTO.getLogin() + " not found"));
             user.setLogin(userDTO.getLogin());
             user.setPhone(userDTO.getPhone());
             user.setFirstname(userDTO.getFirstname());
@@ -126,9 +125,9 @@ public class UserServiceImpl implements UserService {
             user.setEmail(userDTO.getEmail());
             userDao.update(user);
             userDao.getConnection().commit();
-        } catch (SQLException e) {
+        } catch (final DaoException | SQLException e) {
             log.error(e.getMessage());
-            throw new ServiceException(SERVICE_EXCEPTION, e);
+            throw new ServiceException("User's update process has failed", e);
         }
     }
 
@@ -137,14 +136,14 @@ public class UserServiceImpl implements UserService {
         try (var userDao = daoFactory.createUserDao()) {
             userDao.getConnection().setAutoCommit(false);
             final var user = userDao.findById(id)
-                    .orElseThrow(() -> new UserNotFoundException(String.format(USER_WITH_SUCH_ID_NOT_FOUND, id)));
+                    .orElseThrow(() -> new UserNotFoundException("User with id = " + id + " not found"));
             user.setStatus(status);
             user.setRoles(roles);
             userDao.update(user);
             userDao.getConnection().commit();
-        } catch (SQLException e) {
+        } catch (final DaoException | SQLException e) {
             log.error(e.getMessage());
-            throw new ServiceException(SERVICE_EXCEPTION, e);
+            throw new ServiceException("User's update process has failed", e);
         }
     }
 

@@ -19,12 +19,10 @@ import java.util.Date;
 import static com.example.hotel.controller.Path.APPLICATION_INVOICE;
 import static com.example.hotel.controller.Path.ERROR_503_PAGE;
 import static com.example.hotel.controller.Path.PROFILE;
-import static java.lang.String.format;
 
 public class ConfirmPaymentCommand implements Command {
     public final static Logger log = Logger.getLogger(ConfirmPaymentCommand.class);
     private static final String DATE_PATTERN = "yyyy-MM-dd";
-    private static final String CLIENT_HAS_NOT_ENOUGH_TO_CONFIRM = "Client has not enough to confirm application: application price = %f, User money account = %f";
     private ApplicationService applicationService = ServiceFactory.getInstance().createApplicationService();
 
     public ConfirmPaymentCommand() {
@@ -45,14 +43,12 @@ public class ConfirmPaymentCommand implements Command {
             log.trace("Payment is confirmed");
             response.sendRedirect(request.getContextPath() + PROFILE);
 
-        } catch (NotEnoughMoneyToConfirmException e) {
-            final var clientsMoney = e.getClient().getMoney();
-            final var price = e.getApplication().getPrice();
-            log.error(format(CLIENT_HAS_NOT_ENOUGH_TO_CONFIRM, clientsMoney, price));
+        } catch (final NotEnoughMoneyToConfirmException e) {
+            log.error(e.getMessage(), e);
             request.setAttribute("error", "client_has_not_enough_to_confirm");
             request.getRequestDispatcher(APPLICATION_INVOICE).forward(request, response);
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        } catch (final Exception e) {
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }

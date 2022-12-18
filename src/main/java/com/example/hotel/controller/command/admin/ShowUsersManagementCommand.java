@@ -52,7 +52,7 @@ public class ShowUsersManagementCommand implements Command {
                 request.setAttribute(TOTAL_PAGES_NUMBER, totalPagesNumber);
             }
         } catch (final Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
         request.getRequestDispatcher(ADMIN_MANAGE_USERS_PAGE).forward(request, response);

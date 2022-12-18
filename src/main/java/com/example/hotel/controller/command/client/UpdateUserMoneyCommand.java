@@ -3,7 +3,6 @@ package com.example.hotel.controller.command.client;
 import com.example.hotel.controller.command.Command;
 import com.example.hotel.controller.exception.MoneyValueIsNotValidException;
 import com.example.hotel.model.service.UserService;
-import com.example.hotel.model.service.exception.Messages;
 import com.example.hotel.model.service.factory.ServiceFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +44,7 @@ public class UpdateUserMoneyCommand implements Command {
             log.error("User specified wrong money value");
             response.sendRedirect(request.getContextPath() + MONEY_VALUE_IS_INCORRECT);
         } catch (final Exception e) {
-            log.error(Messages.UPDATING_USERS_MONEY_FAILED, e);
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }

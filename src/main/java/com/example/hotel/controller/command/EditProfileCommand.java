@@ -41,16 +41,16 @@ public class EditProfileCommand implements Command {
             request.getSession().setAttribute(LOGIN_ATTRIBUTE, userDTO.getLogin());
 
         } catch (InvalidDataException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             request.setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
         } catch (LoginIsNotUniqueException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             request.setAttribute(ERROR_ATTRIBUTE, "user_with_such_login_exists");
         } catch (ServiceException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             request.setAttribute(ERROR_ATTRIBUTE, "data_could_not_be_saved");
         } catch (final Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         } finally {
             request.getRequestDispatcher(PROFILE).forward(request, response);

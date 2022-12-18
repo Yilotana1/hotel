@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import static com.example.hotel.controller.Path.ERROR_503_PAGE;
 import static com.example.hotel.controller.Path.MAIN;
 import static com.example.hotel.model.dao.Tools.deleteFromLoginCache;
 
@@ -18,13 +19,18 @@ public class LogOutCommand implements Command {
     public final static Logger log = Logger.getLogger(LogOutCommand.class);
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        log.debug("Command started executing");
+    public void execute(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        try {
+            log.debug("Command started executing");
 
-        request.getSession().invalidate();
-        deleteFromLoginCache(request, request.getParameter("login"));
-        response.sendRedirect(request.getContextPath() + MAIN);
+            request.getSession().invalidate();
+            deleteFromLoginCache(request, request.getParameter("login"));
+            response.sendRedirect(request.getContextPath() + MAIN);
 
-        log.debug("Logout passed successfully");
+            log.debug("Logout passed successfully");
+        } catch (final Exception e) {
+            log.error(e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
+        }
     }
 }

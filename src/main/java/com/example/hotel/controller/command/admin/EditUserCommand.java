@@ -39,7 +39,7 @@ public class EditUserCommand implements Command {
             userService.update(id, status, roles);
             request.getRequestDispatcher(ADMIN_MANAGE_USERS).forward(request, response);
         } catch (final Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
         }
     }

@@ -4,7 +4,6 @@ import com.example.hotel.model.service.ApplicationService;
 import com.example.hotel.model.service.UserService;
 import com.example.hotel.model.service.exception.LoginIsNotFoundException;
 import com.example.hotel.model.service.factory.ServiceFactory;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
@@ -32,7 +31,7 @@ public class ShowProfileCommand implements Command {
     }
 
     @Override
-    public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    public void execute(final HttpServletRequest request, final HttpServletResponse response) throws IOException{
         log.debug("Started command");
         final var login = (String) request.getSession().getAttribute(LOGIN_INPUT);
         try {
@@ -45,8 +44,8 @@ public class ShowProfileCommand implements Command {
             request.setAttribute(USER_ATTRIBUTE, user);
             request.getRequestDispatcher(PROFILE_PAGE).forward(request, response);
         } catch (final Exception e) {
-            log.error(e.getMessage());
-            request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
+            log.error(e.getMessage(), e);
+            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }
 }

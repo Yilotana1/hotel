@@ -1,23 +1,25 @@
 package com.example.hotel.model.dao;
 
+import com.example.hotel.model.dao.exception.DaoException;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
 public interface GenericDao<T> extends AutoCloseable {
 
-    Connection getConnection() throws SQLException;
+    Connection getConnection() throws DaoException;
 
-    int getCount() throws SQLException;
+    int getCount() throws DaoException;
 
-    int create(T entity) throws SQLException;
+    int create(T entity) throws DaoException;
 
-    Optional<T> findById(long id) throws SQLException;
+    Optional<T> findById(long id) throws DaoException;
 
 
-    void update(T entity) throws SQLException;
+    void update(T entity) throws DaoException;
 
-    void delete(long id) throws SQLException;
+    void delete(long id) throws DaoException;
 
     void close() throws SQLException;
 }

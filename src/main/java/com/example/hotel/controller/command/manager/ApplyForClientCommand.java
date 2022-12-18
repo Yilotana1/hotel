@@ -36,10 +36,10 @@ public class ApplyForClientCommand implements Command {
             applicationService.apply(applicationDTO);
             response.sendRedirect(request.getContextPath() + SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE);
         } catch (final ClientHasNotCanceledApplicationException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + CLIENT_HAS_ASSIGNED_APPLICATION_PAGE);
         } catch (final Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }

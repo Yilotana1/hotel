@@ -39,7 +39,7 @@ public class ShowApplicationInvoiceCommand implements Command {
             request.setAttribute(APPLICATION_ATTRIBUTE, application);
             request.getRequestDispatcher(APPLICATION_INVOICE_PAGE).forward(request, response);
         } catch (final Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }

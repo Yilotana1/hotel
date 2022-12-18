@@ -1,9 +1,11 @@
 package com.example.hotel.model.dao.impl;
 
 import com.example.hotel.model.dao.UserDao;
+import com.example.hotel.model.dao.exception.DaoException;
 import com.example.hotel.model.dao.mapper.EntityMapper;
 import com.example.hotel.model.entity.User;
 import com.example.hotel.model.entity.enums.Role;
+import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,7 +30,7 @@ import static com.example.hotel.model.dao.sql.mysql.UserSQL.UPDATE_USER;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class JDBCUserDao implements UserDao {
-
+    public final static Logger log = Logger.getLogger(JDBCUserDao.class);
     private final Connection connection;
     private final EntityMapper<User> userMapper;
     private final EntityMapper<Role> roleMapper;
@@ -45,74 +47,91 @@ public class JDBCUserDao implements UserDao {
     }
 
     @Override
-    public int getCount() throws SQLException {
+    public int getCount() throws DaoException {
         try (var statement = connection.createStatement()) {
-            var resultSet = statement.executeQuery(SELECT_COUNT_USERS);
+            final var resultSet = statement.executeQuery(SELECT_COUNT_USERS);
             resultSet.next();
             return resultSet.getInt("count");
+        } catch (final SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new DaoException("Counting user's records failed during accessing data from database", e);
         }
     }
 
     @Override
-    public int create(User user) throws SQLException {
+    public int create(final User user) throws DaoException {
         try (var insertUserStatement = connection.prepareStatement(INSERT_USER, RETURN_GENERATED_KEYS);
              var insertRoleStatement = connection.prepareStatement(INSERT_USER_ROLE)) {
             setStatementParametersForUser(user, insertUserStatement);
             insertUserStatement.executeUpdate();
-            var userId = getGeneratedId(insertUserStatement);
+            final var userId = getGeneratedId(insertUserStatement);
 
-            for (var role : user.getRoles()) {
+            for (final var role : user.getRoles()) {
                 insertRoleStatement.setString(1, role.getName());
                 insertRoleStatement.setLong(2, userId);
                 insertRoleStatement.executeUpdate();
             }
             return userId;
+        } catch (final SQLException e){
+            log.error(e.getMessage(), e);
+            throw new DaoException("Creating new user record failed during accessing to database", e);
         }
     }
 
     @Override
-    public Optional<User> findById(long userId) throws SQLException {
+    public Optional<User> findById(long userId) throws DaoException {
         try (var selectUserStatement = connection.prepareStatement(SELECT_USER_BY_ID);
              var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
             selectUserStatement.setLong(1, userId);
-            var usersSet = selectUserStatement.executeQuery();
-            if (usersSet.next()) {
-                var user = userMapper.extractFromResultSet(usersSet);
+            final var resultSet = selectUserStatement.executeQuery();
+            if (resultSet.next()) {
+                var user = userMapper.extractFromResultSet(resultSet);
                 selectRolesStatement.setLong(1, userId);
                 addRolesToUser(user, selectRolesStatement);
                 return Optional.of(user);
             }
+        } catch (final SQLException e){
+            log.error(e.getMessage(), e);
+            throw new DaoException("Getting user's record by id failed during accessing data from database", e);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<User> findByLogin(String login) throws SQLException {
+    public Optional<User> findByLogin(final String login) throws DaoException {
         try (var selectUserStatement = connection.prepareStatement(SELECT_USER_BY_LOGIN);
              var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
             selectUserStatement.setString(1, login);
-            var usersSet = selectUserStatement.executeQuery();
-            if (usersSet.next()) {
-                var user = userMapper.extractFromResultSet(usersSet);
+            final var resultSet = selectUserStatement.executeQuery();
+            if (resultSet.next()) {
+                final var user = userMapper.extractFromResultSet(resultSet);
                 selectRolesStatement.setLong(1, user.getId());
                 addRolesToUser(user, selectRolesStatement);
                 return Optional.of(user);
             }
+        } catch (final SQLException e){
+            log.error(e.getMessage(), e);
+            throw new DaoException("Getting user's record by login failed during accessing data from database", e);
         }
         return Optional.empty();
     }
 
     @Override
-    public Collection<User> findSortedById(int skip, int count) throws SQLException {
+    public Collection<User> findSortedById(int skip, int count) throws DaoException {
         try (var selectUserStatement = connection.prepareStatement(SELECT_USERS_SORTED_BY_ID_LIMITED);
              var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
             selectUserStatement.setLong(1, skip);
             selectUserStatement.setLong(2, count);
             return getUsers(selectUserStatement, selectRolesStatement);
+        } catch (final SQLException e){
+            log.error(e.getMessage(), e);
+            final var message = "Getting sorted list of user's records failed during accessing data from database";
+            throw new DaoException(message, e);
         }
     }
+
     @Override
-    public void update(User user) throws SQLException {
+    public void update(User user) throws DaoException {
         try (var updateUserStatement = connection.prepareStatement(UPDATE_USER);
              var deleteRolesStatement = connection.prepareStatement(DELETE_PREVIOUS_ROLES);
              var insertRolesStatement = connection.prepareStatement(INSERT_UPDATED_ROLES)) {
@@ -132,14 +151,20 @@ public class JDBCUserDao implements UserDao {
                 insertRolesStatement.setLong(2, user.getId());
                 insertRolesStatement.executeUpdate();
             }
+        } catch (final SQLException e){
+            log.error(e.getMessage(), e);
+            throw new DaoException("Updating user's record failed during accessing database", e);
         }
     }
 
     @Override
-    public void delete(long id) throws SQLException {
+    public void delete(long id) throws DaoException {
         try (var preparedStatement = connection.prepareStatement(DELETE_USER_BY_ID)) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
+        } catch (final SQLException e){
+            log.error(e.getMessage(), e);
+            throw new DaoException("Deleting user record failed during accessing database", e);
         }
     }
 
