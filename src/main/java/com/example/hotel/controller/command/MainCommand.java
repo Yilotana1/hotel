@@ -11,8 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -37,7 +37,7 @@ public class MainCommand implements Command {
     private static final String TOTAL_PAGES_NUMBER = "count";
     private static final String DEFAULT_PAGE_NUMBER = "1";
     private ApartmentService apartmentService = ServiceFactory.getInstance().createApartmentService();
-    private final Map<String, BiFunction<Integer, Integer, List<Apartment>>> sortingMethods = new HashMap<>() {{
+    private final Map<String, BiFunction<Integer, Integer, Collection<Apartment>>> sortingMethods = new HashMap<>() {{
         put("price", apartmentService::getApartmentsSortedByPrice);
         put("number_of_people", apartmentService::getApartmentsSortedByPeople);
         put("class", apartmentService::getApartmentsSortedByClass);

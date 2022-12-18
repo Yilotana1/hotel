@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 import static com.example.hotel.model.dao.Tools.getGeneratedId;
@@ -42,7 +42,7 @@ public class JDBCTemporaryApplicationDao implements TemporaryApplicationDao {
     }
 
     @Override
-    public List<TemporaryApplication> findSortedById(final int skip, final int count) throws SQLException {
+    public Collection<TemporaryApplication> findSortedById(final int skip, final int count) throws SQLException {
         try (var selectTemporaryApplicationStatement = connection
                 .prepareStatement(SELECT_APARTMENT_REQUESTS_SORTED_BY_NUMBER)) {
             selectTemporaryApplicationStatement.setInt(1, skip);

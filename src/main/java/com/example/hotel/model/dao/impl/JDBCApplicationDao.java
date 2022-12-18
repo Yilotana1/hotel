@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 import static com.example.hotel.model.dao.Tools.getGeneratedId;
@@ -152,7 +152,7 @@ public class JDBCApplicationDao implements ApplicationDao {
     }
 
     @Override
-    public List<Application> findOutdatedApproved() throws SQLException {
+    public Collection<Application> findOutdatedApproved() throws SQLException {
         try (var statement = connection.createStatement()) {
             final var resultSet = statement.executeQuery(SELECT_OUTDATED_APPLICATIONS);
             final var applications = new ArrayList<Application>();

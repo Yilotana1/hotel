@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 import static com.example.hotel.model.ConnectionPoolHolder.getConnection;
@@ -108,7 +108,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public List<TemporaryApplication> getTemporaryApplications(final int skip, final int count) throws ServiceException {
+    public Collection<TemporaryApplication> getTemporaryApplications(final int skip, final int count) throws ServiceException {
         try (var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao()) {
             return temporaryApplicationDao.findSortedById(skip, count);
         } catch (final SQLException e) {
@@ -116,8 +116,6 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new ServiceException(SERVICE_EXCEPTION, e);
         }
     }
-
-    //TODO Substitute List with Collection everywhere
     @Override
     public Optional<TemporaryApplication> getTemporaryApplicationByLogin(final String clientLogin) {
         try (var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao()) {

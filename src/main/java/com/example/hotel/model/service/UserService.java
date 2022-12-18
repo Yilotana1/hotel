@@ -8,7 +8,6 @@ import com.example.hotel.model.service.exception.ServiceException;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -17,7 +16,7 @@ public interface UserService {
 
     Optional<User> getByLogin(String login) throws ServiceException;
 
-    List<User> getUsers(int skip, int count) throws ServiceException;
+    Collection<User> getUsers(int skip, int count) throws ServiceException;
 
     int count() throws ServiceException;
     void updateMoneyAccount(String login, BigDecimal money) throws ServiceException;

@@ -14,8 +14,6 @@ import org.apache.log4j.Logger;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 import static com.example.hotel.model.service.exception.Messages.LOGIN_IS_NOT_UNIQUE;
@@ -60,7 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsers(int skip, int count) throws ServiceException {
+    public Collection<User> getUsers(int skip, int count) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
             return userDao.findSortedById(skip, count);
         } catch (SQLException e) {

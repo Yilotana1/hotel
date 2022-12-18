@@ -10,8 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -94,7 +94,7 @@ public class JDBCApartmentDao implements ApartmentDao {
     }
 
     @Override
-    public List<Apartment> findByTemporaryApplication(TemporaryApplication temporaryApplication, int skip, int count) throws SQLException {
+    public Collection<Apartment> findByTemporaryApplication(TemporaryApplication temporaryApplication, int skip, int count) throws SQLException {
         try (var selectApartmentStatement = connection.prepareStatement(SELECT_APARTMENTS_BY_CLIENT_PREFERENCES)) {
             selectApartmentStatement.setInt(1, temporaryApplication.getNumberOfPeople());
             selectApartmentStatement.setInt(2, temporaryApplication.getApartmentClass().getId());
@@ -103,38 +103,28 @@ public class JDBCApartmentDao implements ApartmentDao {
             return getApartmentsFromStatement(selectApartmentStatement);
         }
     }
-
-    private List<Apartment> getApartmentsFromStatement(final PreparedStatement selectApartmentStatement) throws SQLException {
-        final var resultSet = selectApartmentStatement.executeQuery();
-        final var apartments = new ArrayList<Apartment>();
-        while (resultSet.next()) {
-            apartments.add(apartmentMapper.extractFromResultSet(resultSet));
-        }
-        return apartments;
-    }
-
     @Override
     public Optional<Apartment> findByNumber(long number) throws SQLException {
         return findById(number);
     }
 
     @Override
-    public List<Apartment> findSortedByClass(int skip, int count) throws SQLException {
+    public Collection<Apartment> findSortedByClass(int skip, int count) throws SQLException {
         return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_CLASS);
     }
 
     @Override
-    public List<Apartment> findSortedByStatus(int skip, int count) throws SQLException {
+    public Collection<Apartment> findSortedByStatus(int skip, int count) throws SQLException {
         return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_STATUS);
     }
 
     @Override
-    public List<Apartment> findSortedByPrice(int skip, int count) throws SQLException {
+    public Collection<Apartment> findSortedByPrice(int skip, int count) throws SQLException {
         return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_PRICE);
     }
 
     @Override
-    public List<Apartment> findSortedByNumberOfPeople(int skip, int count) throws SQLException {
+    public Collection<Apartment> findSortedByNumberOfPeople(int skip, int count) throws SQLException {
         return getSortedListOfApartments(skip, count, SELECT_APARTMENTS_SORTED_BY_NUMBER_OF_PEOPLE);
     }
 
@@ -159,14 +149,6 @@ public class JDBCApartmentDao implements ApartmentDao {
         }
         return Optional.empty();
     }
-    private List<Apartment> getSortedListOfApartments(int skip, int count, String sortingSql) throws SQLException {
-        try (var selectApartmentStatement = connection.prepareStatement(sortingSql)) {
-            selectApartmentStatement.setInt(1, skip);
-            selectApartmentStatement.setInt(2, count);
-            return getApartmentsFromStatement(selectApartmentStatement);
-        }
-    }
-
     @Override
     public int create(Apartment apartment) throws SQLException {
         try (var insertApartmentStatement = connection.prepareStatement(INSERT_APARTMENT)) {
@@ -207,5 +189,21 @@ public class JDBCApartmentDao implements ApartmentDao {
     @Override
     public void close() throws SQLException {
         connection.close();
+    }
+
+    private Collection<Apartment> getSortedListOfApartments(int skip, int count, String sortingSql) throws SQLException {
+        try (var selectApartmentStatement = connection.prepareStatement(sortingSql)) {
+            selectApartmentStatement.setInt(1, skip);
+            selectApartmentStatement.setInt(2, count);
+            return getApartmentsFromStatement(selectApartmentStatement);
+        }
+    }
+    private Collection<Apartment> getApartmentsFromStatement(final PreparedStatement selectApartmentStatement) throws SQLException {
+        final var resultSet = selectApartmentStatement.executeQuery();
+        final var apartments = new ArrayList<Apartment>();
+        while (resultSet.next()) {
+            apartments.add(apartmentMapper.extractFromResultSet(resultSet));
+        }
+        return apartments;
     }
 }

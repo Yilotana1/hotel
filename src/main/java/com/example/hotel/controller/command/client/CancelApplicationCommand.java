@@ -37,18 +37,4 @@ public class CancelApplicationCommand implements Command {
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }
-
-//    private ApartmentDTO getApartmentDTOFromRequest(final HttpServletRequest request) {
-//        final var numberOfPeople = parseInt(request.getParameter("number_of_people"));
-//        final var apartmentClass = ApartmentClass
-//                .getById(parseInt(request.getParameter("apartment_class_id")));
-//        final var stayLength = parseInt(request.getParameter("stay_length"));
-//
-//        return ApartmentDTO
-//                .builder()
-//                .numberOfPeople(numberOfPeople)
-//                .apartmentClass(apartmentClass)
-//                .stayLength(stayLength)
-//                .build();
-//    }
 }

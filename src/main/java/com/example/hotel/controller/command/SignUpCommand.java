@@ -2,6 +2,7 @@ package com.example.hotel.controller.command;
 
 import com.example.hotel.controller.dto.UserDTO;
 import com.example.hotel.controller.exception.InvalidDataException;
+import com.example.hotel.model.service.UserService;
 import com.example.hotel.model.service.exception.LoginIsNotUniqueException;
 import com.example.hotel.model.service.exception.ServiceException;
 import com.example.hotel.model.service.factory.ServiceFactory;
@@ -22,6 +23,16 @@ public class SignUpCommand implements Command {
     public static final String DATA_COULD_NOT_BE_SAVED = "data_could_not_be_saved";
     public static final String ERROR_ATTRIBUTE = "error";
 
+    private UserService userService = ServiceFactory.getInstance().createUserService();
+
+    public SignUpCommand() {
+    }
+
+    public SignUpCommand(ServiceFactory serviceFactory) {
+        userService = serviceFactory.createUserService();
+    }
+
+
     @Override
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         log.trace("Started SignUp command");
@@ -30,7 +41,6 @@ public class SignUpCommand implements Command {
             final var userDTO = getUserDTO(request);
             log.trace("User validation passed successfully");
 
-            final var userService = ServiceFactory.getInstance().createUserService();
             userService.signUp(userDTO);
             log.trace("User has been signed up");
 

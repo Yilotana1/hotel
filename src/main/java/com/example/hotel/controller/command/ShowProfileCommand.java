@@ -28,6 +28,7 @@ public class ShowProfileCommand implements Command {
 
     public ShowProfileCommand(final ServiceFactory serviceFactory) {
         userService = serviceFactory.createUserService();
+        applicationService = serviceFactory.createApplicationService();
     }
 
     @Override

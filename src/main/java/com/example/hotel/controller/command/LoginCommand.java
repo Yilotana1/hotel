@@ -1,5 +1,6 @@
 package com.example.hotel.controller.command;
 
+import com.example.hotel.model.service.UserService;
 import com.example.hotel.model.service.factory.ServiceFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,15 @@ import static com.example.hotel.model.dao.Tools.userIsLogged;
 public class LoginCommand implements Command {
     public final static Logger log = Logger.getLogger(LoginCommand.class);
 
+    private UserService userService = ServiceFactory.getInstance().createUserService();
+
+    public LoginCommand() {
+    }
+
+    public LoginCommand(ServiceFactory serviceFactory) {
+        userService = serviceFactory.createUserService();
+    }
+
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.trace("Started Login command");
@@ -37,8 +47,6 @@ public class LoginCommand implements Command {
             request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
             return;
         }
-
-        var userService = ServiceFactory.getInstance().createUserService();
         var user = userService.signIn(login, password);
         if (user.isEmpty()) {
             log.error("User login-process has failed");

@@ -9,8 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 import static com.example.hotel.model.dao.Tools.getGeneratedId;
@@ -103,7 +103,7 @@ public class JDBCUserDao implements UserDao {
     }
 
     @Override
-    public List<User> findSortedById(int skip, int count) throws SQLException {
+    public Collection<User> findSortedById(int skip, int count) throws SQLException {
         try (var selectUserStatement = connection.prepareStatement(SELECT_USERS_SORTED_BY_ID_LIMITED);
              var selectRolesStatement = connection.prepareStatement(SELECT_ROLES_BY_USER_ID)) {
             selectUserStatement.setLong(1, skip);
@@ -153,7 +153,7 @@ public class JDBCUserDao implements UserDao {
         preparedStatement.setInt(7, user.getStatus().getId());
     }
 
-    private ArrayList<User> getUsers(PreparedStatement selectUserStatement, PreparedStatement selectRolesStatement) throws SQLException {
+    private Collection<User> getUsers(PreparedStatement selectUserStatement, PreparedStatement selectRolesStatement) throws SQLException {
         var usersSet = selectUserStatement.executeQuery();
         var users = new ArrayList<User>();
         while (usersSet.next()) {

@@ -6,7 +6,7 @@ import com.example.hotel.model.entity.TemporaryApplication;
 import com.example.hotel.model.entity.Application;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 public interface ApplicationService {
@@ -15,7 +15,7 @@ public interface ApplicationService {
     void cancelOutdatedApprovedApplications();
     void apply(ApplicationDTO applicationDTO);
     long temporaryApplicationsCount();
-    List<TemporaryApplication> getTemporaryApplications(int skip, int count);
+    Collection<TemporaryApplication> getTemporaryApplications(int skip, int count);
     Optional<TemporaryApplication> getTemporaryApplicationByLogin(String clientLogin);
 
     void makeTemporaryApplication(TemporaryApplicationDTO temporaryApplicationDTO);

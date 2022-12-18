@@ -12,7 +12,7 @@ import com.example.hotel.model.service.exception.TemporaryApplicationNotFound;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,9 +50,9 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public List<Apartment> getPreferredApartments(final String clientLogin,
-                                                  final int skip,
-                                                  final int count) {
+    public Collection<Apartment> getPreferredApartments(final String clientLogin,
+                                                        final int skip,
+                                                        final int count) {
         try (var connection = getConnection();
              var apartmentDao = daoFactory.createApartmentDao(connection);
              var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao(connection)) {
@@ -71,7 +71,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public List<Apartment> getApartmentsSortedByPrice(final int skip, final int count) {
+    public Collection<Apartment> getApartmentsSortedByPrice(final int skip, final int count) {
         try (var apartmentDao = daoFactory.createApartmentDao()) {
             return apartmentDao.findSortedByPrice(skip, count);
         } catch (final SQLException e) {
@@ -81,7 +81,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public List<Apartment> getApartmentsSortedByPeople(final int skip, final int count) {
+    public Collection<Apartment> getApartmentsSortedByPeople(final int skip, final int count) {
         try (var apartmentDao = daoFactory.createApartmentDao()) {
             return apartmentDao.findSortedByNumberOfPeople(skip, count);
         } catch (SQLException e) {
@@ -91,7 +91,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public List<Apartment> getApartmentsSortedByClass(final int skip, final int count) {
+    public Collection<Apartment> getApartmentsSortedByClass(final int skip, final int count) {
         try (var apartmentDao = daoFactory.createApartmentDao()) {
             return apartmentDao.findSortedByClass(skip, count);
         } catch (SQLException e) {
@@ -101,7 +101,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public List<Apartment> getApartmentsSortedByStatus(final int skip, final int count) {
+    public Collection<Apartment> getApartmentsSortedByStatus(final int skip, final int count) {
         try (var apartmentDao = daoFactory.createApartmentDao()) {
             return apartmentDao.findSortedByStatus(skip, count);
         } catch (SQLException e) {
