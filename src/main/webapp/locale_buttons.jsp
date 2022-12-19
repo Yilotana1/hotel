@@ -19,6 +19,7 @@
             <form>
                 <input value="ua" type="submit"/>
                 <input value="ua" type="hidden" name="lang"/>
+                <input value="${pageContext.request.requestURI}" type="hidden" name="page_uri">
                 <input value="${param}" name="request_params" type="hidden"/>
             </form>
         </th>
@@ -26,6 +27,7 @@
             <form>
                 <input value="en" type="submit"/>
                 <input value="en" type="hidden" name="lang"/>
+                <input value="${pageContext.request.requestURI}" type="hidden" name="page_uri">
                 <input value="${param}" name="request_params" type="hidden"/>
             </form>
         </th>

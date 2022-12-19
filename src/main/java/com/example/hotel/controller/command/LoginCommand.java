@@ -19,6 +19,7 @@ import static com.example.hotel.model.dao.Tools.userIsLogged;
 
 public class LoginCommand implements Command {
     public final static Logger log = Logger.getLogger(LoginCommand.class);
+    public static final String ERROR_ATTRIBUTE = "error" + LOGIN_PAGE;
 
     private UserService userService = ServiceFactory.getInstance().createUserService();
 
@@ -33,34 +34,31 @@ public class LoginCommand implements Command {
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         try {
             log.trace("Started Login command");
-            var login = request.getParameter("login");
-            var password = request.getParameter("password");
-
+            final var login = request.getParameter("login");
+            final var password = request.getParameter("password");
             if (login == null || password == null || login.isEmpty() || password.isEmpty()) {
                 log.error("Login or password are not specified");
-                request.setAttribute("error", "credentials_not_specified");
-                request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
+                request.getSession().setAttribute(ERROR_ATTRIBUTE, "credentials_not_specified");
+                response.sendRedirect(request.getContextPath() + LOGIN_PAGE);
                 return;
             }
             if (userIsLogged(login, request)) {
                 log.error("User has already been logged");
-                request.setAttribute("error", "user_in_system");
-                request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
+                request.getSession().setAttribute(ERROR_ATTRIBUTE, "user_in_system");
+                response.sendRedirect(request.getContextPath() + LOGIN_PAGE);
                 return;
             }
             var user = userService.signIn(login, password);
             if (user.isEmpty()) {
                 log.error("User login-process has failed");
-                request.setAttribute("error", "user_not_found");
-                request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
+                request.getSession().setAttribute("error", "user_not_found");
+                response.sendRedirect(request.getContextPath() + LOGIN_PAGE);
                 return;
             }
             addLoginToCache(login, request);
             addRolesToSession(user.get().getRoles(), request);
             addLoginToSession(login, request);
             addUserStatusToSession(user.get().getStatus(), request);
-            log.trace("Added user to login cache: login = " + login);
-            log.trace("Roles and login have been added to session");
             log.trace(login + " is logged");
             response.sendRedirect(request.getContextPath() + PROFILE);
         } catch (final Exception e) {

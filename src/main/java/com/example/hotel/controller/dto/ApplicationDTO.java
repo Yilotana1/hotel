@@ -55,13 +55,13 @@ public class ApplicationDTO {
             throw new InvalidDataException("apartmentNumber must be a number", "number");
         }
         if (!stayLength.matches("[0-9]+")) {
-            throw new InvalidDataException("stayLength must be a number");
+            throw new InvalidDataException("stayLength must be a number", "stay_length");
         }
         if (parseLong(apartmentNumber) <= 0) {
-            throw new InvalidDataException("apartmentNumber must be more that 0");
+            throw new InvalidDataException("apartmentNumber must be more that 0", "number");
         }
         if (parseLong(stayLength) <= 0) {
-            throw new InvalidDataException("stayLength must be more that 0");
+            throw new InvalidDataException("stayLength must be more that 0", "stay_length");
         }
     }
 

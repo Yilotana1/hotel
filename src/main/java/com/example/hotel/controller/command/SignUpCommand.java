@@ -21,7 +21,7 @@ public class SignUpCommand implements Command {
     public static final Logger log = Logger.getLogger(SignUpCommand.class);
     public static final String USER_WITH_SUCH_LOGIN_EXISTS = "user_with_such_login_exists";
     public static final String DATA_COULD_NOT_BE_SAVED = "data_could_not_be_saved";
-    public static final String ERROR_ATTRIBUTE = "error";
+    public static final String ERROR_ATTRIBUTE = "error" + SIGNUP_PAGE;
 
     private UserService userService = ServiceFactory.getInstance().createUserService();
 
@@ -46,18 +46,18 @@ public class SignUpCommand implements Command {
 
         } catch (final InvalidDataException e) {
             log.error(e.getMessage());
-            request.setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
-            request.getRequestDispatcher(SIGNUP_PAGE).forward(request, response);
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
+            response.sendRedirect(request.getContextPath() + SIGNUP_PAGE);
             return;
         } catch (final LoginIsNotUniqueException e) {
             log.error(e.getMessage());
-            request.setAttribute(ERROR_ATTRIBUTE, USER_WITH_SUCH_LOGIN_EXISTS);
-            request.getRequestDispatcher(SIGNUP_PAGE).forward(request, response);
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, USER_WITH_SUCH_LOGIN_EXISTS);
+            response.sendRedirect(request.getContextPath() + SIGNUP_PAGE);
             return;
         } catch (final ServiceException e) {
             log.error(e.getMessage(), e);
-            request.setAttribute(ERROR_ATTRIBUTE, DATA_COULD_NOT_BE_SAVED);
-            request.getRequestDispatcher(SIGNUP_PAGE).forward(request, response);
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, DATA_COULD_NOT_BE_SAVED);
+            response.sendRedirect(request.getContextPath() + SIGNUP_PAGE);
             return;
         } catch (final Exception e) {
             log.error(e.getMessage(), e);

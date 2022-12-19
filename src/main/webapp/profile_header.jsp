@@ -30,7 +30,7 @@
 </c:if>
 <br/>
 <h3><fmt:message key="information_about_you"/>:</h3>
-<form action="${pageContext.request.contextPath}/edit-profile">
+<form action="${pageContext.request.contextPath}/edit-profile" method="post">
     <table>
         <input type="hidden" name="status" value="${requestScope.user.status.id}"/>
         <tr>
@@ -60,8 +60,8 @@
     </table>
     <fmt:message key="edit" var="edit"/>
     <input type="submit" value="${edit}">
-    <c:if test="${!(requestScope.error == null)}">
-        <span style="color:red"><fmt:message key="${requestScope.error}"/></span>
+    <c:if test="${!(sessionScope.get('error/profile') == null)}">
+        <span style="color:red"><fmt:message key="${sessionScope.get('error/profile')}"/></span>
     </c:if>
 </form>
 </body>

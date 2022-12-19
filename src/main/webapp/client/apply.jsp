@@ -39,18 +39,20 @@
 </table>
 <br/>
 
-<form action="${pageContext.request.contextPath}/client/apply">
+<form action="${pageContext.request.contextPath}/client/apply" method="post">
     <input type="hidden" name="number" value="${requestScope.apartment.number}">
     <table style="{border: none}">
         <tr>
             <th><fmt:message key="stay_length"/>:</th>
-            <th><input type="number" name="stay_length"/></th>
+            <th><input type="text" name="stay_length"/></th>
         </tr>
     </table>
     <fmt:message key="apply" var="apply"/>
     <input type="submit" value="${apply}">
 </form>
-<jsp:include page="../error_message.jsp"/>
+<c:if test="${sessionScope.get('error/client/show-application-page') != null}">
+    <span style="color:red"><fmt:message key="${sessionScope.get('error/client/show-application-page')}"/></span>
+</c:if>
 <fmt:message key="main" var="main"/>
 <br/>
 <form action="${pageContext.request.contextPath}/main">

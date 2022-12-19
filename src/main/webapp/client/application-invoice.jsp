@@ -54,7 +54,7 @@
 <table>
     <tr>
         <th>
-            <form action="${pageContext.request.contextPath}/client/confirm-payment">
+            <form action="${pageContext.request.contextPath}/client/confirm-payment" method="post">
                 <input type="hidden" name="application_id" value="${requestScope.application.id}">
                 <input type="hidden" name="start_date" value="${requestScope.application.startDate.get()}">
                 <input type="hidden" name="end_date" value="${requestScope.application.endDate.get()}">
@@ -63,7 +63,7 @@
             </form>
         </th>
         <th>
-            <form action="${pageContext.request.contextPath}/client/cancel-application">
+            <form action="${pageContext.request.contextPath}/client/cancel-application" method="post">
                 <input type="hidden" name="application_id" value="${requestScope.application.id}">
                 <fmt:message key="cancel" var="cancel"/>
                 <input type="submit" value="${cancel}"/>

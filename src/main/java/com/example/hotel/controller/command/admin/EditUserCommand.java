@@ -37,14 +37,14 @@ public class EditUserCommand implements Command {
             final var status = request.getParameter("blocked") != null ? BLOCKED : NON_BLOCKED;
             final var roles = getRoles(request);
             userService.update(id, status, roles);
-            request.getRequestDispatcher(ADMIN_MANAGE_USERS).forward(request, response);
+            response.sendRedirect(request.getContextPath() + ADMIN_MANAGE_USERS);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
-            request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
+            response.sendRedirect(ERROR_503_PAGE);
         }
     }
 
-    private Collection<Role> getRoles(HttpServletRequest request) {
+    private Collection<Role> getRoles(final HttpServletRequest request) {
         final var roles = new HashSet<Role>();
         for (final var role : Role.values()) {
             if (request.getParameter(role.name()) != null) {

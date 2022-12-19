@@ -16,12 +16,14 @@ import java.io.IOException;
  * Uses for not allowing users to get on page after logout
  */
 public class NoCacheFilter implements Filter {
-    public final static Logger log = Logger.getLogger(NoCacheFilter.class);
+    public static final Logger log = Logger.getLogger(NoCacheFilter.class);
 
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletResponse res = (HttpServletResponse) servletResponse;
+    public void doFilter(final ServletRequest servletRequest,
+                         final ServletResponse servletResponse,
+                         final FilterChain filterChain) throws IOException, ServletException {
+        final var res = (HttpServletResponse) servletResponse;
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         log.trace("set header: cache-control");
         filterChain.doFilter(servletRequest, servletResponse);

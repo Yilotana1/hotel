@@ -30,8 +30,8 @@
     </table>
     <fmt:message key="submit" var="submit"/>
     <input type="submit" value="${submit}"/>
-    <c:if test="${!(requestScope.error == null)}">
-        <span style="color:red"><fmt:message key="${requestScope.error}"/></span>
+    <c:if test="${!(sessionScope.get('error/login.jsp') == null)}">
+        <span style="color:red"><fmt:message key="${sessionScope.get('error/login.jsp')}"/></span>
     </c:if>
 </form>
 </body>

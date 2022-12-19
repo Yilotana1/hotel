@@ -23,7 +23,7 @@
         <th><fmt:message key="resident_login"/></th>
     </tr>
     <c:forEach var="apartmentEntry" items="${requestScope.apartments.entrySet()}">
-        <form action="${pageContext.request.contextPath}/admin/edit-apartment">
+        <form action="${pageContext.request.contextPath}/admin/edit-apartment" method="post">
             <input type="hidden" name="number" value="${apartmentEntry.getKey().number}"/>
             <tr>
                 <th>${apartmentEntry.getKey().number}</th>

@@ -23,7 +23,6 @@
     </tr>
     <c:forEach var="user" items="${requestScope.users}">
         <c:if test="${!sessionScope.login.equals(user.login)}">
-            <form action="${pageContext.request.contextPath}/admin/edit-user">
                 <tr>
                     <th>${user.login}</th>
                     <th>${user.firstname}</th>
@@ -32,7 +31,6 @@
                     <th>${user.phone}</th>
                     <th>${user.status}</th>
                 </tr>
-            </form>
         </c:if>
     </c:forEach>
 </table>

@@ -11,7 +11,7 @@
 <fmt:setBundle basename="message"/>
 <jsp:include page="../locale_buttons.jsp"/>
 <fieldset style="width: 30%">
-    <form action="${pageContext.request.contextPath}/client/make-temporary-application">
+    <form action="${pageContext.request.contextPath}/client/make-temporary-application" method="post">
         <table>
             <tr>
                 <th><fmt:message key="stay_length"/>:</th>

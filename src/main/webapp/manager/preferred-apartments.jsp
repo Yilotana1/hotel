@@ -40,7 +40,7 @@
             <th>${apartment.price * koef} <fmt:message key="currency_sign"/></th>
             <th>${apartment.demand}</th>
             <th>
-                <form action="${pageContext.request.contextPath}/manager/apply-for-client">
+                <form action="${pageContext.request.contextPath}/manager/apply-for-client" method="post">
                     <fmt:message key="choose" var="choose"/>
                     <input type="hidden" name="number" value="${apartment.number}">
                     <input type="hidden" name="client_login" value="${requestScope.client_login}">

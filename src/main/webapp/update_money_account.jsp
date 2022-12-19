@@ -14,7 +14,7 @@
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
-<form action="${pageContext.request.contextPath}/client/update-money">
+<form action="${pageContext.request.contextPath}/client/update-money" method="post">
     <fmt:message key="currency_koef" var="koef"/>
     <h4><fmt:message key="current_balance"/>: ${requestScope.user.money * koef}<fmt:message key="currency_sign"/></h4>
     <fmt:message key="update_money"/>: <input type="text" name="money" value="0"/>

@@ -19,7 +19,7 @@
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="locale_buttons.jsp"/>
-<form action="signup" method="get">
+<form action="signup" method="post">
     <table>
         <tr>
             <th><fmt:message key="login"/>: </th>
@@ -50,8 +50,8 @@
     <fmt:message key="submit" var="submit"/>
     <input type="submit" value="${submit}"/>
     <br/>
-    <c:if test="${!(requestScope.error == null)}">
-        <span style="color:red"><fmt:message key="${requestScope.error}"/></span>
+    <c:if test="${!(sessionScope.get('error/signup.jsp') == null)}">
+        <span style="color:red"><fmt:message key="${sessionScope.get('error/signup.jsp')}"/></span>
     </c:if>
 </form>
 <br/>

@@ -29,15 +29,15 @@ public class LocalizationFilter implements Filter {
 
     public final static Logger log = Logger.getLogger(LocalizationFilter.class);
     public static final String LANGUAGE = "lang";
-
-
     @Override
-    public void init(FilterConfig filterConfig) {
+    public void init(final FilterConfig filterConfig) {
         log.debug("Filter initialized");
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(final ServletRequest servletRequest,
+                         final ServletResponse servletResponse,
+                         final FilterChain filterChain) throws IOException, ServletException {
 
         final var request = (HttpServletRequest) servletRequest;
         final var response = (HttpServletResponse) servletResponse;
@@ -60,6 +60,12 @@ public class LocalizationFilter implements Filter {
             }
         }
         filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    @Override
+    public void destroy() {
+        log.debug("Filter destroyed");
+
     }
 
     private String getUrlWithParameters(final String baseUrl, final Map<String, String> params) {
@@ -94,13 +100,7 @@ public class LocalizationFilter implements Filter {
         return map;
     }
 
-
-    @Override
-    public void destroy() {
-        log.debug("Filter destroyed");
-
-    }
-    private Locale getLangFromRequest(HttpServletRequest request) {
+    private Locale getLangFromRequest(final HttpServletRequest request) {
         Locale langFromRequest = null;
         final var langTagFromRequest = request.getParameter(LANGUAGE);
         if (langTagFromRequest != null) {

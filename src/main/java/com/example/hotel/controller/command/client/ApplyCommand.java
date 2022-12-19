@@ -24,6 +24,7 @@ import static java.lang.Integer.parseInt;
 
 public class ApplyCommand implements Command {
     public static final Logger log = Logger.getLogger(ApplyCommand.class);
+    public static final String ERROR_ATTRIBUTE = "error" + SHOW_APPLY_PAGE;
     private ApplicationService applicationService = ServiceFactory.getInstance().createApplicationService();
 
     public ApplyCommand() {
@@ -43,14 +44,14 @@ public class ApplyCommand implements Command {
 
         } catch (final InvalidDataException e) {
             log.error("Validation error: " + e.getMessage());
-            request.setAttribute("error", e.getInvalidField() + "_is_invalid");
-            forwardToApplyPage(request, response);
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
+            redirectToApplyPage(request, response);
         } catch (final ClientHasNotCanceledApplicationException e) {
             log.error(e.getMessage(), e);
-            response.sendRedirect(request.getContextPath() + CLIENT_HAS_APPLICATION_PAGE);
+            request.getRequestDispatcher(CLIENT_HAS_APPLICATION_PAGE).forward(request, response);
         } catch (ApartmentIsNotAvailableException e) {
             log.error(e.getMessage(), e);
-            response.sendRedirect(request.getContextPath() + APARTMENT_NOT_AVAILABLE_PAGE);
+            request.getRequestDispatcher(APARTMENT_NOT_AVAILABLE_PAGE).forward(request, response);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
             request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
@@ -67,8 +68,10 @@ public class ApplyCommand implements Command {
                 .build();
     }
 
-    private static void forwardToApplyPage(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("number", request.getParameter("number"));
-        request.getRequestDispatcher(SHOW_APPLY_PAGE).forward(request, response);
+    private static void redirectToApplyPage(final HttpServletRequest request, final HttpServletResponse response)throws IOException {
+        final var number = request.getParameter("number");
+        request.setAttribute("number", number);
+        response.sendRedirect(request.getContextPath() + SHOW_APPLY_PAGE + "?number=" + number);
+
     }
 }

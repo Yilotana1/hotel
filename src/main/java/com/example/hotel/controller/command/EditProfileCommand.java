@@ -20,7 +20,7 @@ import static com.example.hotel.model.dao.Tools.addLoginToCache;
 public class EditProfileCommand implements Command {
 
     public final static Logger log = Logger.getLogger(EditProfileCommand.class);
-    public static final String ERROR_ATTRIBUTE = "error";
+    public static final String ERROR_ATTRIBUTE = "error" + PROFILE;
     public static final String LOGIN_ATTRIBUTE = "login";
     private UserService userService = ServiceFactory.getInstance().createUserService();
 
@@ -40,24 +40,24 @@ public class EditProfileCommand implements Command {
             addLoginToCache(userDTO.getLogin(), request);
             request.getSession().setAttribute(LOGIN_ATTRIBUTE, userDTO.getLogin());
 
-        } catch (InvalidDataException e) {
+        } catch (final InvalidDataException e) {
             log.error(e.getMessage(), e);
-            request.setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
-        } catch (LoginIsNotUniqueException e) {
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
+        } catch (final LoginIsNotUniqueException e) {
             log.error(e.getMessage(), e);
-            request.setAttribute(ERROR_ATTRIBUTE, "user_with_such_login_exists");
-        } catch (ServiceException e) {
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, "user_with_such_login_exists");
+        } catch (final ServiceException e) {
             log.error(e.getMessage(), e);
-            request.setAttribute(ERROR_ATTRIBUTE, "data_could_not_be_saved");
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, "data_could_not_be_saved");
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         } finally {
-            request.getRequestDispatcher(PROFILE).forward(request, response);
+            response.sendRedirect(request.getContextPath() + PROFILE);
         }
     }
 
-    private UserDTO getUserDTO(HttpServletRequest request) {
+    private UserDTO getUserDTO(final HttpServletRequest request) {
         return UserDTO
                 .builder()
                 .login(request.getParameter("login"))

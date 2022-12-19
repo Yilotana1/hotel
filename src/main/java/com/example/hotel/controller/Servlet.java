@@ -20,9 +20,9 @@ import com.example.hotel.controller.command.client.ShowApplicationPageCommand;
 import com.example.hotel.controller.command.client.UpdateUserMoneyCommand;
 import com.example.hotel.controller.command.manager.ApplyForClientCommand;
 import com.example.hotel.controller.command.manager.ShowApartmentsCommand;
-import com.example.hotel.controller.command.manager.ShowUsersCommand;
 import com.example.hotel.controller.command.manager.ShowPreferredApartmentsCommand;
 import com.example.hotel.controller.command.manager.ShowTemporaryApplicationsCommand;
+import com.example.hotel.controller.command.manager.ShowUsersCommand;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,45 +59,59 @@ import static com.example.hotel.controller.Path.UPDATE_MONEY_ACCOUNT;
 
 public class Servlet extends HttpServlet {
     private final Map<String, Command> commands = new HashMap<>();
+    private final Map<String, Command> postCommands = new HashMap<>();
 
     public final static Logger log = Logger.getLogger(Servlet.class);
 
     public void init() {
         getServletConfig().getServletContext()
                 .setAttribute("loggedUsers", new HashSet<String>());
-
-        commands.put(SIGNUP, new SignUpCommand());
+//GET
         commands.put(LOGIN, new LoginCommand());
         commands.put(LOGOUT, new LogOutCommand());
         commands.put(MAIN, new MainCommand());
         commands.put(PROFILE, new ShowProfileCommand());
-        commands.put(EDIT_PROFILE, new EditProfileCommand());
         commands.put(ADMIN_MANAGE_USERS, new ShowUsersManagementCommand());
-        commands.put(ADMIN_EDIT_USER, new EditUserCommand());
         commands.put(MANAGER_LIST_USERS, new ShowUsersCommand());
-        commands.put(UPDATE_MONEY_ACCOUNT, new UpdateUserMoneyCommand());
-        commands.put(CLIENT_APPLY, new ApplyCommand());
         commands.put(SHOW_APPLY_PAGE, new ShowApplicationPageCommand());
         commands.put(APPLICATION_INVOICE, new ShowApplicationInvoiceCommand());
-        commands.put(CONFIRM_PAYMENT, new ConfirmPaymentCommand());
-        commands.put(CANCEL_APPLICATION, new CancelApplicationCommand());
-        commands.put(MAKE_TEMPORARY_APPLICATION, new MakeTemporaryApplicationCommand());
         commands.put(SHOW_PREFERRED_APARTMENTS, new ShowPreferredApartmentsCommand());
-        commands.put(APPLY_FOR_CLIENT, new ApplyForClientCommand());
         commands.put(SHOW_TEMPORARY_APPLICATIONS, new ShowTemporaryApplicationsCommand());
         commands.put(SHOW_APARTMENTS_MANAGEMENT, new ShowApartmentsManagementCommand());
-        commands.put(EDIT_APARTMENT, new EditApartmentCommand());
         commands.put(SHOW_APARTMENTS, new ShowApartmentsCommand());
+//POST
+        postCommands.put(SIGNUP, new SignUpCommand());
+        postCommands.put(EDIT_PROFILE, new EditProfileCommand());
+        postCommands.put(ADMIN_EDIT_USER, new EditUserCommand());
+        postCommands.put(UPDATE_MONEY_ACCOUNT, new UpdateUserMoneyCommand());
+        postCommands.put(CLIENT_APPLY, new ApplyCommand());
+        postCommands.put(CONFIRM_PAYMENT, new ConfirmPaymentCommand());
+        postCommands.put(CANCEL_APPLICATION, new CancelApplicationCommand());
+        postCommands.put(MAKE_TEMPORARY_APPLICATION, new MakeTemporaryApplicationCommand());
+        postCommands.put(APPLY_FOR_CLIENT, new ApplyForClientCommand());
+        postCommands.put(EDIT_APARTMENT, new EditApartmentCommand());
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    public void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException, ServletException {
         var path = req.getRequestURI();
 
         log.trace("Received URI from request: " + path);
 
         path = path.replaceAll(".*/hotel_war_exploded", "");
-        var command = commands.getOrDefault(path,
+        final var command = commands.getOrDefault(path,
                 null);
+        command.execute(req, resp);
+
+        log.trace("doGet finished");
+    }
+
+    public void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws IOException, ServletException {
+        var path = req.getRequestURI();
+
+        log.trace("Received URI from request: " + path);
+
+        path = path.replaceAll(".*/hotel_war_exploded", "");
+        final var command = postCommands.getOrDefault(path, null);
         command.execute(req, resp);
 
         log.trace("doGet finished");
@@ -107,10 +121,6 @@ public class Servlet extends HttpServlet {
     }
 }
 
-//TODO Remove all redundant methods from all layers
-//TODO Create abstract class with constants and put all constants in nested classes so it looks structured
-//TODO Create Exception in DAO layer. So SQLExceptions will be caught in dao layer and wrapped at DaoExceptions
-//TODO Remove all redundant exceptions and create new ones for some cases.
 //TODO Put all urls in Path interface into properties (watch ResourceBundle)
 //TODO Create new folders for jsp pages and make it look more structured. For example put all error pages of client into folder /client/error/...
 //TODO Make logs look more formal.
