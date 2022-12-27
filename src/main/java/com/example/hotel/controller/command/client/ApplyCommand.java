@@ -14,17 +14,16 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.APARTMENT_NOT_AVAILABLE_PAGE;
-import static com.example.hotel.controller.Path.CLIENT_HAS_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
-import static com.example.hotel.controller.Path.SUCCESS_APPLY_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.APARTMENT_NOT_AVAILABLE_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.CLIENT_HAS_APPLICATION_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.SUCCESS_APPLY_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.WRONG_STAY_LENGTH;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static com.example.hotel.model.dao.Tools.getLoginFromSession;
 import static java.lang.Integer.parseInt;
 
 public class ApplyCommand implements Command {
     public static final Logger log = Logger.getLogger(ApplyCommand.class);
-    public static final String ERROR_ATTRIBUTE = "error" + SHOW_APPLY_PAGE;
     private ApplicationService applicationService = ServiceFactory.getInstance().createApplicationService();
 
     public ApplyCommand() {
@@ -44,17 +43,16 @@ public class ApplyCommand implements Command {
 
         } catch (final InvalidDataException e) {
             log.error("Validation error: " + e.getMessage());
-            request.getSession().setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
-            redirectToApplyPage(request, response);
+            response.sendRedirect(request.getContextPath() + WRONG_STAY_LENGTH);
         } catch (final ClientHasNotCanceledApplicationException e) {
             log.error(e.getMessage(), e);
-            request.getRequestDispatcher(CLIENT_HAS_APPLICATION_PAGE).forward(request, response);
-        } catch (ApartmentIsNotAvailableException e) {
+            response.sendRedirect(request.getContextPath() + CLIENT_HAS_APPLICATION_PAGE);
+        } catch (final ApartmentIsNotAvailableException e) {
             log.error(e.getMessage(), e);
-            request.getRequestDispatcher(APARTMENT_NOT_AVAILABLE_PAGE).forward(request, response);
+            response.sendRedirect(request.getContextPath() + APARTMENT_NOT_AVAILABLE_PAGE);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
-            request.getRequestDispatcher(ERROR_503_PAGE).forward(request, response);
+            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
         }
     }
 
@@ -66,12 +64,5 @@ public class ApplyCommand implements Command {
                 .clientLogin(getLoginFromSession(request.getSession()))
                 .stayLength(parseInt(stayLength))
                 .build();
-    }
-
-    private static void redirectToApplyPage(final HttpServletRequest request, final HttpServletResponse response)throws IOException {
-        final var number = request.getParameter("number");
-        request.setAttribute("number", number);
-        response.sendRedirect(request.getContextPath() + SHOW_APPLY_PAGE + "?number=" + number);
-
     }
 }

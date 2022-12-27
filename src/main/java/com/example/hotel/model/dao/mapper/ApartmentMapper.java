@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class ApartmentMapper implements EntityMapper<Apartment>{
     @Override
-    public Apartment extractFromResultSet(ResultSet rs) throws SQLException {
+    public Apartment extractFromResultSet(final ResultSet rs) throws SQLException {
         return Apartment
                 .builder()
                 .number(rs.getInt("apartment.number"))

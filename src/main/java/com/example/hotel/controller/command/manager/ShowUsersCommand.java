@@ -12,8 +12,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.List;
 
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.MANAGER_LIST_USERS_PAGE;
+import static com.example.hotel.controller.Path.Get.Manager.MANAGER_LIST_USERS_PAGE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.requireNonNullElse;
 

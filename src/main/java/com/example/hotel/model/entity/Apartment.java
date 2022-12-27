@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import java.math.BigDecimal;
 
 import static com.example.hotel.model.entity.enums.ApartmentStatus.BOOKED;
+import static com.example.hotel.model.entity.enums.ApartmentStatus.BUSY;
 import static com.example.hotel.model.entity.enums.ApartmentStatus.FREE;
 import static com.example.hotel.model.entity.enums.ApartmentStatus.UNAVAILABLE;
 
@@ -45,37 +46,37 @@ public class Apartment {
         private final Apartment apartment = new Apartment();
 
 
-        public ApartmentBuilder numberOfPeople(Integer numberOfPeople) {
+        public ApartmentBuilder numberOfPeople(final Integer numberOfPeople) {
             apartment.setNumberOfPeople(numberOfPeople);
             return this;
         }
 
-        public ApartmentBuilder price(BigDecimal price) {
+        public ApartmentBuilder price(final BigDecimal price) {
             apartment.setPrice(price);
             return this;
         }
 
-        public ApartmentBuilder floor(Integer floor) {
+        public ApartmentBuilder floor(final Integer floor) {
             apartment.setFloor(floor);
             return this;
         }
 
-        public ApartmentBuilder apartmentClass(ApartmentClass apartmentClass) {
+        public ApartmentBuilder apartmentClass(final ApartmentClass apartmentClass) {
             apartment.setApartmentClass(apartmentClass);
             return this;
         }
 
-        public ApartmentBuilder apartmentStatus(ApartmentStatus apartmentStatus) {
+        public ApartmentBuilder apartmentStatus(final ApartmentStatus apartmentStatus) {
             apartment.setStatus(apartmentStatus);
             return this;
         }
 
-        public ApartmentBuilder number(Integer number) {
+        public ApartmentBuilder number(final Integer number) {
             apartment.setNumber(number);
             return this;
         }
 
-        public ApartmentBuilder demand(Integer demand) {
+        public ApartmentBuilder demand(final Integer demand) {
             apartment.setDemand(demand);
             return this;
         }
@@ -112,11 +113,15 @@ public class Apartment {
         return getStatus() != FREE;
     }
 
+    public boolean isNotAllowedToUpdate() {
+        return getStatus() != FREE && getStatus() != BUSY || this.isBooked();
+    }
+
     public Integer getNumberOfPeople() {
         return numberOfPeople;
     }
 
-    public void setNumberOfPeople(Integer numberOfPeople) {
+    public void setNumberOfPeople(final Integer numberOfPeople) {
         this.numberOfPeople = numberOfPeople;
     }
 
@@ -124,7 +129,7 @@ public class Apartment {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(final BigDecimal price) {
         this.price = price;
     }
 
@@ -132,7 +137,7 @@ public class Apartment {
         return status;
     }
 
-    public void setStatus(ApartmentStatus apartmentStatus) {
+    public void setStatus(final ApartmentStatus apartmentStatus) {
         this.status = apartmentStatus;
     }
 
@@ -140,7 +145,7 @@ public class Apartment {
         return number;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(final Integer number) {
         this.number = number;
     }
 
@@ -148,7 +153,7 @@ public class Apartment {
         return floor;
     }
 
-    public void setFloor(Integer floor) {
+    public void setFloor(final Integer floor) {
         this.floor = floor;
     }
 
@@ -156,7 +161,7 @@ public class Apartment {
         return apartmentClass;
     }
 
-    public void setApartmentClass(ApartmentClass apartmentClass) {
+    public void setApartmentClass(final ApartmentClass apartmentClass) {
         this.apartmentClass = apartmentClass;
     }
 
@@ -164,7 +169,7 @@ public class Apartment {
         return demand;
     }
 
-    public void setDemand(Integer demand) {
+    public void setDemand(final Integer demand) {
         this.demand = demand;
     }
 }

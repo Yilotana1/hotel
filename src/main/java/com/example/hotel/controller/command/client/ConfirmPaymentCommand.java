@@ -16,15 +16,15 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static com.example.hotel.controller.Path.APPLICATION_INVOICE;
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.PROFILE;
+import static com.example.hotel.controller.Path.Get.Client.APPLICATION_INVOICE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
+import static com.example.hotel.controller.Path.Get.User.PROFILE;
 
 public class ConfirmPaymentCommand implements Command {
     public final static Logger log = Logger.getLogger(ConfirmPaymentCommand.class);
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     private ApplicationService applicationService = ServiceFactory.getInstance().createApplicationService();
-
+    public static final String ERROR_ATTRIBUTE = "error" + APPLICATION_INVOICE;
     public ConfirmPaymentCommand() {
     }
 
@@ -42,11 +42,10 @@ public class ConfirmPaymentCommand implements Command {
                     getLocalDateFromString(request.getParameter("end_date")));
             log.trace("Payment is confirmed");
             response.sendRedirect(request.getContextPath() + PROFILE);
-
         } catch (final NotEnoughMoneyToConfirmException e) {
             log.error(e.getMessage(), e);
-            request.setAttribute("error", "client_has_not_enough_to_confirm");
-            request.getRequestDispatcher(APPLICATION_INVOICE).forward(request, response);
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, "client_has_not_enough_to_confirm");
+            response.sendRedirect(request.getContextPath() + APPLICATION_INVOICE);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);

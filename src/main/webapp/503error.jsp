@@ -12,6 +12,7 @@
     <title>Title</title>
     <style>
         <jsp:include page="styles/style.css"/>
+        <jsp:include page="parts/common.jsp"/>
     </style>
 </head>
 <body>

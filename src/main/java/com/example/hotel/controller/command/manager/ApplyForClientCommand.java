@@ -13,9 +13,9 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.CLIENT_HAS_ASSIGNED_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE;
+import static com.example.hotel.controller.Path.Get.Manager.CLIENT_HAS_ASSIGNED_APPLICATION_PAGE;
+import static com.example.hotel.controller.Path.Get.Manager.SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static java.lang.Integer.parseInt;
 
 public class ApplyForClientCommand implements Command {

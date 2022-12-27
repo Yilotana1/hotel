@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Anatoliy
-  Date: 02.12.2022
-  Time: 18:24
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -14,7 +7,7 @@
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
-<table>
+<table class="table table-striped table-bordered table-hover w-75">
     <tr>
         <th><fmt:message key="login"/></th>
         <th><fmt:message key="firstname"/></th>
@@ -34,40 +27,44 @@
                     <th>${user.email}</th>
                     <th>${user.phone}</th>
                     <th>
-                        <c:if test="${user.status == UserStatus.BLOCKED}">
-                            <input type="checkbox" name="blocked" value="yes" checked/>
-                        </c:if>
-                        <c:if test="${user.status == UserStatus.NON_BLOCKED}">
-                            <input type="checkbox" name="blocked" value="yes"/>
-                        </c:if>
-                            ${UserStatus.BLOCKED}
+                        <div class="form-check form-switch">
+                            <c:if test="${user.status == UserStatus.BLOCKED}">
+                                <input type="checkbox" class="form-check-input" role="switch" name="blocked" value="yes"
+                                       checked/>
+                            </c:if>
+                            <c:if test="${user.status == UserStatus.NON_BLOCKED}">
+                                <input type="checkbox" class="form-check-input" role="switch" name="blocked"
+                                       value="yes"/>
+                            </c:if>
+                                ${UserStatus.BLOCKED}
+                        </div>
                     </th>
                     <th>
-                        <c:if test="${user.roles.contains(Role.MANAGER)}">
-                            <input type="checkbox" name="${Role.MANAGER}" value="yes" checked/>
-                        </c:if>
-                        <c:if test="${!user.roles.contains(Role.MANAGER)}">
-                            <input type="checkbox" name="${Role.MANAGER}" value="yes"/>
-                        </c:if>
-                            ${Role.MANAGER}
-                        <c:forEach var="role" items="${user.roles}">
-                            <c:if test="${role != Role.MANAGER}">
-                                <input type="hidden" name="${role}" value="yes">
+                        <div class="form-check form-switch">
+                            <c:if test="${user.roles.contains(Role.MANAGER)}">
+                                <input type="checkbox" class="form-check-input" role="switch" name="${Role.MANAGER}"
+                                       value="yes" checked/>
                             </c:if>
-                        </c:forEach>
+                            <c:if test="${!user.roles.contains(Role.MANAGER)}">
+                                <input type="checkbox" class="form-check-input" role="switch" name="${Role.MANAGER}"
+                                       value="yes"/>
+                            </c:if>
+                                ${Role.MANAGER}
+                            <c:forEach var="role" items="${user.roles}">
+                                <c:if test="${role != Role.MANAGER}">
+                                    <input type="hidden" name="${role}" value="yes">
+                                </c:if>
+                            </c:forEach>
+                        </div>
                     </th>
                     <input type="hidden" value="${user.id}" name="id"/>
                     <fmt:message key="edit" var="edit"/>
-                    <th><input type="submit" value="${edit}"/></th>
+                    <th><input type="submit" value="${edit}" class="btn btn-primary text-white"/></th>
                 </tr>
             </form>
         </c:if>
     </c:forEach>
 </table>
-<br/>
-<br/>
-<br/>
 <jsp:include page="../pages.jsp"/>
-
 </body>
 </html>

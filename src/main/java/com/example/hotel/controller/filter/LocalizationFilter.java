@@ -29,6 +29,7 @@ public class LocalizationFilter implements Filter {
 
     public final static Logger log = Logger.getLogger(LocalizationFilter.class);
     public static final String LANGUAGE = "lang";
+
     @Override
     public void init(final FilterConfig filterConfig) {
         log.debug("Filter initialized");
@@ -65,7 +66,6 @@ public class LocalizationFilter implements Filter {
     @Override
     public void destroy() {
         log.debug("Filter destroyed");
-
     }
 
     private String getUrlWithParameters(final String baseUrl, final Map<String, String> params) {

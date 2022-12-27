@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class TemporaryApplicationMapper implements EntityMapper<TemporaryApplication> {
     @Override
-    public TemporaryApplication extractFromResultSet(ResultSet rs) throws SQLException {
+    public TemporaryApplication extractFromResultSet(final ResultSet rs) throws SQLException {
         return TemporaryApplication
                 .builder()
                 .id(rs.getLong("temporary_application.id"))

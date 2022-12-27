@@ -2,13 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="custom" uri="custom" %>
 <%@ page import="com.example.hotel.model.entity.enums.UserStatus" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: Anatoliy
-  Date: 03.12.2022
-  Time: 20:49
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -19,14 +12,16 @@
 <fmt:setBundle basename="message"/>
 <jsp:include page="locale_buttons.jsp"/>
 <c:if test="${requestScope.user.status.equals(UserStatus.BLOCKED)}">
-    <b style="color: red"><fmt:message key="you_are_blocked"/></b>
+    <span class="alert alert-danger my-3" role="alert"><fmt:message key="you_are_blocked"/></span>
 </c:if>
 <br/>
 <custom:approvedApplication/>
-
 <c:if test="${requestScope.application != null}">
     <fmt:message key="application_to_confirm"/><br/>
-    <a href="${pageContext.request.contextPath}/client/application-invoice">See</a>
+    <form action="${pageContext.request.contextPath}/client/application-invoice">
+        <fmt:message key="see" var="see"/>
+        <input type="submit" value="${see}" class="btn btn-primary text-white">
+    </form>
 </c:if>
 <br/>
 <h3><fmt:message key="information_about_you"/>:</h3>
@@ -59,9 +54,9 @@
         </tr>
     </table>
     <fmt:message key="edit" var="edit"/>
-    <input type="submit" value="${edit}">
+    <input type="submit" value="${edit}" class="my-3 btn btn-primary text-white">
     <c:if test="${!(sessionScope.get('error/profile') == null)}">
-        <span style="color:red"><fmt:message key="${sessionScope.get('error/profile')}"/></span>
+        <span class="alert alert-danger my-3" role="alert"><fmt:message key="${sessionScope.get('error/profile')}"/></span>
     </c:if>
 </form>
 </body>

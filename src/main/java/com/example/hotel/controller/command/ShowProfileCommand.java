@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.PROFILE_PAGE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
+import static com.example.hotel.controller.Path.Get.User.PROFILE_PAGE;
 
 public class ShowProfileCommand implements Command {
     public final static Logger log = Logger.getLogger(ShowProfileCommand.class);

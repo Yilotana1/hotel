@@ -11,19 +11,13 @@
 <html>
 <head>
     <title>Title</title>
+    <jsp:include page="parts/common.jsp"/>
 </head>
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="locale_buttons.jsp"/>
 <h1>404</h1>
-<form action="${pageContext.request.contextPath}/main">
-    <fmt:message key="denied"/>
-    <fmt:message key="main" var="main"/>
-    <br/>
-    <br/>
-    <br/>
-    <input type="submit" value="${main}">
-</form>
+<fmt:message key="denied"/>
 </body>
 </html>

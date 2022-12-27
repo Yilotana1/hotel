@@ -10,7 +10,7 @@ public enum UserStatus {
         this.name = name;
     }
 
-    public static UserStatus getById(Integer id) {
+    public static UserStatus getById(final Integer id) {
         switch (id) {
             case 1:
                 return BLOCKED;

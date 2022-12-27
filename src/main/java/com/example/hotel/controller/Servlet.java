@@ -34,51 +34,51 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import static com.example.hotel.controller.Path.ADMIN_EDIT_USER;
-import static com.example.hotel.controller.Path.ADMIN_MANAGE_USERS;
-import static com.example.hotel.controller.Path.APPLICATION_INVOICE;
-import static com.example.hotel.controller.Path.APPLY_FOR_CLIENT;
-import static com.example.hotel.controller.Path.CANCEL_APPLICATION;
-import static com.example.hotel.controller.Path.CLIENT_APPLY;
-import static com.example.hotel.controller.Path.CONFIRM_PAYMENT;
-import static com.example.hotel.controller.Path.EDIT_APARTMENT;
-import static com.example.hotel.controller.Path.EDIT_PROFILE;
-import static com.example.hotel.controller.Path.LOGIN;
-import static com.example.hotel.controller.Path.LOGOUT;
-import static com.example.hotel.controller.Path.MAIN;
-import static com.example.hotel.controller.Path.MAKE_TEMPORARY_APPLICATION;
-import static com.example.hotel.controller.Path.MANAGER_LIST_USERS;
-import static com.example.hotel.controller.Path.PROFILE;
-import static com.example.hotel.controller.Path.SHOW_APARTMENTS;
-import static com.example.hotel.controller.Path.SHOW_APARTMENTS_MANAGEMENT;
-import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
-import static com.example.hotel.controller.Path.SHOW_PREFERRED_APARTMENTS;
-import static com.example.hotel.controller.Path.SHOW_TEMPORARY_APPLICATIONS;
-import static com.example.hotel.controller.Path.SIGNUP;
-import static com.example.hotel.controller.Path.UPDATE_MONEY_ACCOUNT;
+import static com.example.hotel.controller.Path.Get.Admin.ADMIN_MANAGE_USERS;
+import static com.example.hotel.controller.Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT;
+import static com.example.hotel.controller.Path.Get.Client.APPLICATION_INVOICE;
+import static com.example.hotel.controller.Path.Get.Client.SHOW_APPLY_PAGE;
+import static com.example.hotel.controller.Path.Get.Manager.MANAGER_LIST_USERS;
+import static com.example.hotel.controller.Path.Get.Manager.SHOW_APARTMENTS;
+import static com.example.hotel.controller.Path.Get.Manager.SHOW_PREFERRED_APARTMENTS;
+import static com.example.hotel.controller.Path.Get.Manager.SHOW_TEMPORARY_APPLICATIONS;
+import static com.example.hotel.controller.Path.Get.User.LOGIN;
+import static com.example.hotel.controller.Path.Get.User.LOGOUT;
+import static com.example.hotel.controller.Path.Get.User.MAIN;
+import static com.example.hotel.controller.Path.Get.User.PROFILE;
+import static com.example.hotel.controller.Path.Post.Admin.ADMIN_EDIT_USER;
+import static com.example.hotel.controller.Path.Post.Admin.EDIT_APARTMENT;
+import static com.example.hotel.controller.Path.Post.Client.CANCEL_APPLICATION;
+import static com.example.hotel.controller.Path.Post.Client.CLIENT_APPLY;
+import static com.example.hotel.controller.Path.Post.Client.CONFIRM_PAYMENT;
+import static com.example.hotel.controller.Path.Post.Client.MAKE_TEMPORARY_APPLICATION;
+import static com.example.hotel.controller.Path.Post.Client.UPDATE_MONEY_ACCOUNT;
+import static com.example.hotel.controller.Path.Post.Manager.APPLY_FOR_CLIENT;
+import static com.example.hotel.controller.Path.Post.User.EDIT_PROFILE;
+import static com.example.hotel.controller.Path.Post.User.SIGNUP;
 
 public class Servlet extends HttpServlet {
-    private final Map<String, Command> commands = new HashMap<>();
+    private final Map<String, Command> getCommands = new HashMap<>();
     private final Map<String, Command> postCommands = new HashMap<>();
 
-    public final static Logger log = Logger.getLogger(Servlet.class);
+    public static final Logger log = Logger.getLogger(Servlet.class);
 
     public void init() {
         getServletConfig().getServletContext()
                 .setAttribute("loggedUsers", new HashSet<String>());
 //GET
-        commands.put(LOGIN, new LoginCommand());
-        commands.put(LOGOUT, new LogOutCommand());
-        commands.put(MAIN, new MainCommand());
-        commands.put(PROFILE, new ShowProfileCommand());
-        commands.put(ADMIN_MANAGE_USERS, new ShowUsersManagementCommand());
-        commands.put(MANAGER_LIST_USERS, new ShowUsersCommand());
-        commands.put(SHOW_APPLY_PAGE, new ShowApplicationPageCommand());
-        commands.put(APPLICATION_INVOICE, new ShowApplicationInvoiceCommand());
-        commands.put(SHOW_PREFERRED_APARTMENTS, new ShowPreferredApartmentsCommand());
-        commands.put(SHOW_TEMPORARY_APPLICATIONS, new ShowTemporaryApplicationsCommand());
-        commands.put(SHOW_APARTMENTS_MANAGEMENT, new ShowApartmentsManagementCommand());
-        commands.put(SHOW_APARTMENTS, new ShowApartmentsCommand());
+        getCommands.put(LOGIN, new LoginCommand());
+        getCommands.put(LOGOUT, new LogOutCommand());
+        getCommands.put(MAIN, new MainCommand());
+        getCommands.put(PROFILE, new ShowProfileCommand());
+        getCommands.put(ADMIN_MANAGE_USERS, new ShowUsersManagementCommand());
+        getCommands.put(MANAGER_LIST_USERS, new ShowUsersCommand());
+        getCommands.put(SHOW_APPLY_PAGE, new ShowApplicationPageCommand());
+        getCommands.put(APPLICATION_INVOICE, new ShowApplicationInvoiceCommand());
+        getCommands.put(SHOW_PREFERRED_APARTMENTS, new ShowPreferredApartmentsCommand());
+        getCommands.put(SHOW_TEMPORARY_APPLICATIONS, new ShowTemporaryApplicationsCommand());
+        getCommands.put(SHOW_APARTMENTS_MANAGEMENT, new ShowApartmentsManagementCommand());
+        getCommands.put(SHOW_APARTMENTS, new ShowApartmentsCommand());
 //POST
         postCommands.put(SIGNUP, new SignUpCommand());
         postCommands.put(EDIT_PROFILE, new EditProfileCommand());
@@ -98,7 +98,7 @@ public class Servlet extends HttpServlet {
         log.trace("Received URI from request: " + path);
 
         path = path.replaceAll(".*/hotel_war_exploded", "");
-        final var command = commands.getOrDefault(path,
+        final var command = getCommands.getOrDefault(path,
                 null);
         command.execute(req, resp);
 

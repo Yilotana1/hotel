@@ -4,14 +4,11 @@
 <%@ page import="com.example.hotel.model.entity.enums.ApartmentClass" %>
 <%@ page import="com.example.hotel.model.entity.enums.ApartmentStatus" %>
 <html>
-<head>
-    <title>Title</title>
-</head>
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 
-<table>
+<table class="table table-striped table-bordered table-hover w-75">
     <tr>
         <th><fmt:message key="number"/></th>
         <th><fmt:message key="floor"/></th>
@@ -29,12 +26,14 @@
                 <th>${apartmentEntry.getKey().number}</th>
                 <th>${apartmentEntry.getKey().floor}</th>
                 <th>
-                    <c:if test="${apartmentEntry.getKey().status == ApartmentStatus.BUSY}">
-                        <input type="checkbox" name="busy" value="yes" checked>
-                    </c:if>
-                    <c:if test="${apartmentEntry.getKey().status != ApartmentStatus.BUSY}">
-                        <input type="checkbox" name="busy" value="yes">
-                    </c:if>
+                    <div class="form-check form-switch">
+                        <c:if test="${apartmentEntry.getKey().status == ApartmentStatus.BUSY}">
+                            <input type="checkbox" class="form-check-input" role="switch" name="busy" value="yes" checked>
+                        </c:if>
+                        <c:if test="${apartmentEntry.getKey().status != ApartmentStatus.BUSY}">
+                            <input type="checkbox" class="form-check-input" role="switch" name="busy" value="yes">
+                        </c:if>
+                    </div>
                 </th>
                 <th>
                     <select name="class_id">
@@ -65,16 +64,12 @@
                 </th>
                 <th>
                     <fmt:message key="edit" var="edit"/>
-                    <input type="submit" value="${edit}">
+                    <input type="submit" value="${edit}" class="btn btn-primary text-white">
                 </th>
             </tr>
         </form>
-
     </c:forEach>
 </table>
-<br/>
-<br/>
-<br/>
 <jsp:include page="../pages.jsp"/>
 </body>
 </html>

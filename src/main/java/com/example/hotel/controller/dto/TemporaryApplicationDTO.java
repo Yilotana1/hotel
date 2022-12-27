@@ -62,14 +62,14 @@ public class TemporaryApplicationDTO {
         final var apartmentClass = request.getParameter("apartment_class_id");
         final var numberOfPeople = request.getParameter("number_of_people");
         throwIfNulls(stayLength, apartmentClass, numberOfPeople);
-        if (parseInt(stayLength) <= MIN_STAY_LENGTH || parseInt(stayLength) > MAX_STAY_LENGTH) {
+        if (stayLength.isEmpty() || parseInt(stayLength) <= MIN_STAY_LENGTH || parseInt(stayLength) > MAX_STAY_LENGTH) {
             final var message = format("Stay Length must be between %d and %d", MIN_STAY_LENGTH, MAX_STAY_LENGTH);
             log.error(message);
             throw new InvalidDataException(
                     message,
                     "stay_length");
         }
-        if (parseInt(numberOfPeople) <= MIN_NUMBER_OF_PEOPLE || parseInt(numberOfPeople) > MAX_NUMBER_OF_PEOPLE) {
+        if (numberOfPeople.isEmpty() || parseInt(numberOfPeople) <= MIN_NUMBER_OF_PEOPLE || parseInt(numberOfPeople) > MAX_NUMBER_OF_PEOPLE) {
             final var message = format("numberOfPeople must be between %d and %d", MIN_NUMBER_OF_PEOPLE, MAX_NUMBER_OF_PEOPLE);
             log.error(message);
             throw new InvalidDataException(

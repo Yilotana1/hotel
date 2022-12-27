@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.APPLICATION_CANCELED;
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.APPLICATION_CANCELED;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static java.lang.Long.parseLong;
 
 public class CancelApplicationCommand implements Command {

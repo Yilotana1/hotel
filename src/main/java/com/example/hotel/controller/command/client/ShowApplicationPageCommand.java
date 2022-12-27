@@ -10,9 +10,9 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.APARTMENT_NOT_AVAILABLE_PAGE;
-import static com.example.hotel.controller.Path.CLIENT_APPLY_PAGE;
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.APARTMENT_NOT_AVAILABLE_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.CLIENT_APPLY_PAGE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static java.lang.String.format;
 
 public class ShowApplicationPageCommand implements Command {

@@ -151,11 +151,11 @@
         <servlet-name>Servlet</servlet-name>
     </filter-mapping>
     <filter>
-        <filter-name>ValidationFilter</filter-name>
-        <filter-class>com.example.hotel.controller.filter.ValidationFilter</filter-class>
+        <filter-name>ValidationErrorFilter</filter-name>
+        <filter-class>com.example.hotel.controller.filter.ValidationErrorFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>ValidationFilter</filter-name>
+        <filter-name>ValidationErrorFilter</filter-name>
         <url-pattern>/*</url-pattern>
         <servlet-name>Servlet</servlet-name>
     </filter-mapping>

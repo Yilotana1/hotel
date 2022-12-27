@@ -1,25 +1,23 @@
 package com.example.hotel.model.entity.enums;
 
 public enum ApartmentClass {
-    STANDARD("standard", 4),
-    SUPERIOR("superior", 3),
-    STUDIO("studio", 2),
-    SUITE("suite", 1);
+    STANDARD("standard"),
+    SUPERIOR("superior"),
+    STUDIO("studio"),
+    SUITE("suite");
 
     private final Integer id = this.ordinal() + 1;
     private final String name;
-    private final int priority;
 
-    ApartmentClass(String name, int priority) {
+    ApartmentClass(final String name) {
         this.name = name;
-        this.priority = priority;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public static ApartmentClass getById(Integer id) {
+    public static ApartmentClass getById(final Integer id) {
         switch (id) {
             case 1:
                 return STANDARD;
@@ -35,9 +33,5 @@ public enum ApartmentClass {
 
     public String getName() {
         return name;
-    }
-
-    public int getPriority() {
-        return priority;
     }
 }

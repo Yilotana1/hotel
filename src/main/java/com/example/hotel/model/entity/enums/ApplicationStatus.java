@@ -6,7 +6,7 @@ public enum ApplicationStatus {
     CANCELED("canceled");
     private final String name;
 
-    public static ApplicationStatus getById(Integer id) {
+    public static ApplicationStatus getById(final Integer id) {
         switch (id) {
             case 1:
                 return APPROVED;
@@ -19,7 +19,7 @@ public enum ApplicationStatus {
     }
 
     private final Integer id = this.ordinal() + 1;
-    ApplicationStatus(String name) {
+    ApplicationStatus(final String name) {
         this.name = name;
     }
 

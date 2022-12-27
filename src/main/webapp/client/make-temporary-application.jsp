@@ -5,12 +5,13 @@
 <html>
 <head>
     <title>Title</title>
+    <jsp:include page="../parts/common.jsp"/>
 </head>
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="../locale_buttons.jsp"/>
-<fieldset style="width: 30%">
+<div class="my-5 w-25 d-flex flex-column align-items-center mx-auto">
     <form action="${pageContext.request.contextPath}/client/make-temporary-application" method="post">
         <table>
             <tr>
@@ -23,37 +24,34 @@
             </tr>
             <tr>
                 <th><fmt:message key="class"/>:</th>
-                <th><select name="apartment_class_id" id="apartment_class_id">
-                    <option value="${ApartmentClass.STANDARD.id}">
-                        Standard
-                    </option>
-                    <option value="${ApartmentClass.STUDIO.id}">
-                        Studio
-                    </option>
-                    <option value="${ApartmentClass.SUITE.id}">
-                        Suite
-                    </option>
-                    <option value="${ApartmentClass.SUPERIOR.id}">
-                        Superior
-                    </option>
-                </select></th>
+                <th>
+                    <div class="input-group mx-3 my-2">
+                        <select class="custom-select" name="apartment_class_id" id="apartment_class_id">
+                            <option value="${ApartmentClass.STANDARD.id}">
+                                Standard
+                            </option>
+                            <option value="${ApartmentClass.STUDIO.id}">
+                                Studio
+                            </option>
+                            <option value="${ApartmentClass.SUITE.id}">
+                                Suite
+                            </option>
+                            <option value="${ApartmentClass.SUPERIOR.id}">
+                                Superior
+                            </option>
+                        </select>
+                    </div>
+                </th>
             </tr>
         </table>
         <br/>
         <fmt:message key="apply" var="apply"/>
-        <input type="submit" value="${apply}"/>
+        <input class="btn btn-primary text-white" type="submit" value="${apply}"/>
     </form>
-</fieldset>
-<br/>
-<c:if test="${!(requestScope.error == null)}">
-    <span style="color:red"><fmt:message key="${requestScope.error}"/></span>
-</c:if>
-<br/>
-<br/>
-<br/>
-<fmt:message key="main" var="main"/>
-<form action="${pageContext.request.contextPath}/main">
-    <input type="submit" value="${main}">
-</form>
+    <br/>
+    <c:if test="${sessionScope.get('error/client/make-temporary-application.jsp') != null}">
+        <span class="alert alert-danger my-3" role="alert"><fmt:message key="${sessionScope.get('error/client/make-temporary-application.jsp')}"/></span>
+    </c:if>
+</div>
 </body>
 </html>

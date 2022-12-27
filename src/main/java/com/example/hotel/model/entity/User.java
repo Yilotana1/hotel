@@ -56,52 +56,52 @@ public class User {
             return user;
         }
 
-        public UserBuilder id(Long id) {
+        public UserBuilder id(final Long id) {
             user.setId(id);
             return this;
         }
 
-        public UserBuilder status(UserStatus status) {
+        public UserBuilder status(final UserStatus status) {
             user.setStatus(status);
             return this;
         }
 
-        public UserBuilder roles(Collection<Role> roles) {
+        public UserBuilder roles(final Collection<Role> roles) {
             user.setRoles(roles);
             return this;
         }
 
-        public UserBuilder login(String login) {
+        public UserBuilder login(final String login) {
             user.setLogin(login);
             return this;
         }
 
-        public UserBuilder firstname(String firstname) {
+        public UserBuilder firstname(final String firstname) {
             user.setFirstname(firstname);
             return this;
         }
 
-        public UserBuilder lastname(String lastname) {
+        public UserBuilder lastname(final String lastname) {
             user.setLastname(lastname);
             return this;
         }
 
-        public UserBuilder email(String email) {
+        public UserBuilder email(final String email) {
             user.setEmail(email);
             return this;
         }
 
-        public UserBuilder password(String password) {
+        public UserBuilder password(final String password) {
             user.setPassword(password);
             return this;
         }
 
-        public UserBuilder phone(String phone) {
+        public UserBuilder phone(final String phone) {
             user.setPhone(phone);
             return this;
         }
 
-        public UserBuilder money(BigDecimal money) {
+        public UserBuilder money(final BigDecimal money) {
             user.setMoney(money);
             return this;
         }
@@ -126,7 +126,7 @@ public class User {
         return money;
     }
 
-    public void setMoney(BigDecimal money) {
+    public void setMoney(final BigDecimal money) {
         this.money = money;
     }
 
@@ -134,7 +134,7 @@ public class User {
         return status;
     }
 
-    public void setStatus(UserStatus status) {
+    public void setStatus(final UserStatus status) {
         this.status = status;
     }
 
@@ -142,7 +142,7 @@ public class User {
         return roles;
     }
 
-    public void setRoles(Collection<Role> roles) {
+    public void setRoles(final Collection<Role> roles) {
         this.roles = roles;
     }
 
@@ -150,7 +150,7 @@ public class User {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -158,7 +158,7 @@ public class User {
         return login;
     }
 
-    public void setLogin(String login) {
+    public void setLogin(final String login) {
         this.login = login;
     }
 
@@ -166,7 +166,7 @@ public class User {
         return firstname;
     }
 
-    public void setFirstname(String firstname) {
+    public void setFirstname(final String firstname) {
         this.firstname = firstname;
     }
 
@@ -174,7 +174,7 @@ public class User {
         return lastname;
     }
 
-    public void setLastname(String lastname) {
+    public void setLastname(final String lastname) {
         this.lastname = lastname;
     }
 
@@ -182,7 +182,7 @@ public class User {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -190,7 +190,7 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
@@ -198,7 +198,7 @@ public class User {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public void setPhone(final String phone) {
         this.phone = phone;
     }
 }

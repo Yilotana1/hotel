@@ -11,14 +11,12 @@
 <html>
 <head>
     <title>Title</title>
+    <jsp:include page="../parts/common.jsp"/>
 </head>
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="../locale_buttons.jsp"/>
 <h2><fmt:message key="client_has_application"/></h2>
-<c:if test="${sessionScope.roles != null}">
-    <a href="${pageContext.request.contextPath}/profile"><fmt:message key="profile"/></a>
-</c:if>
 </body>
 </html>

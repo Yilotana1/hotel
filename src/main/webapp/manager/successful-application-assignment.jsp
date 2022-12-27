@@ -3,15 +3,12 @@
 <html>
 <head>
     <title>Title</title>
+    <jsp:include page="../parts/common.jsp"/>
 </head>
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 <jsp:include page="../locale_buttons.jsp"/>
 <fmt:message key="successful_application_assignment"/>
-<c:if test="${sessionScope.roles != null}">
-    <br/>
-    <a href="profile"><fmt:message key="profile"/></a>
-</c:if>
 </body>
 </html>

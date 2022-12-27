@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.MAIN_PAGE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
+import static com.example.hotel.controller.Path.Get.User.MAIN_PAGE;
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.requireNonNullElse;
 
@@ -26,9 +26,9 @@ import static java.util.Objects.requireNonNullElse;
 public class MainCommand implements Command {
 
 
-    public final static Logger log = Logger.getLogger(MainCommand.class);
+    public static final Logger log = Logger.getLogger(MainCommand.class);
     private static final String DEFAULT_SORTING = "price";
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 8;
     private static final String SORTED_BY = "sorted_by";
     private static final String APARTMENTS = "apartments";
     private static final String LIST_OF_SORTING_OPTIONS = "sorted_by_list";
@@ -46,7 +46,7 @@ public class MainCommand implements Command {
     public MainCommand() {
     }
 
-    public MainCommand(ServiceFactory serviceFactory) {
+    public MainCommand(final ServiceFactory serviceFactory) {
         apartmentService = serviceFactory.createApartmentService();
     }
 
@@ -77,7 +77,9 @@ public class MainCommand implements Command {
     }
 
 
-    private void setAttributesForPaging(HttpServletRequest request, String sorted_by, int pageNumber) {
+    private void setAttributesForPaging(final HttpServletRequest request,
+                                        final String sorted_by,
+                                        final int pageNumber) {
         request.setAttribute(PAGE_NUMBER_INPUT, pageNumber);
         request.setAttribute(LIST_OF_SORTING_OPTIONS, sortingMethods.keySet());
         request.setAttribute(SORTED_BY, sorted_by);

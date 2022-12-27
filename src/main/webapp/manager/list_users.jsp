@@ -1,11 +1,4 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: Anatoliy
-  Date: 06.12.2022
-  Time: 15:46
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -13,6 +6,7 @@
     <style>
         <jsp:include page="../styles/style.css"/>
     </style>
+    <jsp:include page="../parts/common.jsp"/>
 </head>
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>

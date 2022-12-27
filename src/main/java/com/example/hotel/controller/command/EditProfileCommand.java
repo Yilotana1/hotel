@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.PROFILE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
+import static com.example.hotel.controller.Path.Get.User.PROFILE;
 import static com.example.hotel.model.dao.Tools.addLoginToCache;
 
 public class EditProfileCommand implements Command {

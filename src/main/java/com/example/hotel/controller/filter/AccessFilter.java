@@ -20,42 +20,42 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.example.hotel.controller.Path.ADMIN_EDIT_USER;
-import static com.example.hotel.controller.Path.ADMIN_MANAGE_USERS;
-import static com.example.hotel.controller.Path.APARTMENT_NOT_AVAILABLE_PAGE;
-import static com.example.hotel.controller.Path.APPLICATION_CANCELED;
-import static com.example.hotel.controller.Path.APPLICATION_INVOICE;
-import static com.example.hotel.controller.Path.APPLY_FOR_CLIENT;
-import static com.example.hotel.controller.Path.CANCEL_APPLICATION;
-import static com.example.hotel.controller.Path.CLIENT_APPLY;
-import static com.example.hotel.controller.Path.CLIENT_HAS_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.CLIENT_HAS_ASSIGNED_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.CONFIRM_PAYMENT;
-import static com.example.hotel.controller.Path.EDIT_APARTMENT;
-import static com.example.hotel.controller.Path.EDIT_PROFILE;
-import static com.example.hotel.controller.Path.ERROR_404_PAGE;
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.LOGIN;
-import static com.example.hotel.controller.Path.LOGIN_PAGE;
-import static com.example.hotel.controller.Path.LOGOUT;
-import static com.example.hotel.controller.Path.MAIN;
-import static com.example.hotel.controller.Path.MAIN_PAGE;
-import static com.example.hotel.controller.Path.MAKE_TEMPORARY_APPLICATION;
-import static com.example.hotel.controller.Path.MAKE_TEMPORARY_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.MANAGER_LIST_USERS;
-import static com.example.hotel.controller.Path.MONEY_VALUE_IS_INCORRECT;
-import static com.example.hotel.controller.Path.PREFERRED_APARTMENTS_PAGE;
-import static com.example.hotel.controller.Path.PROFILE;
-import static com.example.hotel.controller.Path.SHOW_APARTMENTS;
-import static com.example.hotel.controller.Path.SHOW_APARTMENTS_MANAGEMENT;
-import static com.example.hotel.controller.Path.SHOW_APPLY_PAGE;
-import static com.example.hotel.controller.Path.SHOW_PREFERRED_APARTMENTS;
-import static com.example.hotel.controller.Path.SHOW_TEMPORARY_APPLICATIONS;
-import static com.example.hotel.controller.Path.SIGNUP;
-import static com.example.hotel.controller.Path.SIGNUP_PAGE;
-import static com.example.hotel.controller.Path.SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE;
-import static com.example.hotel.controller.Path.SUCCESS_APPLY_PAGE;
-import static com.example.hotel.controller.Path.UPDATE_MONEY_ACCOUNT;
+import static com.example.hotel.controller.Path.Get.Admin.ADMIN_MANAGE_USERS;
+import static com.example.hotel.controller.Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT;
+import static com.example.hotel.controller.Path.Get.Client.APARTMENT_NOT_AVAILABLE_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.APPLICATION_CANCELED;
+import static com.example.hotel.controller.Path.Get.Client.APPLICATION_INVOICE;
+import static com.example.hotel.controller.Path.Get.Client.CLIENT_HAS_APPLICATION_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.MAKE_TEMPORARY_APPLICATION_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.MONEY_VALUE_IS_INCORRECT;
+import static com.example.hotel.controller.Path.Get.Client.SHOW_APPLY_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.SUCCESS_APPLY_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.WRONG_STAY_LENGTH;
+import static com.example.hotel.controller.Path.Get.Manager.CLIENT_HAS_ASSIGNED_APPLICATION_PAGE;
+import static com.example.hotel.controller.Path.Get.Manager.MANAGER_LIST_USERS;
+import static com.example.hotel.controller.Path.Get.Manager.PREFERRED_APARTMENTS_PAGE;
+import static com.example.hotel.controller.Path.Get.Manager.SHOW_APARTMENTS;
+import static com.example.hotel.controller.Path.Get.Manager.SHOW_PREFERRED_APARTMENTS;
+import static com.example.hotel.controller.Path.Get.Manager.SHOW_TEMPORARY_APPLICATIONS;
+import static com.example.hotel.controller.Path.Get.Manager.SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_404_PAGE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
+import static com.example.hotel.controller.Path.Get.User.LOGIN;
+import static com.example.hotel.controller.Path.Get.User.LOGIN_PAGE;
+import static com.example.hotel.controller.Path.Get.User.LOGOUT;
+import static com.example.hotel.controller.Path.Get.User.MAIN;
+import static com.example.hotel.controller.Path.Get.User.PROFILE;
+import static com.example.hotel.controller.Path.Get.User.SIGNUP_PAGE;
+import static com.example.hotel.controller.Path.Post.Admin.ADMIN_EDIT_USER;
+import static com.example.hotel.controller.Path.Post.Admin.EDIT_APARTMENT;
+import static com.example.hotel.controller.Path.Post.Client.CANCEL_APPLICATION;
+import static com.example.hotel.controller.Path.Post.Client.CLIENT_APPLY;
+import static com.example.hotel.controller.Path.Post.Client.CONFIRM_PAYMENT;
+import static com.example.hotel.controller.Path.Post.Client.MAKE_TEMPORARY_APPLICATION;
+import static com.example.hotel.controller.Path.Post.Client.UPDATE_MONEY_ACCOUNT;
+import static com.example.hotel.controller.Path.Post.Manager.APPLY_FOR_CLIENT;
+import static com.example.hotel.controller.Path.Post.User.EDIT_PROFILE;
+import static com.example.hotel.controller.Path.Post.User.SIGNUP;
 import static com.example.hotel.model.dao.Tools.userIsLogged;
 import static com.example.hotel.model.entity.enums.UserStatus.BLOCKED;
 import static com.example.hotel.model.entity.enums.UserStatus.NON_BLOCKED;
@@ -123,7 +123,8 @@ public class AccessFilter implements Filter {
                 CANCEL_APPLICATION,
                 APPLICATION_CANCELED,
                 MAKE_TEMPORARY_APPLICATION,
-                MAKE_TEMPORARY_APPLICATION_PAGE);
+                MAKE_TEMPORARY_APPLICATION_PAGE,
+                WRONG_STAY_LENGTH);
 
         addPermissionsTo(Role.MANAGER,
                 MAIN,
@@ -177,7 +178,7 @@ public class AccessFilter implements Filter {
         //Check whether user has been removed from LoginCache by manager or admin
         if (loginIsRemovedFromLoginCache(login, httpRequest)) {
             httpRequest.getSession().invalidate();
-            httpResponse.sendRedirect(contextPath + MAIN_PAGE);
+            httpResponse.sendRedirect(contextPath + MAIN);
             return;
         }
         log.debug("doFilter finished");
@@ -201,8 +202,8 @@ public class AccessFilter implements Filter {
             return false;
         }
         if (roles != null && userStatus != null && userStatus.equals(NON_BLOCKED)) {
-            for (var role : roles) {
-                var permissionsSet = accessMap.get(role);
+            for (final var role : roles) {
+                final var permissionsSet = accessMap.get(role);
                 if (permissionsSet.contains(URI)) {
                     return false;
                 }

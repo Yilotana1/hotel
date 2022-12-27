@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class UserMapper implements EntityMapper<User> {
     @Override
-    public User extractFromResultSet(ResultSet rs) throws SQLException {
+    public User extractFromResultSet(final ResultSet rs) throws SQLException {
         return User.builder()
                 .id(rs.getLong("user.id"))
                 .login(rs.getString("user.login"))
@@ -19,7 +19,7 @@ public class UserMapper implements EntityMapper<User> {
                 .email(rs.getString("user.email"))
                 .phone(rs.getString("user.phone"))
                 .status(UserStatus.getById(rs.getInt("user.status_id")))
-                .money(new BigDecimal(rs.getString("user.money")))
+                .money(BigDecimal.valueOf(rs.getDouble("user.money")))
                 .build();
     }
 }

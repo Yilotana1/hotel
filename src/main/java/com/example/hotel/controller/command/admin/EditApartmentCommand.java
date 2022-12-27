@@ -13,10 +13,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.SHOW_APARTMENTS_MANAGEMENT;
+import static com.example.hotel.controller.Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static com.example.hotel.model.entity.enums.ApartmentStatus.BUSY;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
@@ -28,9 +27,8 @@ public class EditApartmentCommand implements Command {
     private static final String CLASS_REQUEST_PARAMETER = "class_id";
     private static final String STATUS_REQUEST_PARAMETER = "busy";
     private static final String PRICE_REQUEST_PARAMETER = "price";
-    private static final String ERROR_ATTRIBUTE = "error";
+    private static final String ERROR_ATTRIBUTE = "error" + SHOW_APARTMENTS_MANAGEMENT;
     public static final String APARTMENT_NOT_ALLOWED_TO_UPDATE = "apartment_not_allowed_to_update";
-    public static final String WHITESPACE = " ";
     private ApartmentService apartmentService = ServiceFactory.getInstance().createApartmentService();
 
     public EditApartmentCommand() {
@@ -49,12 +47,12 @@ public class EditApartmentCommand implements Command {
             response.sendRedirect(request.getContextPath() + SHOW_APARTMENTS_MANAGEMENT);
         } catch (final InvalidDataException e) {
             log.error(e.getMessage(), e);
-            request.setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
-            request.getRequestDispatcher(SHOW_APARTMENTS_MANAGEMENT).forward(request, response);
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
+            response.sendRedirect(request.getContextPath() + SHOW_APARTMENTS_MANAGEMENT);
         } catch (final ApartmentNotAllowedToUpdateException e) {
             log.error(e.getMessage(), e);
-            request.setAttribute(ERROR_ATTRIBUTE, APARTMENT_NOT_ALLOWED_TO_UPDATE);
-            request.getRequestDispatcher(SHOW_APARTMENTS_MANAGEMENT).forward(request, response);
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, APARTMENT_NOT_ALLOWED_TO_UPDATE);
+            response.sendRedirect(request.getContextPath() + SHOW_APARTMENTS_MANAGEMENT);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
@@ -68,7 +66,7 @@ public class EditApartmentCommand implements Command {
                 .number(parseLong(request.getParameter(NUMBER_REQUEST_PARAMETER)))
                 .apartmentClass(ApartmentClass.getById(parseInt(request.getParameter(CLASS_REQUEST_PARAMETER))))
                 .status(status)
-                .price(new BigDecimal(price.substring(0, price.indexOf(WHITESPACE))))
+                .price(price)
                 .build();
     }
 }

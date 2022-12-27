@@ -4,11 +4,11 @@ public enum Role {
     CLIENT("client"), MANAGER("manager"), ADMIN("admin");
     private final String role;
 
-    Role(String role) {
+    Role(final String role) {
         this.role = role;
     }
 
-    public static Role getFromString(String role) {
+    public static Role getFromString(final String role) {
         switch (role) {
             case "client": return CLIENT;
             case "manager": return MANAGER;

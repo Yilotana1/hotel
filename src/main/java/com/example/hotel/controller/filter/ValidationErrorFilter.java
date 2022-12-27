@@ -11,8 +11,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class ValidationFilter implements Filter {
-    public static final Logger log = Logger.getLogger(ValidationFilter.class);
+public class ValidationErrorFilter implements Filter {
+    public static final Logger log = Logger.getLogger(ValidationErrorFilter.class);
     public static final String ERROR_ATTRIBUTE_BASE = "error";
 
     @Override

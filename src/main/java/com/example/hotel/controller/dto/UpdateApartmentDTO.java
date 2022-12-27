@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static java.lang.Long.parseLong;
 import static java.util.Objects.requireNonNull;
@@ -15,7 +17,7 @@ public class UpdateApartmentDTO {
     public static final Logger log = Logger.getLogger(UpdateApartmentDTO.class);
     public static final int MIN_NUMBER = 0;
     public static final String NUMBER_REGEX = "[0-9]+";
-    public static final String PRICE_REGEX = "[0-9.]+ \\$";
+    public static final String PRICE_REGEX = "[0-9.]+ (\\$|Грн)";
     public static final String APARTMENT_CLASS_REGEX = "[1-4]";
     public static final String WHITESPACE = " ";
     private Long number;
@@ -48,8 +50,17 @@ public class UpdateApartmentDTO {
             return this;
         }
 
-        public UpdateApartmentDTOBuilder price(final BigDecimal price) {
-            updateApartmentDTO.setPrice(price);
+        public UpdateApartmentDTOBuilder price(final String priceStr) {
+            final var price = priceStr.substring(0, priceStr.indexOf(WHITESPACE));
+            if (priceStr.contains("$")) {
+                updateApartmentDTO.setPrice(new BigDecimal(price));
+            } else {
+                final var koef = new BigDecimal(
+                        ResourceBundle
+                        .getBundle("message", Locale.forLanguageTag("ua"))
+                        .getString("currency_koef"));
+                updateApartmentDTO.setPrice(new BigDecimal(price).divide(koef));
+            }
             return this;
         }
 
@@ -68,7 +79,7 @@ public class UpdateApartmentDTO {
             throw new InvalidDataException("Apartment number must not be empty and be a number", "number");
         }
         if (!price.matches(PRICE_REGEX)) {
-            throw new InvalidDataException("Price must not be empty and be double value");
+            throw new InvalidDataException("Price must not be empty and be double value", "price");
         }
         if (!classId.matches(APARTMENT_CLASS_REGEX)) {
             throw new InvalidDataException("Apartment class id must be between 1 and 4", "class");
@@ -93,6 +104,7 @@ public class UpdateApartmentDTO {
         }
 
     }
+
     public Long getNumber() {
         return number;
     }

@@ -15,10 +15,10 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.CLIENT_HAS_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.MAKE_TEMPORARY_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.SUCCESS_APPLY_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.CLIENT_HAS_APPLICATION_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.MAKE_TEMPORARY_APPLICATION_PAGE;
+import static com.example.hotel.controller.Path.Get.Client.SUCCESS_APPLY_PAGE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static com.example.hotel.model.dao.Tools.getLoginFromSession;
 import static java.lang.Integer.parseInt;
 
@@ -26,6 +26,7 @@ public class MakeTemporaryApplicationCommand implements Command {
     public final static Logger log = Logger.getLogger(MakeTemporaryApplicationCommand.class);
     public static final String ERROR_PROPERTY_NAME = "apartments_with_such_parameters_dont_exist";
     private ApplicationService applicationService = ServiceFactory.getInstance().createApplicationService();
+    public static final String ERROR_ATTRIBUTE = "error" + MAKE_TEMPORARY_APPLICATION_PAGE;
 
     public MakeTemporaryApplicationCommand() {
     }
@@ -43,15 +44,15 @@ public class MakeTemporaryApplicationCommand implements Command {
             response.sendRedirect(request.getContextPath() + SUCCESS_APPLY_PAGE);
         } catch (final InvalidDataException e) {
             log.error("Validation error: " + e.getMessage(), e);
-            request.setAttribute("error", e.getInvalidField() + "_is_invalid");
-            request.getRequestDispatcher(MAKE_TEMPORARY_APPLICATION_PAGE).forward(request, response);
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
+            response.sendRedirect(request.getContextPath() + MAKE_TEMPORARY_APPLICATION_PAGE);
         } catch (final ClientHasNotCanceledApplicationException e) {
             log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + CLIENT_HAS_APPLICATION_PAGE);
         } catch (final ApartmentsNotFoundException e) {
             log.error(e.getMessage(), e);
-            request.setAttribute("error", ERROR_PROPERTY_NAME);
-            request.getRequestDispatcher(MAKE_TEMPORARY_APPLICATION_PAGE).forward(request, response);
+            request.getSession().setAttribute(ERROR_ATTRIBUTE, ERROR_PROPERTY_NAME);
+            response.sendRedirect(request.getContextPath() + MAKE_TEMPORARY_APPLICATION_PAGE);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
             response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);

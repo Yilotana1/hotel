@@ -4,7 +4,6 @@ import com.example.hotel.controller.dto.UpdateApartmentDTO;
 import com.example.hotel.model.dao.exception.DaoException;
 import com.example.hotel.model.dao.factory.DaoFactory;
 import com.example.hotel.model.entity.Apartment;
-import com.example.hotel.model.entity.enums.ApartmentStatus;
 import com.example.hotel.model.service.ApartmentService;
 import com.example.hotel.model.service.exception.ApartmentNotAllowedToUpdateException;
 import com.example.hotel.model.service.exception.ApartmentNotFoundException;
@@ -18,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.example.hotel.model.ConnectionPoolHolder.getConnection;
+import static com.example.hotel.model.entity.enums.ApartmentStatus.BUSY;
 
 public class ApartmentServiceImpl implements ApartmentService {
     public static final Logger log = Logger.getLogger(ApartmentServiceImpl.class);
@@ -148,11 +148,11 @@ public class ApartmentServiceImpl implements ApartmentService {
             final var apartment = apartmentDao
                     .findByNumber(number)
                     .orElseThrow(() -> new ApartmentNotFoundException("Apartment " + number + "not found"));
-            if (apartment.isBooked() || apartment.isNotAvailable()) {
+            if (apartment.isNotAllowedToUpdate()) {
                 throw new ApartmentNotAllowedToUpdateException(
                         "Apartment with status =  " + apartment.getStatus() + " not allowed to get updated");
             }
-            setUpdatedFields(updateApartmentDTO, apartment);
+            setFieldsToUpdate(updateApartmentDTO, apartment);
             apartmentDao.update(apartment);
             connection.commit();
         } catch (final DaoException | SQLException e) {
@@ -161,10 +161,12 @@ public class ApartmentServiceImpl implements ApartmentService {
         }
     }
 
-    private static void setUpdatedFields(final UpdateApartmentDTO updateApartmentDTO,
-                                         final Apartment apartment) {
-        if (updateApartmentDTO.getStatus() == ApartmentStatus.BUSY) {
+    private static void setFieldsToUpdate(final UpdateApartmentDTO updateApartmentDTO,
+                                          final Apartment apartment) {
+        if (updateApartmentDTO.getStatus() == BUSY) {
             apartment.setStatus(updateApartmentDTO.getStatus());
+        } else {
+            apartment.makeFree();
         }
         apartment.setPrice(updateApartmentDTO.getPrice());
         apartment.setApartmentClass(updateApartmentDTO.getApartmentClass());

@@ -11,6 +11,7 @@
 <html>
 <head>
     <title>Title</title>
+    <jsp:include page="parts/common.jsp"/>
 </head>
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>

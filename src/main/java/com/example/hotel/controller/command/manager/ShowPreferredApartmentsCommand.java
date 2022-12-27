@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.PREFERRED_APARTMENTS_PAGE;
+import static com.example.hotel.controller.Path.Get.Manager.PREFERRED_APARTMENTS_PAGE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.requireNonNullElse;
 

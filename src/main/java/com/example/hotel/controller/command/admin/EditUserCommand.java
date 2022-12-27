@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static com.example.hotel.controller.Path.ADMIN_MANAGE_USERS;
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
+import static com.example.hotel.controller.Path.Get.Admin.ADMIN_MANAGE_USERS;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static com.example.hotel.model.entity.enums.UserStatus.BLOCKED;
 import static com.example.hotel.model.entity.enums.UserStatus.NON_BLOCKED;
 

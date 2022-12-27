@@ -12,9 +12,9 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.MONEY_VALUE_IS_INCORRECT;
-import static com.example.hotel.controller.Path.PROFILE;
+import static com.example.hotel.controller.Path.Get.Client.MONEY_VALUE_IS_INCORRECT;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
+import static com.example.hotel.controller.Path.Get.User.PROFILE;
 import static com.example.hotel.model.dao.Tools.getLoginFromSession;
 
 public class UpdateUserMoneyCommand implements Command {

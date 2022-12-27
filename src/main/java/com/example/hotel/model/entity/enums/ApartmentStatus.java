@@ -1,14 +1,14 @@
 package com.example.hotel.model.entity.enums;
 
 public enum ApartmentStatus {
-    FREE("free"),
-    BUSY("busy"),
-    BOOKED("booked"),
-    UNAVAILABLE("unavailable");
+    FREE,
+    BUSY,
+    BOOKED,
+    UNAVAILABLE;
 
     private final Integer id = this.ordinal() + 1;
 
-    public static ApartmentStatus getById(Integer id) {
+    public static ApartmentStatus getById(final Integer id) {
         switch (id) {
             case 1:
                 return FREE;
@@ -24,14 +24,5 @@ public enum ApartmentStatus {
 
     public Integer getId() {
         return id;
-    }
-
-    private final String statusName;
-    ApartmentStatus(String applicationStatus){
-        this.statusName = applicationStatus;
-    }
-
-    public String getStatusName() {
-        return statusName;
     }
 }

@@ -8,9 +8,9 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.LOGIN_PAGE;
-import static com.example.hotel.controller.Path.PROFILE;
+import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
+import static com.example.hotel.controller.Path.Get.User.LOGIN_PAGE;
+import static com.example.hotel.controller.Path.Get.User.PROFILE;
 import static com.example.hotel.model.dao.Tools.addLoginToCache;
 import static com.example.hotel.model.dao.Tools.addLoginToSession;
 import static com.example.hotel.model.dao.Tools.addRolesToSession;
@@ -48,10 +48,10 @@ public class LoginCommand implements Command {
                 response.sendRedirect(request.getContextPath() + LOGIN_PAGE);
                 return;
             }
-            var user = userService.signIn(login, password);
+            final var user = userService.signIn(login, password);
             if (user.isEmpty()) {
                 log.error("User login-process has failed");
-                request.getSession().setAttribute("error", "user_not_found");
+                request.getSession().setAttribute(ERROR_ATTRIBUTE, "user_not_found");
                 response.sendRedirect(request.getContextPath() + LOGIN_PAGE);
                 return;
             }

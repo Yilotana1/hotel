@@ -5,6 +5,7 @@ import com.example.hotel.model.entity.Application;
 import com.example.hotel.model.entity.User;
 import com.example.hotel.model.entity.enums.ApplicationStatus;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,14 +22,14 @@ public class ApplicationMapper implements EntityMapper<Application> {
     }
 
     @Override
-    public Application extractFromResultSet(ResultSet rs) throws SQLException {
+    public Application extractFromResultSet(final ResultSet rs) throws SQLException {
         final var startDate = Optional.ofNullable(rs.getDate("start_date"));
         final var endDate = Optional.ofNullable(rs.getDate("end_date"));
         return Application
                 .builder()
                 .id(rs.getLong("application.id"))
                 .applicationStatus(ApplicationStatus.getById(rs.getInt("application.status_id")))
-                .price(rs.getBigDecimal("application.price"))
+                .price(BigDecimal.valueOf(rs.getDouble("application.price")))
                 .client(userMapper.extractFromResultSet(rs))
                 .apartment(apartmentMapper.extractFromResultSet(rs))
                 .creationDate(rs.getTimestamp("application.creation_date").toLocalDateTime())

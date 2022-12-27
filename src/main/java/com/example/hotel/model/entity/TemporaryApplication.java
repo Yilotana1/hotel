@@ -35,7 +35,7 @@ public class TemporaryApplication {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -43,7 +43,7 @@ public class TemporaryApplication {
         return stayLength;
     }
 
-    public void setStayLength(Integer stayLength) {
+    public void setStayLength(final Integer stayLength) {
         this.stayLength = stayLength;
     }
 
@@ -51,7 +51,7 @@ public class TemporaryApplication {
         return numberOfPeople;
     }
 
-    public void setNumberOfPeople(Integer numberOfPeople) {
+    public void setNumberOfPeople(final Integer numberOfPeople) {
         this.numberOfPeople = numberOfPeople;
     }
 
@@ -59,7 +59,7 @@ public class TemporaryApplication {
         return apartmentClass;
     }
 
-    public void setApartmentClass(ApartmentClass apartmentClass) {
+    public void setApartmentClass(final ApartmentClass apartmentClass) {
         this.apartmentClass = apartmentClass;
     }
 
