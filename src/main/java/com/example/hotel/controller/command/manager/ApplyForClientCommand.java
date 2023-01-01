@@ -1,5 +1,7 @@
 package com.example.hotel.controller.command.manager;
 
+import com.example.hotel.commons.Constants.RequestParameters;
+import com.example.hotel.commons.Path;
 import com.example.hotel.controller.command.Command;
 import com.example.hotel.controller.dto.ApplicationDTO;
 import com.example.hotel.controller.exception.InvalidDataException;
@@ -13,15 +15,11 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.Get.Manager.CLIENT_HAS_ASSIGNED_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.Get.Manager.SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE;
-import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static java.lang.Integer.parseInt;
 
 public class ApplyForClientCommand implements Command {
     public static final Logger log = Logger.getLogger(ApplyForClientCommand.class);
     private ApplicationService applicationService = ServiceFactory.getInstance().createApplicationService();
-
     public ApplyForClientCommand() {
     }
 
@@ -34,28 +32,32 @@ public class ApplyForClientCommand implements Command {
         try {
             final var applicationDTO = getApplicationDTOFromRequest(request);
             applicationService.apply(applicationDTO);
-            response.sendRedirect(request.getContextPath() + SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE);
+            final var redirectPath = request.getContextPath()
+                    + Path.Get.Manager.SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE;
+            response.sendRedirect(redirectPath);
+
         } catch (final ClientHasNotCanceledApplicationException e) {
             log.error(e.getMessage(), e);
-            response.sendRedirect(request.getContextPath() + CLIENT_HAS_ASSIGNED_APPLICATION_PAGE);
+            final var redirectPath = request.getContextPath() + Path.Get.Manager.CLIENT_HAS_ASSIGNED_APPLICATION_PAGE;
+            response.sendRedirect(redirectPath);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
-            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
+            response.sendRedirect(request.getContextPath() + Path.Get.Error.ERROR_503);
         }
     }
 
     public static ApplicationDTO getApplicationDTOFromRequest(final HttpServletRequest request) throws InvalidDataException {
-        final var stayLength = request.getParameter("stay_length");
+        final var stayLength = request.getParameter(RequestParameters.STAY_LENGTH);
         if (stayLength == null || stayLength.isBlank()) {
-            throw new InvalidDataException("stayLength must be specified", "stay_length");
+            throw new InvalidDataException("stayLength must be specified", RequestParameters.STAY_LENGTH);
         }
-        final var apartmentNumber = request.getParameter("number");
+        final var apartmentNumber = request.getParameter(RequestParameters.APARTMENT_NUMBER);
         if (apartmentNumber == null) {
-            throw new InvalidDataException("apartmentNumber must be specified", "stay_length");
+            throw new InvalidDataException("apartmentNumber must be specified", RequestParameters.STAY_LENGTH);
         }
         return ApplicationDTO.builder()
                 .apartmentNumber(parseInt(apartmentNumber))
-                .clientLogin(request.getParameter("client_login"))
+                .clientLogin(request.getParameter(RequestParameters.LOGIN))
                 .stayLength(parseInt(stayLength))
                 .build();
     }

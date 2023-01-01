@@ -38,7 +38,7 @@
                     <form action="${pageContext.request.contextPath}/manager/apply-for-client" method="post">
                         <fmt:message key="choose" var="choose"/>
                         <input type="hidden" name="number" value="${apartment.number}">
-                        <input type="hidden" name="client_login" value="${requestScope.client_login}">
+                        <input type="hidden" name="login" value="${requestScope.client_login}">
                         <input type="hidden" name="stay_length" value="${requestScope.stay_length}">
                         <input type="submit" value="${choose}" class="btn btn-primary text-white">
                     </form>

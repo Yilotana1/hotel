@@ -1,5 +1,6 @@
 package com.example.hotel.controller.filter;
 
+import com.example.hotel.commons.Path;
 import com.example.hotel.model.entity.enums.Role;
 import com.example.hotel.model.entity.enums.UserStatus;
 import jakarta.servlet.Filter;
@@ -20,43 +21,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.example.hotel.controller.Path.Get.Admin.ADMIN_MANAGE_USERS;
-import static com.example.hotel.controller.Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT;
-import static com.example.hotel.controller.Path.Get.Client.APARTMENT_NOT_AVAILABLE_PAGE;
-import static com.example.hotel.controller.Path.Get.Client.APPLICATION_CANCELED;
-import static com.example.hotel.controller.Path.Get.Client.APPLICATION_INVOICE;
-import static com.example.hotel.controller.Path.Get.Client.CLIENT_HAS_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.Get.Client.MAKE_TEMPORARY_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.Get.Client.MONEY_VALUE_IS_INCORRECT;
-import static com.example.hotel.controller.Path.Get.Client.SHOW_APPLY_PAGE;
-import static com.example.hotel.controller.Path.Get.Client.SUCCESS_APPLY_PAGE;
-import static com.example.hotel.controller.Path.Get.Client.WRONG_STAY_LENGTH;
-import static com.example.hotel.controller.Path.Get.Manager.CLIENT_HAS_ASSIGNED_APPLICATION_PAGE;
-import static com.example.hotel.controller.Path.Get.Manager.MANAGER_LIST_USERS;
-import static com.example.hotel.controller.Path.Get.Manager.PREFERRED_APARTMENTS_PAGE;
-import static com.example.hotel.controller.Path.Get.Manager.SHOW_APARTMENTS;
-import static com.example.hotel.controller.Path.Get.Manager.SHOW_PREFERRED_APARTMENTS;
-import static com.example.hotel.controller.Path.Get.Manager.SHOW_TEMPORARY_APPLICATIONS;
-import static com.example.hotel.controller.Path.Get.Manager.SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE;
-import static com.example.hotel.controller.Path.Get.User.ERROR_404_PAGE;
-import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.Get.User.LOGIN;
-import static com.example.hotel.controller.Path.Get.User.LOGIN_PAGE;
-import static com.example.hotel.controller.Path.Get.User.LOGOUT;
-import static com.example.hotel.controller.Path.Get.User.MAIN;
-import static com.example.hotel.controller.Path.Get.User.PROFILE;
-import static com.example.hotel.controller.Path.Get.User.SIGNUP_PAGE;
-import static com.example.hotel.controller.Path.Post.Admin.ADMIN_EDIT_USER;
-import static com.example.hotel.controller.Path.Post.Admin.EDIT_APARTMENT;
-import static com.example.hotel.controller.Path.Post.Client.CANCEL_APPLICATION;
-import static com.example.hotel.controller.Path.Post.Client.CLIENT_APPLY;
-import static com.example.hotel.controller.Path.Post.Client.CONFIRM_PAYMENT;
-import static com.example.hotel.controller.Path.Post.Client.MAKE_TEMPORARY_APPLICATION;
-import static com.example.hotel.controller.Path.Post.Client.UPDATE_MONEY_ACCOUNT;
-import static com.example.hotel.controller.Path.Post.Manager.APPLY_FOR_CLIENT;
-import static com.example.hotel.controller.Path.Post.User.EDIT_PROFILE;
-import static com.example.hotel.controller.Path.Post.User.SIGNUP;
-import static com.example.hotel.model.dao.Tools.userIsLogged;
+import static com.example.hotel.commons.Tools.userIsLogged;
 import static com.example.hotel.model.entity.enums.UserStatus.BLOCKED;
 import static com.example.hotel.model.entity.enums.UserStatus.NON_BLOCKED;
 
@@ -83,76 +48,65 @@ public class AccessFilter implements Filter {
      * @param filterConfig
      */
     @Override
-    public void init(FilterConfig filterConfig) {
+    public void init(final FilterConfig filterConfig) {
         log.debug("Filter started initializing");
         contextPath = filterConfig.getServletContext().getContextPath();
+        try {
 
-        addPermissionsForBlockedUsers(
-                MAIN,
-                ERROR_404_PAGE,
-                ERROR_503_PAGE,
-                PROFILE,
-                EDIT_PROFILE,
-                LOGOUT);
+            addPermissionsToUndefinedUser(
+                    Path.Post.User.SIGNUP,
+                    Path.Get.User.LOGIN,
+                    Path.Get.User.LOGIN_PAGE,
+                    Path.Get.User.MAIN,
+                    Path.Get.User.SIGNUP_PAGE,
+                    Path.Get.Error.ERROR_404,
+                    Path.Get.Error.ERROR_503);
 
-        addPermissionsToUndefinedUser(
-                LOGIN,
-                LOGIN_PAGE,
-                MAIN,
-                SIGNUP,
-                SIGNUP_PAGE,
-                ERROR_404_PAGE,
-                ERROR_503_PAGE);
+            addPermissionsTo(Role.CLIENT,
+                    Path.Post.Client.UPDATE_MONEY_ACCOUNT,
+                    Path.Post.Client.CLIENT_APPLY,
+                    Path.Post.Client.CONFIRM_PAYMENT,
+                    Path.Post.Client.CANCEL_APPLICATION,
+                    Path.Post.Client.MAKE_TEMPORARY_APPLICATION,
+                    Path.Get.Client.SHOW_APPLY_PAGE,
+                    Path.Get.Client.SUCCESS_APPLY_PAGE,
+                    Path.Get.Client.APPLICATION_INVOICE,
+                    Path.Get.Client.APARTMENT_NOT_AVAILABLE_PAGE,
+                    Path.Get.Client.CLIENT_HAS_APPLICATION_PAGE,
+                    Path.Get.Client.MONEY_VALUE_IS_INCORRECT,
+                    Path.Get.Client.APPLICATION_CANCELED,
+                    Path.Get.Client.MAKE_TEMPORARY_APPLICATION_PAGE,
+                    Path.Get.Client.WRONG_STAY_LENGTH);
 
-        addPermissionsTo(Role.CLIENT,
-                MAIN,
-                ERROR_404_PAGE,
-                ERROR_503_PAGE,
-                LOGOUT,
-                PROFILE,
-                EDIT_PROFILE,
-                UPDATE_MONEY_ACCOUNT,
-                CLIENT_APPLY,
-                SHOW_APPLY_PAGE,
-                SUCCESS_APPLY_PAGE,
-                APPLICATION_INVOICE,
-                APARTMENT_NOT_AVAILABLE_PAGE,
-                CLIENT_HAS_APPLICATION_PAGE,
-                CONFIRM_PAYMENT,
-                MONEY_VALUE_IS_INCORRECT,
-                CANCEL_APPLICATION,
-                APPLICATION_CANCELED,
-                MAKE_TEMPORARY_APPLICATION,
-                MAKE_TEMPORARY_APPLICATION_PAGE,
-                WRONG_STAY_LENGTH);
+            addPermissionsTo(Role.MANAGER,
+                    Path.Post.Manager.APPLY_FOR_CLIENT,
+                    Path.Get.Manager.MANAGER_LIST_USERS,
+                    Path.Get.Manager.SHOW_PREFERRED_APARTMENTS,
+                    Path.Get.Manager.PREFERRED_APARTMENTS_PAGE,
+                    Path.Get.Manager.CLIENT_HAS_ASSIGNED_APPLICATION_PAGE,
+                    Path.Get.Manager.SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE,
+                    Path.Get.Manager.SHOW_TEMPORARY_APPLICATIONS,
+                    Path.Get.Manager.SHOW_APARTMENTS);
 
-        addPermissionsTo(Role.MANAGER,
-                MAIN,
-                ERROR_404_PAGE,
-                ERROR_503_PAGE,
-                LOGOUT,
-                PROFILE,
-                EDIT_PROFILE,
-                MANAGER_LIST_USERS,
-                SHOW_PREFERRED_APARTMENTS,
-                PREFERRED_APARTMENTS_PAGE,
-                APPLY_FOR_CLIENT,
-                CLIENT_HAS_ASSIGNED_APPLICATION_PAGE,
-                SUCCESSFUL_APPLICATION_ASSIGNMENT_PAGE,
-                SHOW_TEMPORARY_APPLICATIONS,
-                SHOW_APARTMENTS);
+            addPermissionsTo(Role.ADMIN,
+                    Path.Post.Admin.ADMIN_EDIT_USER,
+                    Path.Post.Admin.EDIT_APARTMENT,
+                    Path.Get.Admin.ADMIN_MANAGE_USERS,
+                    Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT
+            );
 
-        addPermissionsTo(Role.ADMIN,
-                MAIN,
-                ERROR_404_PAGE,
-                ERROR_503_PAGE,
-                LOGOUT,
-                PROFILE,
-                EDIT_PROFILE,
-                ADMIN_MANAGE_USERS,
-                ADMIN_EDIT_USER,
-                SHOW_APARTMENTS_MANAGEMENT,
-                EDIT_APARTMENT);
+            addPermissionsToAll(
+                    Path.Post.User.EDIT_PROFILE,
+                    Path.Get.User.MAIN,
+                    Path.Get.Error.ERROR_404,
+                    Path.Get.Error.ERROR_503,
+                    Path.Get.User.LOGOUT,
+                    Path.Get.User.PROFILE
+            );
+        } catch (final Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
         log.debug("Filter initialized");
     }
 
@@ -171,14 +125,14 @@ public class AccessFilter implements Filter {
         final var URI = httpRequest.getRequestURI();
         if (actionIsForbidden(userStatus, roles, URI)) {
             log.trace("actionIsForbidden URI = " + URI);
-            httpResponse.sendRedirect(contextPath + ERROR_404_PAGE);
+            httpResponse.sendRedirect(contextPath + Path.Get.Error.ERROR_404);
             return;
         }
 
         //Check whether user has been removed from LoginCache by manager or admin
         if (loginIsRemovedFromLoginCache(login, httpRequest)) {
             httpRequest.getSession().invalidate();
-            httpResponse.sendRedirect(contextPath + MAIN);
+            httpResponse.sendRedirect(contextPath + Path.Get.User.MAIN);
             return;
         }
         log.debug("doFilter finished");
@@ -212,38 +166,42 @@ public class AccessFilter implements Filter {
         return true;
     }
 
-    private static boolean loginIsRemovedFromLoginCache(String login, HttpServletRequest httpRequest) {
+    private static boolean loginIsRemovedFromLoginCache(final String login,
+                                                        final HttpServletRequest httpRequest) {
         return login != null && !(userIsLogged(login, httpRequest));
     }
 
-    private UserStatus getUserStatusFromSession(HttpSession session) {
+    private UserStatus getUserStatusFromSession(final HttpSession session) {
         return (UserStatus) session.getAttribute("status");
     }
 
-    private String getLoginFromSession(HttpSession session) {
+    private String getLoginFromSession(final HttpSession session) {
         return (String) session.getAttribute("login");
     }
 
-    private Collection<Role> getRolesFromSession(HttpSession session) {
+    private Collection<Role> getRolesFromSession(final HttpSession session) {
         return (Collection<Role>) session.getAttribute("roles");
     }
 
-    private void addPermissionsToUndefinedUser(String... permissions) {
-        for (var permission : permissions) {
+    private void addPermissionsToUndefinedUser(final String... permissions) {
+        for (final var permission : permissions) {
             undefinedUserPermissionsSet.add(contextPath + permission);
         }
     }
 
-    private void addPermissionsForBlockedUsers(String... permissions) {
-        for (var permission : permissions) {
-            blockedUsersPermission.add(contextPath + permission);
+    private void addPermissionsToAll(final String... permissions) {
+        for (final var entry : accessMap.entrySet()) {
+            for (final var permission : permissions) {
+                entry.getValue().add(contextPath + permission);
+                blockedUsersPermission.add(contextPath + permission);
+            }
         }
     }
 
-    private void addPermissionsTo(Role role, String... permissions) {
+    private void addPermissionsTo(final Role role, final String... permissions) {
         accessMap.putIfAbsent(role, new HashSet<>());
-        var permissionSet = accessMap.get(role);
-        for (var permission : permissions) {
+        final var permissionSet = accessMap.get(role);
+        for (final var permission : permissions) {
             permissionSet.add(contextPath + permission);
         }
     }

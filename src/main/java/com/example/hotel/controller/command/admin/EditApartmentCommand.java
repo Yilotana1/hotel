@@ -1,5 +1,7 @@
 package com.example.hotel.controller.command.admin;
 
+import com.example.hotel.commons.Constants.RequestAttributes;
+import com.example.hotel.commons.Path;
 import com.example.hotel.controller.command.Command;
 import com.example.hotel.controller.dto.UpdateApartmentDTO;
 import com.example.hotel.controller.exception.InvalidDataException;
@@ -14,8 +16,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT;
-import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
+import static com.example.hotel.commons.Tools.setInvalidFieldMessage;
 import static com.example.hotel.model.entity.enums.ApartmentStatus.BUSY;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
@@ -27,8 +28,8 @@ public class EditApartmentCommand implements Command {
     private static final String CLASS_REQUEST_PARAMETER = "class_id";
     private static final String STATUS_REQUEST_PARAMETER = "busy";
     private static final String PRICE_REQUEST_PARAMETER = "price";
-    private static final String ERROR_ATTRIBUTE = "error" + SHOW_APARTMENTS_MANAGEMENT;
-    public static final String APARTMENT_NOT_ALLOWED_TO_UPDATE = "apartment_not_allowed_to_update";
+    public static final String ERROR_MESSAGE = "apartment_not_allowed_to_update";
+    private final String errorAttribute = RequestAttributes.ERROR_PREFIX + Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT;
     private ApartmentService apartmentService = ServiceFactory.getInstance().createApartmentService();
 
     public EditApartmentCommand() {
@@ -44,18 +45,19 @@ public class EditApartmentCommand implements Command {
             UpdateApartmentDTO.throwIfNotValid(request);
             final var apartmentDTO = getApartmentDTOFromRequest(request);
             apartmentService.update(apartmentDTO);
-            response.sendRedirect(request.getContextPath() + SHOW_APARTMENTS_MANAGEMENT);
+            response.sendRedirect(request.getContextPath() + Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT);
+
         } catch (final InvalidDataException e) {
             log.error(e.getMessage(), e);
-            request.getSession().setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
-            response.sendRedirect(request.getContextPath() + SHOW_APARTMENTS_MANAGEMENT);
+            setInvalidFieldMessage(request, e, errorAttribute);
+            response.sendRedirect(request.getContextPath() + Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT);
         } catch (final ApartmentNotAllowedToUpdateException e) {
             log.error(e.getMessage(), e);
-            request.getSession().setAttribute(ERROR_ATTRIBUTE, APARTMENT_NOT_ALLOWED_TO_UPDATE);
-            response.sendRedirect(request.getContextPath() + SHOW_APARTMENTS_MANAGEMENT);
+            request.getSession().setAttribute(errorAttribute, ERROR_MESSAGE);
+            response.sendRedirect(request.getContextPath() + Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
-            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
+            response.sendRedirect(request.getContextPath() + Path.Get.Error.ERROR_503);
         }
     }
 

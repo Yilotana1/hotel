@@ -1,5 +1,7 @@
 package com.example.hotel.controller.command.client;
 
+import com.example.hotel.commons.Constants.RequestParameters;
+import com.example.hotel.commons.Path;
 import com.example.hotel.controller.command.Command;
 import com.example.hotel.controller.exception.MoneyValueIsNotValidException;
 import com.example.hotel.model.service.UserService;
@@ -12,14 +14,10 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-import static com.example.hotel.controller.Path.Get.Client.MONEY_VALUE_IS_INCORRECT;
-import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.Get.User.PROFILE;
-import static com.example.hotel.model.dao.Tools.getLoginFromSession;
+import static com.example.hotel.commons.Tools.getLoginFromSession;
 
 public class UpdateUserMoneyCommand implements Command {
     public final static Logger log = Logger.getLogger(UpdateUserMoneyCommand.class);
-    public static final String MONEY = "money";
     private UserService userService = ServiceFactory.getInstance().createUserService();
 
     public UpdateUserMoneyCommand() {
@@ -33,19 +31,19 @@ public class UpdateUserMoneyCommand implements Command {
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         try {
             final var login = getLoginFromSession(request.getSession());
-            final var moneyInput = request.getParameter(MONEY);
+            final var moneyInput = request.getParameter(RequestParameters.CLIENT_MONEY);
             if (moneyInputIsIncorrect(moneyInput)) {
                 throw new MoneyValueIsNotValidException();
             }
             final var moneyToAdd = new BigDecimal(moneyInput);
             userService.updateMoneyAccount(login, moneyToAdd);
-            response.sendRedirect(request.getContextPath() + PROFILE);
+            response.sendRedirect(request.getContextPath() + Path.Get.User.PROFILE);
         } catch (final MoneyValueIsNotValidException e) {
             log.error("User specified wrong money value");
-            response.sendRedirect(request.getContextPath() + MONEY_VALUE_IS_INCORRECT);
+            response.sendRedirect(request.getContextPath() + Path.Get.Client.MONEY_VALUE_IS_INCORRECT);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
-            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
+            response.sendRedirect(request.getContextPath() + Path.Get.Error.ERROR_503);
         }
     }
 

@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static com.example.hotel.controller.filter.LocalizationFilter.LANGUAGE;
-import static com.example.hotel.model.dao.Tools.getLoginFromSession;
+import static com.example.hotel.commons.Tools.getLoginFromSession;
 
 public class ShowApprovedApplicationHandler extends TagSupport {
     public static final Logger log = Logger.getLogger(ShowApprovedApplicationHandler.class);

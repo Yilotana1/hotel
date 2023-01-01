@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
-import static com.example.hotel.model.dao.Tools.getGeneratedId;
+import static com.example.hotel.commons.Tools.getGeneratedId;
 import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN;
 import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_DELAY_FROM_CREATION_DATE;
 import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_ID;

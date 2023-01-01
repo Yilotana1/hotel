@@ -1,5 +1,9 @@
 package com.example.hotel.controller.command;
 
+import com.example.hotel.commons.Constants.RequestAttributes;
+import com.example.hotel.commons.Constants.SessionAttributes;
+import com.example.hotel.commons.Path;
+import com.example.hotel.model.entity.User;
 import com.example.hotel.model.service.ApplicationService;
 import com.example.hotel.model.service.UserService;
 import com.example.hotel.model.service.exception.LoginIsNotFoundException;
@@ -10,15 +14,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.Get.User.PROFILE_PAGE;
-
 public class ShowProfileCommand implements Command {
     public final static Logger log = Logger.getLogger(ShowProfileCommand.class);
-    public static final String LOGIN_INPUT = "login";
-    public static final String USER_ATTRIBUTE = "user";
-    public static final String APPLICATION_ATTRIBUTE = "application";
-
     private UserService userService = ServiceFactory.getInstance().createUserService();
     private ApplicationService applicationService = ServiceFactory.getInstance().createApplicationService();
 
@@ -31,21 +28,26 @@ public class ShowProfileCommand implements Command {
     }
 
     @Override
-    public void execute(final HttpServletRequest request, final HttpServletResponse response) throws IOException{
+    public void execute(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         log.debug("Started command");
-        final var login = (String) request.getSession().getAttribute(LOGIN_INPUT);
+        final var login = (String) request.getSession().getAttribute(SessionAttributes.LOGIN);
         try {
             final var user = userService
                     .getByLogin(login)
                     .orElseThrow(() -> new LoginIsNotFoundException(login + " is not found"));
-            applicationService
-                    .getNotApprovedApplicationByClientId(user.getId())
-                    .ifPresent(app -> request.setAttribute(APPLICATION_ATTRIBUTE, app));
-            request.setAttribute(USER_ATTRIBUTE, user);
-            request.getRequestDispatcher(PROFILE_PAGE).forward(request, response);
+            setNotApprovedApplicationToRequestScope(request, user);
+            request.setAttribute(RequestAttributes.USER, user);
+            request.getRequestDispatcher(Path.Get.User.PROFILE_PAGE).forward(request, response);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
-            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
+            response.sendRedirect(request.getContextPath() + Path.Get.Error.ERROR_503);
         }
+    }
+
+    private void setNotApprovedApplicationToRequestScope(final HttpServletRequest request,
+                                                         final User user) {
+        applicationService
+                .getNotApprovedApplicationByClientId(user.getId())
+                .ifPresent(app -> request.setAttribute(RequestAttributes.APPLICATION, app));
     }
 }

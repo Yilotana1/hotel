@@ -1,5 +1,8 @@
 package com.example.hotel.controller.command.admin;
 
+import com.example.hotel.commons.Constants.RequestAttributes;
+import com.example.hotel.commons.Constants.RequestAttributes.PaginationAttributes;
+import com.example.hotel.commons.Path;
 import com.example.hotel.controller.command.Command;
 import com.example.hotel.model.service.ApartmentService;
 import com.example.hotel.model.service.factory.ServiceFactory;
@@ -11,50 +14,58 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.example.hotel.controller.Path.Get.Admin.APARTMENTS_MANAGEMENT_PAGE;
-import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.requireNonNullElse;
 
 public class ShowApartmentsManagementCommand implements Command {
     public static final Logger log = Logger.getLogger(ShowApartmentsManagementCommand.class);
     public static final String RESIDENT_LOGIN = "resident_login";
-
     private ApartmentService apartmentService = ServiceFactory.getInstance().createApartmentService();
-    private static final String PAGE_NUMBER_INPUT = "page";
-    private static final String DEFAULT_PAGE_NUMBER = "1";
     private static final int PAGE_SIZE = 7;
-    private static final String TOTAL_PAGES_NUMBER = "count";
-
-    private static final String APARTMENTS = "apartments";
-
     public ShowApartmentsManagementCommand() {
     }
 
     public ShowApartmentsManagementCommand(final ServiceFactory serviceFactory) {
         apartmentService = serviceFactory.createApartmentService();
     }
+
     @Override
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         try {
-            final var pageNumber = parseInt(requireNonNullElse(request.getParameter(PAGE_NUMBER_INPUT), DEFAULT_PAGE_NUMBER));
-            final var skip = (pageNumber - 1) * PAGE_SIZE;
+            final var pageId = getPageId(request);
+            final var skip = (pageId - 1) * PAGE_SIZE;
             final var login = request.getParameter(RESIDENT_LOGIN);
-            if (login != null && !login.isEmpty()) {
-                final var apartment = apartmentService.getApartmentByResidentLogin(login);
-                apartment.ifPresent(a -> request.setAttribute(APARTMENTS, Map.of(a, login)));
-                request.setAttribute(TOTAL_PAGES_NUMBER, apartment.map(a -> 1).orElse(0));
-            } else {
+            if (login == null || login.isEmpty()) {
                 final var apartmentsMap = apartmentService.getApartmentsWithResidentLogins(skip, PAGE_SIZE);
-                request.setAttribute(APARTMENTS, apartmentsMap);
+                request.setAttribute(RequestAttributes.APARTMENTS, apartmentsMap);
                 final var totalPagesNumber = apartmentService.count() / PAGE_SIZE;
-                request.setAttribute(TOTAL_PAGES_NUMBER, totalPagesNumber);
+                setFinalAttributes(request, pageId, totalPagesNumber);
+                request.getRequestDispatcher(Path.Get.Admin.APARTMENT_MANAGEMENT_PAGE).forward(request, response);
+                return;
             }
-            request.setAttribute(PAGE_NUMBER_INPUT, pageNumber);
-            request.getRequestDispatcher(APARTMENTS_MANAGEMENT_PAGE).forward(request, response);
+            final var apartment = apartmentService.getApartmentByResidentLogin(login);
+            apartment.ifPresent(a -> request.setAttribute(RequestAttributes.APARTMENTS, Map.of(a, login)));
+            final var totalPagesNumber = apartment.map(a -> 1).orElse(0);
+            setFinalAttributes(request, pageId, totalPagesNumber);
+            request.getRequestDispatcher(Path.Get.Admin.APARTMENT_MANAGEMENT_PAGE).forward(request, response);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
-            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
+            response.sendRedirect(request.getContextPath() + Path.Get.Error.ERROR_503);
         }
+    }
+
+
+
+    private void setFinalAttributes(final HttpServletRequest request,
+                                    final int pageId,
+                                    final int totalPagesNumber) {
+        request.setAttribute(PaginationAttributes.TOTAL_PAGES_NUMBER, totalPagesNumber);
+        request.setAttribute(PaginationAttributes.PAGE, pageId);
+    }
+
+    private int getPageId(final HttpServletRequest request) {
+        final var pageInput = request.getParameter(PaginationAttributes.PAGE);
+        final var page = requireNonNullElse(pageInput, PaginationAttributes.DEFAULT_PAGE);
+        return parseInt(page);
     }
 }

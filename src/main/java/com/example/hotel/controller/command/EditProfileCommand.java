@@ -1,5 +1,9 @@
 package com.example.hotel.controller.command;
 
+import com.example.hotel.commons.Constants.RequestAttributes;
+import com.example.hotel.commons.Constants.RequestParameters;
+import com.example.hotel.commons.Constants.SessionAttributes;
+import com.example.hotel.commons.Path;
 import com.example.hotel.controller.dto.UserDTO;
 import com.example.hotel.controller.exception.InvalidDataException;
 import com.example.hotel.model.service.UserService;
@@ -13,16 +17,13 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
-import static com.example.hotel.controller.Path.Get.User.PROFILE;
-import static com.example.hotel.model.dao.Tools.addLoginToCache;
+import static com.example.hotel.commons.Tools.addLoginToCache;
 
 public class EditProfileCommand implements Command {
 
     public final static Logger log = Logger.getLogger(EditProfileCommand.class);
-    public static final String ERROR_ATTRIBUTE = "error" + PROFILE;
-    public static final String LOGIN_ATTRIBUTE = "login";
     private UserService userService = ServiceFactory.getInstance().createUserService();
+    public final String ERROR_ATTRIBUTE = RequestAttributes.ERROR_PREFIX + Path.Get.User.PROFILE;
 
     public EditProfileCommand() {
     }
@@ -38,11 +39,11 @@ public class EditProfileCommand implements Command {
             final var userDTO = getUserDTO(request);
             userService.update(userDTO);
             addLoginToCache(userDTO.getLogin(), request);
-            request.getSession().setAttribute(LOGIN_ATTRIBUTE, userDTO.getLogin());
+            request.getSession().setAttribute(SessionAttributes.LOGIN, userDTO.getLogin());
 
         } catch (final InvalidDataException e) {
             log.error(e.getMessage(), e);
-            request.getSession().setAttribute(ERROR_ATTRIBUTE, e.getInvalidField() + "_is_invalid");
+            setInvalidationErrorMessage(request, e);
         } catch (final LoginIsNotUniqueException e) {
             log.error(e.getMessage(), e);
             request.getSession().setAttribute(ERROR_ATTRIBUTE, "user_with_such_login_exists");
@@ -51,21 +52,28 @@ public class EditProfileCommand implements Command {
             request.getSession().setAttribute(ERROR_ATTRIBUTE, "data_could_not_be_saved");
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
-            response.sendRedirect(request.getContextPath() + ERROR_503_PAGE);
+            response.sendRedirect(request.getContextPath() + Path.Get.Error.ERROR_503);
         } finally {
-            response.sendRedirect(request.getContextPath() + PROFILE);
+            response.sendRedirect(request.getContextPath() + Path.Get.User.PROFILE);
         }
+    }
+
+    private void setInvalidationErrorMessage(final HttpServletRequest request, final InvalidDataException e) {
+        final var message = e.getInvalidField() + SessionAttributes.INVALID_SUFFIX;
+        request
+                .getSession()
+                .setAttribute(ERROR_ATTRIBUTE, message);
     }
 
     private UserDTO getUserDTO(final HttpServletRequest request) {
         return UserDTO
                 .builder()
-                .login(request.getParameter("login"))
-                .firstname(request.getParameter("firstname"))
-                .lastname(request.getParameter("lastname"))
-                .phone(request.getParameter("phone"))
-                .email(request.getParameter("email"))
-                .password(request.getParameter("password"))
+                .login(request.getParameter(RequestParameters.LOGIN))
+                .firstname(request.getParameter(RequestParameters.FIRSTNAME))
+                .lastname(request.getParameter(RequestParameters.LASTNAME))
+                .phone(request.getParameter(RequestParameters.PHONE))
+                .email(request.getParameter(RequestParameters.EMAIL))
+                .password(request.getParameter(RequestParameters.PASSWORD))
                 .build();
     }
 }

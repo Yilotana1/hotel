@@ -1,5 +1,7 @@
 package com.example.hotel.controller.command.admin;
 
+import com.example.hotel.commons.Constants.RequestParameters;
+import com.example.hotel.commons.Path;
 import com.example.hotel.controller.command.Command;
 import com.example.hotel.model.entity.enums.Role;
 import com.example.hotel.model.service.UserService;
@@ -13,8 +15,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static com.example.hotel.controller.Path.Get.Admin.ADMIN_MANAGE_USERS;
-import static com.example.hotel.controller.Path.Get.User.ERROR_503_PAGE;
 import static com.example.hotel.model.entity.enums.UserStatus.BLOCKED;
 import static com.example.hotel.model.entity.enums.UserStatus.NON_BLOCKED;
 
@@ -22,7 +22,6 @@ public class EditUserCommand implements Command {
 
     public final static Logger log = Logger.getLogger(EditUserCommand.class);
     private UserService userService = ServiceFactory.getInstance().createUserService();
-
     public EditUserCommand() {
     }
 
@@ -33,14 +32,15 @@ public class EditUserCommand implements Command {
     @Override
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         try {
-            final var id = Integer.parseInt(request.getParameter("id"));
-            final var status = request.getParameter("blocked") != null ? BLOCKED : NON_BLOCKED;
+            final var id = Integer.parseInt(request.getParameter(RequestParameters.ID));
+            final var status = request
+                    .getParameter(RequestParameters.BLOCKED_STATUS) != null ? BLOCKED : NON_BLOCKED;
             final var roles = getRoles(request);
             userService.update(id, status, roles);
-            response.sendRedirect(request.getContextPath() + ADMIN_MANAGE_USERS);
+            response.sendRedirect(request.getContextPath() + Path.Get.Admin.ADMIN_MANAGE_USERS);
         } catch (final Exception e) {
             log.error(e.getMessage(), e);
-            response.sendRedirect(ERROR_503_PAGE);
+            response.sendRedirect(request.getContextPath() + Path.Get.Error.ERROR_503);
         }
     }
 

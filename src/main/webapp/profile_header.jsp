@@ -12,18 +12,22 @@
 <fmt:setBundle basename="message"/>
 <jsp:include page="locale_buttons.jsp"/>
 <c:if test="${requestScope.user.status.equals(UserStatus.BLOCKED)}">
-    <span class="alert alert-danger my-3" role="alert"><fmt:message key="you_are_blocked"/></span>
+    <div class="my-5">
+        <span class="alert alert-danger my-3" role="alert"><fmt:message key="you_are_blocked"/></span>
+    </div>
 </c:if>
 <br/>
-<custom:approvedApplication/>
-<c:if test="${requestScope.application != null}">
-    <fmt:message key="application_to_confirm"/><br/>
-    <form action="${pageContext.request.contextPath}/client/application-invoice">
-        <fmt:message key="see" var="see"/>
-        <input type="submit" value="${see}" class="btn btn-primary text-white">
-    </form>
+<c:if test="${!requestScope.user.status.equals(UserStatus.BLOCKED)}">
+    <custom:approvedApplication/>
+    <c:if test="${requestScope.application != null}">
+        <fmt:message key="application_to_confirm"/><br/>
+        <form action="${pageContext.request.contextPath}/client/application-invoice">
+            <fmt:message key="see" var="see"/>
+            <input type="submit" value="${see}" class="btn btn-primary text-white">
+        </form>
+    </c:if>
+    <br/>
 </c:if>
-<br/>
 <h3><fmt:message key="information_about_you"/>:</h3>
 <form action="${pageContext.request.contextPath}/edit-profile" method="post">
     <table>
@@ -56,7 +60,8 @@
     <fmt:message key="edit" var="edit"/>
     <input type="submit" value="${edit}" class="my-3 btn btn-primary text-white">
     <c:if test="${!(sessionScope.get('error/profile') == null)}">
-        <span class="alert alert-danger my-3" role="alert"><fmt:message key="${sessionScope.get('error/profile')}"/></span>
+        <span class="alert alert-danger my-3" role="alert"><fmt:message
+                key="${sessionScope.get('error/profile')}"/></span>
     </c:if>
 </form>
 </body>

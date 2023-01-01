@@ -30,7 +30,7 @@ public abstract class DaoFactory {
         if (daoFactory == null) {
             synchronized (DaoFactory.class) {
                 if (daoFactory == null) {
-                    var temp = new JDBCDaoFactory();
+                    final var temp = new JDBCDaoFactory();
                     daoFactory = temp;
                 }
             }

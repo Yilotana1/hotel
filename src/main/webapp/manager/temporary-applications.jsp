@@ -15,7 +15,7 @@
 <jsp:include page="../locale_buttons.jsp"/>
 <div class="mx-3 my-3">
     <form action="${pageContext.request.contextPath}/manager/show-temporary-applications">
-        <fmt:message key="login"/>: <input type="text" name="client_login"/>
+        <fmt:message key="login"/>: <input type="text" name="login"/>
         <fmt:message key="search" var="search"/>
         <input type="submit" value="${search}" class="btn btn-primary text-white"/>
     </form>
@@ -38,7 +38,7 @@
                 <th>${temporary_application.stayLength}</th>
                 <th>
                     <form action="${pageContext.request.contextPath}/manager/show-preferred-apartments">
-                        <input type="hidden" name="client_login" value="${temporary_application.clientLogin}"/>
+                        <input type="hidden" name="login" value="${temporary_application.clientLogin}"/>
                         <input type="hidden" name="stay_length" value="${temporary_application.stayLength}"/>
                         <fmt:message key="apartments" var="apartments"/>
                         <input type="submit" value="${apartments}" class="btn btn-primary text-white"/>
