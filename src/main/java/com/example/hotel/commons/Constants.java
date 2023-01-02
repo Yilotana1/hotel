@@ -32,6 +32,7 @@ public abstract class Constants {
 
     public abstract static class RequestParameters {
         public static final String LOGIN = "login";
+        public static final String BUSY_STATUS = "busy";
         public static final String BLOCKED_STATUS = "blocked";
         public static final String ID = "id";
         public static final String START_DATE = "start_date";
@@ -48,6 +49,7 @@ public abstract class Constants {
         public static final String EMAIL = "email";
         public static final String PASSWORD = "password";
         public static final String SORTED_BY = "sorted_by";
+        public static final String PRICE = "price";
 
     }
 }

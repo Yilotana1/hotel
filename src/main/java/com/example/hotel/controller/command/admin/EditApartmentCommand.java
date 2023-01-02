@@ -1,6 +1,7 @@
 package com.example.hotel.controller.command.admin;
 
 import com.example.hotel.commons.Constants.RequestAttributes;
+import com.example.hotel.commons.Constants.RequestParameters;
 import com.example.hotel.commons.Path;
 import com.example.hotel.controller.command.Command;
 import com.example.hotel.controller.dto.UpdateApartmentDTO;
@@ -24,10 +25,6 @@ import static java.lang.Long.parseLong;
 public class EditApartmentCommand implements Command {
 
     private final static Logger log = Logger.getLogger(EditApartmentCommand.class);
-    private static final String NUMBER_REQUEST_PARAMETER = "number";
-    private static final String CLASS_REQUEST_PARAMETER = "class_id";
-    private static final String STATUS_REQUEST_PARAMETER = "busy";
-    private static final String PRICE_REQUEST_PARAMETER = "price";
     public static final String ERROR_MESSAGE = "apartment_not_allowed_to_update";
     private final String errorAttribute = RequestAttributes.ERROR_PREFIX + Path.Get.Admin.SHOW_APARTMENTS_MANAGEMENT;
     private ApartmentService apartmentService = ServiceFactory.getInstance().createApartmentService();
@@ -62,11 +59,13 @@ public class EditApartmentCommand implements Command {
     }
 
     private UpdateApartmentDTO getApartmentDTOFromRequest(final HttpServletRequest request) {
-        final var status = request.getParameter(STATUS_REQUEST_PARAMETER) != null ? BUSY : null;
-        final var price = request.getParameter(PRICE_REQUEST_PARAMETER);
+        final var status = request.getParameter(RequestParameters.BUSY_STATUS) != null ? BUSY : null;
+        final var price = request.getParameter(RequestParameters.PRICE);
         return UpdateApartmentDTO.builder()
-                .number(parseLong(request.getParameter(NUMBER_REQUEST_PARAMETER)))
-                .apartmentClass(ApartmentClass.getById(parseInt(request.getParameter(CLASS_REQUEST_PARAMETER))))
+                .number(parseLong(request.getParameter(RequestParameters.APARTMENT_NUMBER)))
+                .apartmentClass(
+                        ApartmentClass
+                                .getById(parseInt(request.getParameter(RequestParameters.APARTMENT_CLASS_ID))))
                 .status(status)
                 .price(price)
                 .build();

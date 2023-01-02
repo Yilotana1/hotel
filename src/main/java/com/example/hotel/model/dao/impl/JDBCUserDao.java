@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static com.example.hotel.commons.Tools.getGeneratedId;
+import static com.example.hotel.model.dao.commons.Tools.getGeneratedId;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.DELETE_PREVIOUS_ROLES;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.DELETE_USER_BY_ID;
 import static com.example.hotel.model.dao.sql.mysql.UserSQL.INSERT_UPDATED_ROLES;

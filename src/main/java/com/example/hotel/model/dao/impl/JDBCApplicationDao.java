@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
-import static com.example.hotel.commons.Tools.getGeneratedId;
+import static com.example.hotel.model.dao.commons.Tools.getGeneratedId;
 import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.DELETE_APPLICATION_BY_ID;
 import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.INSERT_APPLICATION;
 import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_APPLICATION_BY_ID;

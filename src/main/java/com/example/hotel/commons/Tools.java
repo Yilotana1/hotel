@@ -10,8 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -20,13 +18,6 @@ import static java.util.Objects.requireNonNullElse;
 
 public class Tools {
     public final static Logger log = Logger.getLogger(Tools.class);
-    private static final int ID_INDEX = 1;
-
-    public static int getGeneratedId(final PreparedStatement statement) throws SQLException {
-        final var keys = statement.getGeneratedKeys();
-        keys.next();
-        return keys.getInt(ID_INDEX);
-    }
 
     public static void setInvalidFieldMessage(final HttpServletRequest request,
                                               final InvalidDataException e,
@@ -50,6 +41,7 @@ public class Tools {
                         .getAttribute(ServletContextAttributes.LOGGED_USERS);
         if (savedLogins.contains(login)) {
             final var logMessage = "User has already been logged";
+            log.error(logMessage);
             return true;
         }
         return false;
