@@ -1,7 +1,7 @@
 package com.example.hotel.controller;
 
 import com.example.hotel.controller.commons.Constants.ServletContextAttributes;
-import com.example.hotel.controller.factory.CommandsFactory;
+import com.example.hotel.controller.factory.ActionFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +15,7 @@ import static com.example.hotel.controller.commons.Constants.BASE_URL;
 
 public class Controller extends HttpServlet {
     public static final Logger log = Logger.getLogger(Controller.class);
-    private final CommandsFactory commandsFactory = CommandsFactory.getInstance();
+    private final ActionFactory actionFactory = ActionFactory.getInstance();
 
     public void init() {
         getServletConfig().getServletContext()
@@ -40,7 +40,7 @@ public class Controller extends HttpServlet {
         log.trace("Received URI from request: " + path);
 
         path = path.replaceAll(".*" + BASE_URL, "");
-        final var command = commandsFactory.getCommand(path);
+        final var command = actionFactory.getCommand(path);
         command.execute(req, resp);
     }
 }

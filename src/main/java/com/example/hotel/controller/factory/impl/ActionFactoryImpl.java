@@ -23,15 +23,15 @@ import com.example.hotel.controller.action.manager.ShowApartmentsAction;
 import com.example.hotel.controller.action.manager.ShowPreferredApartmentsAction;
 import com.example.hotel.controller.action.manager.ShowTemporaryApplicationsAction;
 import com.example.hotel.controller.action.manager.ShowUsersAction;
-import com.example.hotel.controller.factory.CommandsFactory;
+import com.example.hotel.controller.factory.ActionFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CommandsFactoryImpl extends CommandsFactory {
+public class ActionFactoryImpl extends ActionFactory {
     private final Map<String, Action> getCommands = new HashMap<>();
     private final Map<String, Action> postCommands = new HashMap<>();
-    public CommandsFactoryImpl() {
+    public ActionFactoryImpl() {
         setGetUriToCommands();
         setPostUriToCommands();
     }
