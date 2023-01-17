@@ -16,8 +16,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.requireNonNullElse;
@@ -43,9 +41,7 @@ public class Tools {
 
     public static boolean userIsLogged(final String login, final HttpServletRequest request) {
         final var savedLogins =
-                (HashSet<String>) request
-                        .getServletContext()
-                        .getAttribute(ServletContextAttributes.LOGGED_USERS);
+                getLoggedUsers(request);
         if (savedLogins.contains(login)) {
             final var logMessage = "User has already been logged";
             log.error(logMessage);
@@ -61,8 +57,7 @@ public class Tools {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
     public static void addLoginToCache(final String login, final HttpServletRequest request) {
-        final var loggedUsers = (HashSet<String>) request.getServletContext()
-                .getAttribute(ServletContextAttributes.LOGGED_USERS);
+        final var loggedUsers = getLoggedUsers(request);
         loggedUsers.add(login);
     }
 
@@ -87,9 +82,13 @@ public class Tools {
 
     public static void deleteFromLoginCache(final HttpServletRequest request, final String login) {
         final var loggedUsers =
-                (HashSet<String>) request
-                        .getServletContext()
-                        .getAttribute(ServletContextAttributes.LOGGED_USERS);
+                getLoggedUsers(request);
         loggedUsers.remove(login);
+    }
+
+    private static Collection<String> getLoggedUsers(final HttpServletRequest request) {
+        return (Collection<String>) request
+                .getServletContext()
+                .getAttribute(ServletContextAttributes.LOGGED_USERS);
     }
 }
