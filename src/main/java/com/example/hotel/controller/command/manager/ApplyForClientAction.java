@@ -46,7 +46,8 @@ public class ApplyForClientAction implements Action {
         }
     }
 
-    public static ApplicationDTO getApplicationDTOFromRequest(final HttpServletRequest request) throws InvalidDataException {
+
+    private ApplicationDTO getApplicationDTOFromRequest(final HttpServletRequest request) throws InvalidDataException {
         final var stayLength = request.getParameter(RequestParameters.STAY_LENGTH);
         if (stayLength == null || stayLength.isBlank()) {
             throw new InvalidDataException("stayLength must be specified", RequestParameters.STAY_LENGTH);
@@ -55,9 +56,13 @@ public class ApplyForClientAction implements Action {
         if (apartmentNumber == null) {
             throw new InvalidDataException("apartmentNumber must be specified", RequestParameters.STAY_LENGTH);
         }
+        final var clientLogin = request.getParameter(RequestParameters.LOGIN);
+        if (clientLogin == null || clientLogin.isEmpty()) {
+            throw new InvalidDataException("login must be specified", RequestParameters.LOGIN);
+        }
         return ApplicationDTO.builder()
                 .apartmentNumber(parseInt(apartmentNumber))
-                .clientLogin(request.getParameter(RequestParameters.LOGIN))
+                .clientLogin(clientLogin)
                 .stayLength(parseInt(stayLength))
                 .build();
     }

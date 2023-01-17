@@ -44,10 +44,3 @@ public class Controller extends HttpServlet {
         command.execute(req, resp);
     }
 }
-
-//TODO Put all urls in Path interface into properties (watch ResourceBundle)
-//TODO Create new folders for jsp pages and make it look more structured. For example put all error pages of client into folder /client/error/...
-//TODO Make logs look more formal.
-//TODO Create at least a few mock-tests.
-//TODO Generate Create-sql-script of the finale database.
-//TODO Fix bug. hasNotAllowedNulls() method in dto's must throw InvalidDateException with specified wrongField[ALL fields or something]
