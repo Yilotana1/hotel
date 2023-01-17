@@ -1,5 +1,6 @@
 package com.example.hotel.model.dao.mapper;
 
+import com.example.hotel.model.dao.commons.Constants.ColumnLabels;
 import com.example.hotel.model.entity.TemporaryApplication;
 import com.example.hotel.model.entity.enums.ApartmentClass;
 
@@ -11,12 +12,12 @@ public class TemporaryApplicationMapper implements EntityMapper<TemporaryApplica
     public TemporaryApplication extractFromResultSet(final ResultSet rs) throws SQLException {
         return TemporaryApplication
                 .builder()
-                .id(rs.getLong("temporary_application.id"))
-                .apartmentClass(ApartmentClass.getById(rs.getInt("temporary_application.class_id")))
-                .numberOfPeople(rs.getInt("temporary_application.number_of_people"))
-                .stayLength(rs.getInt("temporary_application.stay_length"))
-                .clientLogin(rs.getString("temporary_application.client_login"))
-                .creationDate(rs.getDate("temporary_application.creation_date").toLocalDate())
+                .id(rs.getLong(ColumnLabels.TemporaryApplication.ID))
+                .apartmentClass(ApartmentClass.getById(rs.getInt(ColumnLabels.TemporaryApplication.CLASS_ID)))
+                .numberOfPeople(rs.getInt(ColumnLabels.TemporaryApplication.NUMBER_OF_PEOPLE))
+                .stayLength(rs.getInt(ColumnLabels.TemporaryApplication.STAY_LENGTH))
+                .clientLogin(rs.getString(ColumnLabels.TemporaryApplication.CLIENT_LOGIN))
+                .creationDate(rs.getDate(ColumnLabels.TemporaryApplication.CREATION_DATE).toLocalDate())
                 .build();
     }
 }

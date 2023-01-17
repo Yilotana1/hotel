@@ -1,5 +1,7 @@
 package com.example.hotel.controller.dto;
 
+import com.example.hotel.controller.commons.Constants;
+import com.example.hotel.controller.commons.Constants.RequestParameters;
 import com.example.hotel.controller.exception.InvalidDataException;
 import com.example.hotel.model.entity.enums.ApartmentClass;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,23 +60,30 @@ public class TemporaryApplicationDTO {
     }
 
     public static void throwIfNotValid(final HttpServletRequest request) throws InvalidDataException {
-        final var stayLength = request.getParameter("stay_length");
-        final var apartmentClass = request.getParameter("apartment_class_id");
-        final var numberOfPeople = request.getParameter("number_of_people");
+        final var stayLength = request.getParameter(RequestParameters.STAY_LENGTH);
+        final var apartmentClass = request.getParameter(RequestParameters.APARTMENT_CLASS_ID);
+        final var numberOfPeople = request.getParameter(RequestParameters.NUMBER_OF_PEOPLE);
         throwIfNulls(stayLength, apartmentClass, numberOfPeople);
-        if (stayLength.isEmpty() || parseInt(stayLength) <= MIN_STAY_LENGTH || parseInt(stayLength) > MAX_STAY_LENGTH) {
-            final var message = format("Stay Length must be between %d and %d", MIN_STAY_LENGTH, MAX_STAY_LENGTH);
+        if (
+                stayLength.isEmpty()
+                || parseInt(stayLength) <= MIN_STAY_LENGTH
+                        || parseInt(stayLength) > MAX_STAY_LENGTH) {
+            final var message = format(
+                    "Stay Length must be between %d and %d",
+                    MIN_STAY_LENGTH, MAX_STAY_LENGTH);
+
             log.error(message);
             throw new InvalidDataException(
                     message,
                     "stay_length");
         }
-        if (numberOfPeople.isEmpty() || parseInt(numberOfPeople) <= MIN_NUMBER_OF_PEOPLE || parseInt(numberOfPeople) > MAX_NUMBER_OF_PEOPLE) {
+        if (numberOfPeople.isEmpty() || parseInt(numberOfPeople) <= MIN_NUMBER_OF_PEOPLE
+                || parseInt(numberOfPeople) > MAX_NUMBER_OF_PEOPLE) {
             final var message = format("numberOfPeople must be between %d and %d", MIN_NUMBER_OF_PEOPLE, MAX_NUMBER_OF_PEOPLE);
             log.error(message);
             throw new InvalidDataException(
                     message,
-                    "number_of_people");
+                    RequestParameters.NUMBER_OF_PEOPLE);
         }
     }
 

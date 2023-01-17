@@ -14,7 +14,7 @@ public interface TemporaryApplicationDao extends GenericDao<TemporaryApplication
 
     Optional<TemporaryApplication> findByClientLogin(String clientLogin) throws DaoException;
 
-    int create(TemporaryApplication temporaryApplication) throws DaoException;
+    long create(TemporaryApplication temporaryApplication) throws DaoException;
 
     void update(TemporaryApplication temporaryApplication) throws DaoException;
 

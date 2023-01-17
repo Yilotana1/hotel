@@ -1,6 +1,8 @@
 package com.example.hotel.model.dao.impl;
 
 import com.example.hotel.model.dao.ApartmentDao;
+import com.example.hotel.model.dao.commons.Constants;
+import com.example.hotel.model.dao.commons.Constants.ColumnLabels;
 import com.example.hotel.model.dao.exception.DaoException;
 import com.example.hotel.model.dao.mapper.EntityMapper;
 import com.example.hotel.model.entity.Apartment;
@@ -17,27 +19,27 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.DELETE_APARTMENT_BY_NUMBER;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.INSERT_APARTMENT;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_AND_RESIDENTS_LOGINS;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_CLIENT_PREFERENCES;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_CLASS;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_NUMBER_OF_PEOPLE;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_PRICE;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_STATUS;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENT_BY_NUMBER;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_APARTMENT_BY_RESIDENT_LOGIN;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_COUNT_APARTMENTS;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_COUNT_APARTMENT_BY_CLASS_AND_NUMBER_OF_PEOPLE;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.SELECT_COUNT_PREFERRED_APARTMENTS;
-import static com.example.hotel.model.dao.sql.mysql.ApartmentSQL.UPDATE_APARTMENT;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.DELETE_APARTMENT_BY_NUMBER;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.INSERT_APARTMENT;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_APARTMENTS_AND_RESIDENTS_LOGINS;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_APARTMENTS_BY_CLIENT_PREFERENCES;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_CLASS;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_NUMBER_OF_PEOPLE;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_PRICE;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_APARTMENTS_SORTED_BY_STATUS;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_APARTMENT_BY_NUMBER;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_APARTMENT_BY_RESIDENT_LOGIN;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_COUNT_APARTMENTS;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_COUNT_APARTMENT_BY_CLASS_AND_NUMBER_OF_PEOPLE;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.SELECT_COUNT_PREFERRED_APARTMENTS;
+import static com.example.hotel.model.dao.commons.mysql.ApartmentSQL.UPDATE_APARTMENT;
 
 public class JDBCApartmentDao implements ApartmentDao {
     public final static Logger log = Logger.getLogger(JDBCApartmentDao.class);
     private final Connection connection;
     private final EntityMapper<Apartment> apartmentMapper;
 
-    public JDBCApartmentDao(Connection connection, EntityMapper<Apartment> apartmentMapper) {
+    public JDBCApartmentDao(final Connection connection, final EntityMapper<Apartment> apartmentMapper) {
         this.connection = connection;
         this.apartmentMapper = apartmentMapper;
     }
@@ -160,7 +162,7 @@ public class JDBCApartmentDao implements ApartmentDao {
         try (var statement = connection.createStatement()) {
             final var resultSet = statement.executeQuery(SELECT_COUNT_APARTMENTS);
             resultSet.next();
-            return resultSet.getInt("count");
+            return resultSet.getInt(ColumnLabels.COUNT);
         } catch (final SQLException e) {
             log.error(e.getMessage(), e);
             throw new DaoException("Counting apartment records failed during accessing data from database", e);
@@ -172,7 +174,7 @@ public class JDBCApartmentDao implements ApartmentDao {
     public Optional<Apartment> findById(final long id) throws DaoException {
         try (var selectApartmentStatement = connection.prepareStatement(SELECT_APARTMENT_BY_NUMBER)) {
             selectApartmentStatement.setLong(1, id);
-            var resultSet = selectApartmentStatement.executeQuery();
+            final var resultSet = selectApartmentStatement.executeQuery();
             if (resultSet.next()) {
                 return Optional.of(apartmentMapper.extractFromResultSet(resultSet));
             }
@@ -185,7 +187,7 @@ public class JDBCApartmentDao implements ApartmentDao {
     }
 
     @Override
-    public int create(final Apartment apartment) throws DaoException {
+    public long create(final Apartment apartment) throws DaoException {
         try (var insertApartmentStatement = connection.prepareStatement(INSERT_APARTMENT)) {
             insertApartmentStatement.setLong(1, apartment.getNumber());
             insertApartmentStatement.setLong(2, apartment.getFloor());
@@ -204,15 +206,15 @@ public class JDBCApartmentDao implements ApartmentDao {
 
     @Override
     public void update(final Apartment apartment) throws DaoException {
-        try (var insertApartmentStatement = connection.prepareStatement(UPDATE_APARTMENT)) {
-            insertApartmentStatement.setLong(1, apartment.getFloor());
-            insertApartmentStatement.setLong(2, apartment.getApartmentClass().getId());
-            insertApartmentStatement.setLong(3, apartment.getStatus().getId());
-            insertApartmentStatement.setInt(4, apartment.getDemand());
-            insertApartmentStatement.setBigDecimal(5, apartment.getPrice());
-            insertApartmentStatement.setInt(6, apartment.getNumberOfPeople());
-            insertApartmentStatement.setInt(7, apartment.getNumber());
-            insertApartmentStatement.executeUpdate();
+        try (var updateApartmentStatement = connection.prepareStatement(UPDATE_APARTMENT)) {
+            updateApartmentStatement.setLong(1, apartment.getFloor());
+            updateApartmentStatement.setLong(2, apartment.getApartmentClass().getId());
+            updateApartmentStatement.setLong(3, apartment.getStatus().getId());
+            updateApartmentStatement.setInt(4, apartment.getDemand());
+            updateApartmentStatement.setBigDecimal(5, apartment.getPrice());
+            updateApartmentStatement.setInt(6, apartment.getNumberOfPeople());
+            updateApartmentStatement.setLong(7, apartment.getNumber());
+            updateApartmentStatement.executeUpdate();
         } catch (final SQLException e) {
             log.error(e.getMessage(), e);
             throw new DaoException("Updating apartment record failed during accessing database", e);

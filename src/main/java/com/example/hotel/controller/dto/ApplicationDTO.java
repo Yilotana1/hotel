@@ -1,5 +1,6 @@
 package com.example.hotel.controller.dto;
 
+import com.example.hotel.controller.commons.Constants.RequestParameters;
 import com.example.hotel.controller.exception.InvalidDataException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
@@ -11,8 +12,9 @@ import static java.util.Objects.requireNonNull;
 
 public class ApplicationDTO {
     public final static Logger log = Logger.getLogger(ApplicationDTO.class);
+    public static final String NUMBER_REGEX = "[0-9]+";
     private String clientLogin;
-    private Integer apartmentNumber;
+    private long apartmentNumber;
     private final LocalDate creationDate = LocalDate.now();
     private Integer stayLength;
 
@@ -31,7 +33,7 @@ public class ApplicationDTO {
             return this;
         }
 
-        public ApplicationDTOBuilder apartmentNumber(final int apartmentNumber) {
+        public ApplicationDTOBuilder apartmentNumber(final long apartmentNumber) {
             applicationDTO.setApartmentNumber(apartmentNumber);
             return this;
         }
@@ -48,20 +50,20 @@ public class ApplicationDTO {
     }
 
     public static void throwIfNotValid(final HttpServletRequest request) throws InvalidDataException {
-        final var apartmentNumber = request.getParameter("number");
-        final var stayLength = request.getParameter("stay_length");
+        final var apartmentNumber = request.getParameter(RequestParameters.APARTMENT_NUMBER);
+        final var stayLength = request.getParameter(RequestParameters.STAY_LENGTH);
         throwIfNulls(apartmentNumber, stayLength);
-        if (!apartmentNumber.matches("[0-9]+")) {
-            throw new InvalidDataException("apartmentNumber must be a number", "number");
+        if (!apartmentNumber.matches(NUMBER_REGEX)) {
+            throw new InvalidDataException("apartmentNumber must be a number", RequestParameters.APARTMENT_NUMBER);
         }
-        if (!stayLength.matches("[0-9]+")) {
-            throw new InvalidDataException("stayLength must be a number", "stay_length");
+        if (!stayLength.matches(NUMBER_REGEX)) {
+            throw new InvalidDataException("stayLength must be a number", RequestParameters.STAY_LENGTH);
         }
         if (parseLong(apartmentNumber) <= 0) {
-            throw new InvalidDataException("apartmentNumber must be more that 0", "number");
+            throw new InvalidDataException("apartmentNumber must be more that 0", RequestParameters.APARTMENT_NUMBER);
         }
         if (parseLong(stayLength) <= 0) {
-            throw new InvalidDataException("stayLength must be more that 0", "stay_length");
+            throw new InvalidDataException("stayLength must be more that 0", RequestParameters.STAY_LENGTH);
         }
     }
 
@@ -76,6 +78,7 @@ public class ApplicationDTO {
             throw new InvalidDataException(message);
         }
     }
+
     public LocalDate getCreationDate() {
         return creationDate;
     }
@@ -96,11 +99,11 @@ public class ApplicationDTO {
         this.clientLogin = clientLogin;
     }
 
-    public Integer getApartmentNumber() {
+    public long getApartmentNumber() {
         return apartmentNumber;
     }
 
-    public void setApartmentNumber(Integer apartmentNumber) {
+    public void setApartmentNumber(long apartmentNumber) {
         this.apartmentNumber = apartmentNumber;
     }
 }

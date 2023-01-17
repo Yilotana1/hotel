@@ -5,6 +5,7 @@ import com.example.hotel.model.entity.enums.ApartmentStatus;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import static com.example.hotel.model.entity.enums.ApartmentStatus.BOOKED;
 import static com.example.hotel.model.entity.enums.ApartmentStatus.BUSY;
@@ -13,7 +14,7 @@ import static com.example.hotel.model.entity.enums.ApartmentStatus.UNAVAILABLE;
 
 public class Apartment {
     public final static Logger log = Logger.getLogger(Apartment.class);
-    private Integer number;
+    private Long number;
     private Integer floor;
     private ApartmentClass apartmentClass;
     private ApartmentStatus status;
@@ -36,6 +37,19 @@ public class Apartment {
                 ", price=" + price +
                 ", numberOfPeople=" + numberOfPeople +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Apartment apartment = (Apartment) o;
+        return Objects.equals(number, apartment.number) && Objects.equals(floor, apartment.floor) && apartmentClass == apartment.apartmentClass && status == apartment.status && Objects.equals(demand, apartment.demand) && Objects.equals(price, apartment.price) && Objects.equals(numberOfPeople, apartment.numberOfPeople);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number, floor, apartmentClass, status, demand, price, numberOfPeople);
     }
 
     public static ApartmentBuilder builder() {
@@ -71,7 +85,7 @@ public class Apartment {
             return this;
         }
 
-        public ApartmentBuilder number(final Integer number) {
+        public ApartmentBuilder number(final Long number) {
             apartment.setNumber(number);
             return this;
         }
@@ -89,6 +103,10 @@ public class Apartment {
 
     public boolean isBooked() {
         return getStatus() == BOOKED;
+    }
+
+    public boolean isFree() {
+        return getStatus() == FREE;
     }
 
     public void makeUnavailable() {
@@ -141,11 +159,11 @@ public class Apartment {
         this.status = apartmentStatus;
     }
 
-    public Integer getNumber() {
+    public Long getNumber() {
         return number;
     }
 
-    public void setNumber(final Integer number) {
+    public void setNumber(final Long number) {
         this.number = number;
     }
 

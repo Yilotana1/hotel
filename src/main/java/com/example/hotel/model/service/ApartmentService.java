@@ -24,8 +24,6 @@ public interface ApartmentService {
 
     Collection<Apartment> getApartmentsSortedByStatus(int skip, int count) throws ServiceException;
 
-    Optional<Apartment> getByNumber(long number) throws ServiceException;
-
     int preferredApartmentsCount(String clientLogin) throws ServiceException;
 
     int count() throws ServiceException;

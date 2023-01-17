@@ -12,7 +12,7 @@ public interface GenericDao<T> extends AutoCloseable {
 
     int getCount() throws DaoException;
 
-    int create(T entity) throws DaoException;
+    long create(T entity) throws DaoException;
 
     Optional<T> findById(long id) throws DaoException;
 

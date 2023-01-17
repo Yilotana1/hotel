@@ -7,6 +7,8 @@ import com.example.hotel.model.entity.User;
 import com.example.hotel.model.entity.enums.Role;
 import com.example.hotel.model.entity.enums.UserStatus;
 import com.example.hotel.model.service.UserService;
+import com.example.hotel.model.service.commons.Constants;
+import com.example.hotel.model.service.exception.LoginIsNotFoundException;
 import com.example.hotel.model.service.exception.LoginIsNotUniqueException;
 import com.example.hotel.model.service.exception.ServiceException;
 import com.example.hotel.model.service.exception.UserNotFoundException;
@@ -30,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> signIn(final String login, final String password) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
-            userDao.getConnection().setAutoCommit(false);
+            userDao.getConnection().setAutoCommit(Constants.AUTO_COMMIT);
             final var user = userDao.findByLogin(login);
             if (user.isPresent() && user.get().getPassword().equals(password)) {
                 userDao.getConnection().commit();
@@ -76,9 +78,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateMoneyAccount(final String login, final BigDecimal money) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
-            userDao.getConnection().setAutoCommit(false);
+            userDao.getConnection().setAutoCommit(Constants.AUTO_COMMIT);
             final var user = userDao.findByLogin(login)
-                    .orElseThrow(() -> new ServiceException("User with login = " + login + " not found"));
+                    .orElseThrow(() -> new LoginIsNotFoundException("User with login = " + login + " not found"));
             user.updateMoneyAccount(money);
             userDao.update(user);
             userDao.getConnection().commit();
@@ -91,7 +93,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User signUp(final UserDTO userDTO) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
-            userDao.getConnection().setAutoCommit(false);
+            userDao.getConnection().setAutoCommit(Constants.AUTO_COMMIT);
             final var userFromDB = userDao.findByLogin(userDTO.getLogin());
             if (userFromDB.isPresent()) {
                 throw new LoginIsNotUniqueException(
@@ -112,7 +114,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void update(final UserDTO userDTO) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
-            userDao.getConnection().setAutoCommit(false);
+            userDao.getConnection().setAutoCommit(Constants.AUTO_COMMIT);
             final var user = userDao
                     .findByLogin(userDTO.getLogin())
                     .orElseThrow(() -> new UserNotFoundException(
@@ -134,7 +136,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void update(final long id, final UserStatus status, final Collection<Role> roles) throws ServiceException {
         try (var userDao = daoFactory.createUserDao()) {
-            userDao.getConnection().setAutoCommit(false);
+            userDao.getConnection().setAutoCommit(Constants.AUTO_COMMIT);
             final var user = userDao.findById(id)
                     .orElseThrow(() -> new UserNotFoundException("User with id = " + id + " not found"));
             user.setStatus(status);

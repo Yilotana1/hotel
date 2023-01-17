@@ -1,6 +1,8 @@
 package com.example.hotel.model.dao.impl;
 
 import com.example.hotel.model.dao.ApplicationDao;
+import com.example.hotel.model.dao.commons.Constants;
+import com.example.hotel.model.dao.commons.Constants.ColumnLabels;
 import com.example.hotel.model.dao.exception.DaoException;
 import com.example.hotel.model.dao.mapper.EntityMapper;
 import com.example.hotel.model.entity.Application;
@@ -17,16 +19,16 @@ import java.util.Collection;
 import java.util.Optional;
 
 import static com.example.hotel.model.dao.commons.Tools.getGeneratedId;
-import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.DELETE_APPLICATION_BY_ID;
-import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.INSERT_APPLICATION;
-import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_APPLICATION_BY_ID;
-import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_APPROVED_APPLICATION_BY_CLIENT_LOGIN;
-import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_COUNT_APPLICATIONS;
-import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_NOT_APPROVED_APPLICATION_BY_CLIENT_ID;
-import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_NOT_APPROVED_APPLICATION_BY_CLIENT_LOGIN;
-import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_NOT_CANCELED_APPLICATION_BY_CLIENT_LOGIN;
-import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.SELECT_OUTDATED_APPLICATIONS;
-import static com.example.hotel.model.dao.sql.mysql.ApplicationSQL.UPDATE_APPLICATION;
+import static com.example.hotel.model.dao.commons.mysql.ApplicationSQL.DELETE_APPLICATION_BY_ID;
+import static com.example.hotel.model.dao.commons.mysql.ApplicationSQL.INSERT_APPLICATION;
+import static com.example.hotel.model.dao.commons.mysql.ApplicationSQL.SELECT_APPLICATION_BY_ID;
+import static com.example.hotel.model.dao.commons.mysql.ApplicationSQL.SELECT_APPROVED_APPLICATION_BY_CLIENT_LOGIN;
+import static com.example.hotel.model.dao.commons.mysql.ApplicationSQL.SELECT_COUNT_APPLICATIONS;
+import static com.example.hotel.model.dao.commons.mysql.ApplicationSQL.SELECT_NOT_APPROVED_APPLICATION_BY_CLIENT_ID;
+import static com.example.hotel.model.dao.commons.mysql.ApplicationSQL.SELECT_NOT_APPROVED_APPLICATION_BY_CLIENT_LOGIN;
+import static com.example.hotel.model.dao.commons.mysql.ApplicationSQL.SELECT_NOT_CANCELED_APPLICATION_BY_CLIENT_LOGIN;
+import static com.example.hotel.model.dao.commons.mysql.ApplicationSQL.SELECT_OUTDATED_APPLICATIONS;
+import static com.example.hotel.model.dao.commons.mysql.ApplicationSQL.UPDATE_APPLICATION;
 import static com.example.hotel.model.entity.enums.ApplicationStatus.NOT_APPROVED;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
@@ -50,7 +52,7 @@ public class JDBCApplicationDao implements ApplicationDao {
         try (var countStatement = connection.createStatement()) {
             final var resultSet = countStatement.executeQuery(SELECT_COUNT_APPLICATIONS);
             resultSet.next();
-            return resultSet.getInt("count");
+            return resultSet.getInt(ColumnLabels.COUNT);
         } catch (final SQLException e) {
             log.error(e.getMessage(), e);
             throw new DaoException("Counting application records failed during accessing database", e);
@@ -58,7 +60,7 @@ public class JDBCApplicationDao implements ApplicationDao {
     }
 
     @Override
-    public int create(final Application application) throws DaoException {
+    public long create(final Application application) throws DaoException {
         try (var createApplicationStatement = connection.prepareStatement(INSERT_APPLICATION, RETURN_GENERATED_KEYS)) {
             setApplicationFieldsToCreateStatement(application, createApplicationStatement);
             createApplicationStatement.executeUpdate();

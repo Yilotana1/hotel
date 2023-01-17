@@ -1,6 +1,6 @@
 package com.example.hotel.controller.filter;
 
-import com.example.hotel.commons.Path;
+import com.example.hotel.controller.commons.Path;
 import com.example.hotel.model.entity.enums.Role;
 import com.example.hotel.model.entity.enums.UserStatus;
 import jakarta.servlet.Filter;
@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.example.hotel.commons.Tools.userIsLogged;
+import static com.example.hotel.controller.commons.Tools.userIsLogged;
 import static com.example.hotel.model.entity.enums.UserStatus.BLOCKED;
 import static com.example.hotel.model.entity.enums.UserStatus.NON_BLOCKED;
 
@@ -121,7 +121,6 @@ public class AccessFilter implements Filter {
         final var roles = getRolesFromSession(httpRequest.getSession());
         final var login = getLoginFromSession(httpRequest.getSession());
         final var userStatus = getUserStatusFromSession(httpRequest.getSession());
-        log.trace("login = " + login + ", roles = " + roles + ", userStatus = " + userStatus);
         final var URI = httpRequest.getRequestURI();
         if (actionIsForbidden(userStatus, roles, URI)) {
             log.trace("actionIsForbidden URI = " + URI);

@@ -1,6 +1,7 @@
 package com.example.hotel.model.dao.impl;
 
 import com.example.hotel.model.dao.TemporaryApplicationDao;
+import com.example.hotel.model.dao.commons.Constants.ColumnLabels;
 import com.example.hotel.model.dao.exception.DaoException;
 import com.example.hotel.model.dao.mapper.EntityMapper;
 import com.example.hotel.model.entity.TemporaryApplication;
@@ -14,26 +15,26 @@ import java.util.Collection;
 import java.util.Optional;
 
 import static com.example.hotel.model.dao.commons.Tools.getGeneratedId;
-import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN;
-import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_DELAY_FROM_CREATION_DATE;
-import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_ID;
-import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.INSERT_TEMPORARY_APPLICATION;
-import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.SELECT_APARTMENT_REQUESTS_SORTED_BY_NUMBER;
-import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.SELECT_COUNT_TEMPORARY_APPLICATION;
-import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.SELECT_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN;
-import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.SELECT_TEMPORARY_APPLICATION_BY_ID;
-import static com.example.hotel.model.dao.sql.mysql.TemporaryApplicationSQL.UPDATE_APARTMENT_REQUEST;
+import static com.example.hotel.model.dao.commons.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN;
+import static com.example.hotel.model.dao.commons.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_DELAY_FROM_CREATION_DATE;
+import static com.example.hotel.model.dao.commons.mysql.TemporaryApplicationSQL.DELETE_TEMPORARY_APPLICATION_BY_ID;
+import static com.example.hotel.model.dao.commons.mysql.TemporaryApplicationSQL.INSERT_TEMPORARY_APPLICATION;
+import static com.example.hotel.model.dao.commons.mysql.TemporaryApplicationSQL.SELECT_APARTMENT_REQUESTS_SORTED_BY_NUMBER;
+import static com.example.hotel.model.dao.commons.mysql.TemporaryApplicationSQL.SELECT_COUNT_TEMPORARY_APPLICATION;
+import static com.example.hotel.model.dao.commons.mysql.TemporaryApplicationSQL.SELECT_TEMPORARY_APPLICATION_BY_CLIENT_LOGIN;
+import static com.example.hotel.model.dao.commons.mysql.TemporaryApplicationSQL.SELECT_TEMPORARY_APPLICATION_BY_ID;
+import static com.example.hotel.model.dao.commons.mysql.TemporaryApplicationSQL.UPDATE_APARTMENT_REQUEST;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class JDBCTemporaryApplicationDao implements TemporaryApplicationDao {
     public final static Logger log = Logger.getLogger(JDBCTemporaryApplicationDao.class);
     private final Connection connection;
-    private final EntityMapper<TemporaryApplication> apartmentRequestMapper;
+    private final EntityMapper<TemporaryApplication> temporaryApplicationMapper;
 
     public JDBCTemporaryApplicationDao(final Connection connection,
-                                       final EntityMapper<TemporaryApplication> apartmentRequestMapper) {
+                                       final EntityMapper<TemporaryApplication> temporaryApplicationMapper) {
         this.connection = connection;
-        this.apartmentRequestMapper = apartmentRequestMapper;
+        this.temporaryApplicationMapper = temporaryApplicationMapper;
     }
 
     @Override
@@ -59,7 +60,7 @@ public class JDBCTemporaryApplicationDao implements TemporaryApplicationDao {
             final var resultSet = selectTemporaryApplicationStatement.executeQuery();
             final var apartmentRequests = new ArrayList<TemporaryApplication>();
             while (resultSet.next()) {
-                apartmentRequests.add(apartmentRequestMapper.extractFromResultSet(resultSet));
+                apartmentRequests.add(temporaryApplicationMapper.extractFromResultSet(resultSet));
             }
             return apartmentRequests;
         } catch (final SQLException e) {
@@ -76,7 +77,7 @@ public class JDBCTemporaryApplicationDao implements TemporaryApplicationDao {
             selectTemporaryApplicationStatement.setString(1, clientLogin);
             final var resultSet = selectTemporaryApplicationStatement.executeQuery();
             if (resultSet.next()) {
-                return Optional.of(apartmentRequestMapper.extractFromResultSet(resultSet));
+                return Optional.of(temporaryApplicationMapper.extractFromResultSet(resultSet));
             }
         } catch (final SQLException e) {
             log.error(e.getMessage(), e);
@@ -95,7 +96,7 @@ public class JDBCTemporaryApplicationDao implements TemporaryApplicationDao {
         try (var statement = connection.createStatement()) {
             final var resultSet = statement.executeQuery(SELECT_COUNT_TEMPORARY_APPLICATION);
             resultSet.next();
-            return resultSet.getInt("count");
+            return resultSet.getInt(ColumnLabels.COUNT);
         } catch (final SQLException e) {
             log.error(e.getMessage(), e);
             throw new DaoException("Counting temporary applications" +
@@ -104,7 +105,7 @@ public class JDBCTemporaryApplicationDao implements TemporaryApplicationDao {
     }
 
     @Override
-    public int create(final TemporaryApplication temporaryApplication) throws DaoException {
+    public long create(final TemporaryApplication temporaryApplication) throws DaoException {
         try (var insertTemporaryApplicationStatement = connection
                 .prepareStatement(INSERT_TEMPORARY_APPLICATION, RETURN_GENERATED_KEYS)) {
             insertTemporaryApplicationStatement.setLong(1, temporaryApplication.getApartmentClass().getId());
@@ -127,7 +128,7 @@ public class JDBCTemporaryApplicationDao implements TemporaryApplicationDao {
             selectTemporaryApplicationStatement.setLong(1, id);
             final var resultSet = selectTemporaryApplicationStatement.executeQuery();
             if (resultSet.next()) {
-                return Optional.of(apartmentRequestMapper.extractFromResultSet(resultSet));
+                return Optional.of(temporaryApplicationMapper.extractFromResultSet(resultSet));
             }
         } catch (final SQLException e) {
             log.error(e.getMessage(), e);

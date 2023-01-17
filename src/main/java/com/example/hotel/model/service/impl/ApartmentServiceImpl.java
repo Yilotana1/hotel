@@ -5,6 +5,7 @@ import com.example.hotel.model.dao.exception.DaoException;
 import com.example.hotel.model.dao.factory.DaoFactory;
 import com.example.hotel.model.entity.Apartment;
 import com.example.hotel.model.service.ApartmentService;
+import com.example.hotel.model.service.commons.Constants;
 import com.example.hotel.model.service.exception.ApartmentNotAllowedToUpdateException;
 import com.example.hotel.model.service.exception.ApartmentNotFoundException;
 import com.example.hotel.model.service.exception.ServiceException;
@@ -16,7 +17,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.example.hotel.model.ConnectionPoolHolder.getConnection;
 import static com.example.hotel.model.entity.enums.ApartmentStatus.BUSY;
 
 public class ApartmentServiceImpl implements ApartmentService {
@@ -52,16 +52,20 @@ public class ApartmentServiceImpl implements ApartmentService {
     public Collection<Apartment> getPreferredApartments(final String clientLogin,
                                                         final int skip,
                                                         final int count) throws ServiceException {
-        try (var connection = getConnection();
-             var apartmentDao = daoFactory.createApartmentDao(connection);
+        try (var apartmentDao = daoFactory.createApartmentDao();
+             var connection = apartmentDao.getConnection();
              var temporaryApplicationDao = daoFactory.createTemporaryApplicationDao(connection)) {
-            connection.setAutoCommit(false);
+            connection.setAutoCommit(Constants.AUTO_COMMIT);
+
             final var temporaryApplication = temporaryApplicationDao
                     .findByClientLogin(clientLogin)
-                    .orElseThrow(() -> new TemporaryApplicationNotFound(
+                    .orElseThrow(
+                            () -> new TemporaryApplicationNotFound(
                             "Temporary application for clientLogin = " + clientLogin + "not found"));
+
             final var apartments = apartmentDao
                     .findByTemporaryApplication(temporaryApplication, skip, count);
+
             connection.commit();
             return apartments;
         } catch (final DaoException | SQLException e) {
@@ -109,17 +113,6 @@ public class ApartmentServiceImpl implements ApartmentService {
             throw new ServiceException("Getting sorted by status apartments somehow failed", e);
         }
     }
-
-    @Override
-    public Optional<Apartment> getByNumber(final long number) throws ServiceException {
-        try (var apartmentDao = daoFactory.createApartmentDao()) {
-            return apartmentDao.findByNumber(number);
-        } catch (final DaoException | SQLException e) {
-            log.error(e.getMessage(), e);
-            throw new ServiceException("Getting apartment by its number somehow failed", e);
-        }
-    }
-
     @Override
     public int preferredApartmentsCount(final String clientLogin) throws ServiceException {
         try (var apartmentDao = daoFactory.createApartmentDao()) {
@@ -143,17 +136,20 @@ public class ApartmentServiceImpl implements ApartmentService {
     public void update(final UpdateApartmentDTO updateApartmentDTO) throws ServiceException {
         try (var apartmentDao = daoFactory.createApartmentDao()) {
             final var connection = apartmentDao.getConnection();
-            connection.setAutoCommit(false);
+            connection.setAutoCommit(Constants.AUTO_COMMIT);
+
             final var number = updateApartmentDTO.getNumber();
             final var apartment = apartmentDao
                     .findByNumber(number)
                     .orElseThrow(() -> new ApartmentNotFoundException("Apartment " + number + "not found"));
+
             if (apartment.isNotAllowedToUpdate()) {
                 throw new ApartmentNotAllowedToUpdateException(
                         "Apartment with status =  " + apartment.getStatus() + " not allowed to get updated");
             }
             setFieldsToUpdate(updateApartmentDTO, apartment);
             apartmentDao.update(apartment);
+
             connection.commit();
         } catch (final DaoException | SQLException e) {
             log.error(e.getMessage(), e);

@@ -3,6 +3,7 @@ package com.example.hotel.model.entity;
 import com.example.hotel.model.entity.enums.ApartmentClass;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class TemporaryApplication {
     private Long id;
@@ -61,6 +62,19 @@ public class TemporaryApplication {
 
     public void setApartmentClass(final ApartmentClass apartmentClass) {
         this.apartmentClass = apartmentClass;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TemporaryApplication that = (TemporaryApplication) o;
+        return Objects.equals(id, that.id) && Objects.equals(stayLength, that.stayLength) && Objects.equals(numberOfPeople, that.numberOfPeople) && apartmentClass == that.apartmentClass && Objects.equals(clientLogin, that.clientLogin) && Objects.equals(creationDate, that.creationDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, stayLength, numberOfPeople, apartmentClass, clientLogin, creationDate);
     }
 
     public static ApartmentRequestBuilder builder() {

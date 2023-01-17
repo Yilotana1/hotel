@@ -1,5 +1,6 @@
 package com.example.hotel.controller.dto;
 
+import com.example.hotel.controller.commons.Constants.RequestParameters;
 import com.example.hotel.controller.exception.InvalidDataException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
@@ -71,12 +72,12 @@ public class UserDTO {
     }
 
     public static void throwIfNotValid(final HttpServletRequest request) throws InvalidDataException {
-        final var login = request.getParameter("login");
-        final var firstname = request.getParameter("firstname");
-        final var lastname = request.getParameter("lastname");
-        final var email = request.getParameter("email");
-        final var password = request.getParameter("password");
-        final var phone = request.getParameter("phone");
+        final var login = request.getParameter(RequestParameters.LOGIN);
+        final var firstname = request.getParameter(RequestParameters.FIRSTNAME);
+        final var lastname = request.getParameter(RequestParameters.LASTNAME);
+        final var email = request.getParameter(RequestParameters.EMAIL);
+        final var password = request.getParameter(RequestParameters.PASSWORD);
+        final var phone = request.getParameter(RequestParameters.PHONE);
         throwIfNulls(login, firstname,
                 lastname, email,
                 password, phone);
@@ -100,7 +101,7 @@ public class UserDTO {
         }
     }
 
-    private static void throwIfNulls(final String... args) throws InvalidDataException{
+    private static void throwIfNulls(final String... args) throws InvalidDataException {
         try {
             for (final var arg : args) {
                 requireNonNull(arg);

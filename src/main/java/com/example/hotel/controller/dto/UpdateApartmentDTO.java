@@ -51,15 +51,15 @@ public class UpdateApartmentDTO {
         }
 
         public UpdateApartmentDTOBuilder price(final String priceStr) {
-            final var price = priceStr.substring(0, priceStr.indexOf(WHITESPACE));
+            final var priceValue = priceStr.substring(0, priceStr.indexOf(WHITESPACE));
             if (priceStr.contains("$")) {
-                updateApartmentDTO.setPrice(new BigDecimal(price));
+                updateApartmentDTO.setPrice(new BigDecimal(priceValue));
             } else {
                 final var koef = new BigDecimal(
                         ResourceBundle
                         .getBundle("message", Locale.forLanguageTag("ua"))
                         .getString("currency_koef"));
-                updateApartmentDTO.setPrice(new BigDecimal(price).divide(koef));
+                updateApartmentDTO.setPrice(new BigDecimal(priceValue).divide(koef));
             }
             return this;
         }

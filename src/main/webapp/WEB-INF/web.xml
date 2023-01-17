@@ -17,7 +17,7 @@
     </listener>
     <servlet>
         <servlet-name>Servlet</servlet-name>
-        <servlet-class>com.example.hotel.controller.Servlet</servlet-class>
+        <servlet-class>com.example.hotel.controller.Controller</servlet-class>
     </servlet>
     <!--    Servlet mappings-->
     <servlet-mapping>

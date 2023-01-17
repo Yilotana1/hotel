@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.example.hotel.model.entity.enums.ApplicationStatus.APPROVED;
@@ -109,6 +110,19 @@ public class Application {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Application that = (Application) o;
+        return Objects.equals(client, that.client) && Objects.equals(apartment, that.apartment) && status == that.status && Objects.equals(price, that.price) && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate) && Objects.equals(stayLength, that.stayLength);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, client, apartment, status, price, creationDate, lastModified, startDate, endDate, stayLength);
+    }
+
     public void approve(final LocalDate startDate, final LocalDate endDate) {
         setStatus(APPROVED);
         setStartDate(startDate);
@@ -176,6 +190,10 @@ public class Application {
 
     public ApplicationStatus getStatus() {
         return status;
+    }
+
+    public boolean isCanceled() {
+        return getStatus() == CANCELED;
     }
 
     public BigDecimal getPrice() {
