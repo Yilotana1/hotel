@@ -44,10 +44,7 @@ public class LocalizationFilter implements Filter {
         final var response = (HttpServletResponse) servletResponse;
         final var langStoredInSession = (Locale) request.getSession().getAttribute(LANGUAGE);
 
-        log.trace("get locale language from session: " + langStoredInSession);
-
         final var langFromRequest = getLangFromRequest(request);
-        log.trace("get locale language from request: " + langFromRequest);
         if (langFromRequest != null) {
             request.getSession().setAttribute(LANGUAGE, langFromRequest);
             log.trace("locale language from request not null, set request locale language to session: " + langFromRequest);
