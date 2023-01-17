@@ -1,6 +1,6 @@
 package com.example.hotel.controller.factory;
 
-import com.example.hotel.controller.command.Action;
+import com.example.hotel.controller.action.Action;
 import com.example.hotel.controller.factory.impl.CommandsFactoryImpl;
 
 public abstract class CommandsFactory {
