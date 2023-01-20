@@ -31,6 +31,9 @@ public abstract class Constants {
             public static final String TOTAL_PAGES_NUMBER = "count";
             public static final String PAGE = "page";
             public static final String DEFAULT_PAGE = "1";
+            public static final String LIST_OF_SORTING_OPTIONS = "sorted_by_list";
+            public static final String SORTED_BY = "sorted_by";
+            public static final String DEFAULT_SORTING = "default_sorting";
         }
     }
 

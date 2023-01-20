@@ -3,6 +3,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.example.hotel.model.entity.enums.ApartmentClass" %>
 <%@ page import="com.example.hotel.model.entity.enums.ApartmentStatus" %>
+<!DOCTYPE html>
 <html>
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
@@ -36,7 +37,7 @@
                     </div>
                 </th>
                 <th>
-                    <select name="class_id">
+                    <select name="apartment_class_id">
                         <c:forEach var="apartment_class" items="${ApartmentClass.values()}">
                             <c:if test="${apartmentEntry.getKey().apartmentClass == apartment_class}">
                                 <option value="${apartment_class.id}" selected="selected">${apartment_class}</option>

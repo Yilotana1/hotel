@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="com.example.hotel.model.entity.enums.UserStatus" %>
 <%@ page import="com.example.hotel.model.entity.enums.Role" %>
+<!DOCTYPE html>
 <html>
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>

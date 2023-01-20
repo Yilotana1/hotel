@@ -1,5 +1,6 @@
 package com.example.hotel.controller.dto;
 
+import com.example.hotel.controller.commons.Constants.RequestParameters;
 import com.example.hotel.controller.exception.InvalidDataException;
 import com.example.hotel.model.entity.enums.ApartmentClass;
 import com.example.hotel.model.entity.enums.ApartmentStatus;
@@ -71,24 +72,28 @@ public class UpdateApartmentDTO {
     }
 
     public static void throwIfNotValid(final HttpServletRequest request) throws InvalidDataException {
-        final var number = request.getParameter("number");
-        final var classId = request.getParameter("class_id");
-        final var price = request.getParameter("price");
+        final var number = request.getParameter(RequestParameters.APARTMENT_NUMBER);
+        final var classId = request.getParameter(RequestParameters.APARTMENT_CLASS_ID);
+        final var price = request.getParameter(RequestParameters.PRICE);
         throwIfNulls(number, classId, price);
         if (!number.matches(NUMBER_REGEX)) {
-            throw new InvalidDataException("Apartment number must not be empty and be a number", "number");
+            throw new InvalidDataException("Apartment number must not be empty and be a number",
+                    RequestParameters.APARTMENT_NUMBER);
         }
         if (!price.matches(PRICE_REGEX)) {
-            throw new InvalidDataException("Price must not be empty and be double value", "price");
+            throw new InvalidDataException("Price must not be empty and be double value",
+                    RequestParameters.PRICE);
         }
         if (!classId.matches(APARTMENT_CLASS_REGEX)) {
             throw new InvalidDataException("Apartment class id must be between 1 and 4", "class");
         }
         if (parseLong(number) <= MIN_NUMBER) {
-            throw new InvalidDataException("Apartment number must be more than zero", "number");
+            throw new InvalidDataException("Apartment number must be more than zero",
+                    RequestParameters.APARTMENT_NUMBER);
         }
         if (new BigDecimal(price.substring(0, price.indexOf(WHITESPACE))).compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidDataException("Apartment price must be more than zero", "price");
+            throw new InvalidDataException("Apartment price must be more than zero",
+                    RequestParameters.PRICE);
         }
     }
 

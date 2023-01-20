@@ -53,7 +53,6 @@ public class MainAction implements Action {
   @Override
   public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
     try {
-      log.debug("Command started executing");
       final var pageNumber = getPageId(request);
       final var skip = (pageNumber - 1) * PAGE_SIZE;
 
@@ -63,6 +62,7 @@ public class MainAction implements Action {
 
       final var apartments = sortingMethod.apply(skip, PAGE_SIZE);
       request.setAttribute(RequestAttributes.APARTMENTS, apartments);
+
       final var totalPagesNumber = apartmentService.count() / PAGE_SIZE;
 
       setAttributesForPaging(request, requestedSorting, pageNumber, totalPagesNumber);
@@ -81,10 +81,10 @@ public class MainAction implements Action {
                                       final int pageNumber,
                                       final int totalPagesNumber) {
     request.setAttribute(PaginationAttributes.TOTAL_PAGES_NUMBER, totalPagesNumber);
-    request.setAttribute(PAGE_NUMBER_INPUT, pageNumber);
-    request.setAttribute(LIST_OF_SORTING_OPTIONS, sortingMethods.keySet());
-    request.setAttribute(SORTED_BY, sorted_by);
-    request.setAttribute("default_sorting", DEFAULT_SORTING);
+    request.setAttribute(PaginationAttributes.PAGE, pageNumber);
+    request.setAttribute(PaginationAttributes.LIST_OF_SORTING_OPTIONS, sortingMethods.keySet());
+    request.setAttribute(PaginationAttributes.SORTED_BY, sorted_by);
+    request.setAttribute(PaginationAttributes.DEFAULT_SORTING, DEFAULT_SORTING);
 
   }
 
