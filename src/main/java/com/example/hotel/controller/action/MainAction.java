@@ -31,10 +31,7 @@ public class MainAction implements Action {
   public static final Logger log = Logger.getLogger(MainAction.class);
   private static final String DEFAULT_SORTING = "price";
   private static final int PAGE_SIZE = 8;
-  private static final String SORTED_BY = "sorted_by";
-  private static final String LIST_OF_SORTING_OPTIONS = "sorted_by_list";
-  private static final String PAGE_NUMBER_INPUT = "page";
-  private ApartmentService apartmentService = ServiceFactory.getInstance().createApartmentService();
+  private final ApartmentService apartmentService = ServiceFactory.getInstance().createApartmentService();
   private final Map<String, BiFunction<Integer, Integer, Collection<Apartment>>> sortingMethods =
           new HashMap<>() {{
             put("price", apartmentService::getApartmentsSortedByPrice);
@@ -45,11 +42,6 @@ public class MainAction implements Action {
 
   public MainAction() {
   }
-
-  public MainAction(final ServiceFactory serviceFactory) {
-    apartmentService = serviceFactory.createApartmentService();
-  }
-
   @Override
   public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
     try {
