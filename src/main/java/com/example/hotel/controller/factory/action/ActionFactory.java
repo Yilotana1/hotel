@@ -1,7 +1,7 @@
-package com.example.hotel.controller.factory;
+package com.example.hotel.controller.factory.action;
 
 import com.example.hotel.controller.action.Action;
-import com.example.hotel.controller.factory.impl.ActionFactoryImpl;
+import com.example.hotel.controller.factory.action.impl.ActionFactoryImpl;
 
 public abstract class ActionFactory {
     private static ActionFactory actionFactory;

@@ -1,11 +1,14 @@
 package com.example.hotel.controller.action;
 
 import com.example.hotel.controller.commons.Constants.RequestAttributes;
-import com.example.hotel.controller.commons.Constants.RequestParameters;
 import com.example.hotel.controller.commons.Constants.SessionAttributes;
 import com.example.hotel.controller.commons.Path;
 import com.example.hotel.controller.dto.UserDTO;
 import com.example.hotel.controller.exception.InvalidDataException;
+import com.example.hotel.controller.factory.mapper.MapperFactory;
+import com.example.hotel.controller.factory.validator.ValidatorFactory;
+import com.example.hotel.controller.mapper.Mapper;
+import com.example.hotel.controller.validator.Validator;
 import com.example.hotel.model.service.UserService;
 import com.example.hotel.model.service.exception.LoginIsNotUniqueException;
 import com.example.hotel.model.service.exception.ServiceException;
@@ -25,6 +28,9 @@ public class EditProfileAction implements Action {
     private UserService userService = ServiceFactory.getInstance().createUserService();
     public final String ERROR_ATTRIBUTE = RequestAttributes.ERROR_PREFIX + Path.Get.User.PROFILE;
 
+    private final Mapper<UserDTO> userMapper = MapperFactory.getInstance().createUserMapper();
+    private final Validator userValidator = ValidatorFactory.getInstance().createUserValidator();
+
     public EditProfileAction() {
     }
 
@@ -35,11 +41,11 @@ public class EditProfileAction implements Action {
     @Override
     public void execute(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         try {
-            UserDTO.throwIfNotValid(request);
-            final var userDTO = getUserDTO(request);
-            userService.update(userDTO);
-            addLoginToCache(userDTO.getLogin(), request);
-            request.getSession().setAttribute(SessionAttributes.LOGIN, userDTO.getLogin());
+            userValidator.throwIfNotValid(request);
+            final var userDto = userMapper.map(request);
+            userService.update(userDto);
+            addLoginToCache(userDto.getLogin(), request);
+            request.getSession().setAttribute(SessionAttributes.LOGIN, userDto.getLogin());
 
         } catch (final InvalidDataException e) {
             log.error(e.getMessage(), e);
@@ -63,17 +69,5 @@ public class EditProfileAction implements Action {
         request
                 .getSession()
                 .setAttribute(ERROR_ATTRIBUTE, message);
-    }
-
-    private UserDTO getUserDTO(final HttpServletRequest request) {
-        return UserDTO
-                .builder()
-                .login(request.getParameter(RequestParameters.LOGIN))
-                .firstname(request.getParameter(RequestParameters.FIRSTNAME))
-                .lastname(request.getParameter(RequestParameters.LASTNAME))
-                .phone(request.getParameter(RequestParameters.PHONE))
-                .email(request.getParameter(RequestParameters.EMAIL))
-                .password(request.getParameter(RequestParameters.PASSWORD))
-                .build();
     }
 }

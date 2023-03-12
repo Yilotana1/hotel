@@ -1,6 +1,5 @@
 package com.example.hotel.controller.dto;
 
-import com.example.hotel.controller.commons.Constants;
 import com.example.hotel.controller.commons.Constants.RequestParameters;
 import com.example.hotel.controller.exception.InvalidDataException;
 import com.example.hotel.model.entity.enums.ApartmentClass;
@@ -64,8 +63,7 @@ public class TemporaryApplicationDTO {
         final var apartmentClass = request.getParameter(RequestParameters.APARTMENT_CLASS_ID);
         final var numberOfPeople = request.getParameter(RequestParameters.NUMBER_OF_PEOPLE);
         throwIfNulls(stayLength, apartmentClass, numberOfPeople);
-        if (
-                stayLength.isEmpty()
+        if (stayLength.isEmpty()
                 || parseInt(stayLength) <= MIN_STAY_LENGTH
                         || parseInt(stayLength) > MAX_STAY_LENGTH) {
             final var message = format(

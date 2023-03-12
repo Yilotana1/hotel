@@ -1,6 +1,6 @@
 package com.example.hotel.controller;
 
-import com.example.hotel.controller.factory.ActionFactory;
+import com.example.hotel.controller.factory.action.ActionFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

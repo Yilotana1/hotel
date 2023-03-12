@@ -66,6 +66,7 @@
             </th>
         </tr>
     </table>
+    <br/>
     <c:if test="${!(sessionScope.get('error/client/application-invoice') == null)}">
         <span class="alert alert-danger my-3" role="alert"><fmt:message
                 key="${sessionScope.get('error/client/application-invoice')}"/></span>

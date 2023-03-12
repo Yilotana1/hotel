@@ -1,4 +1,4 @@
-package com.example.hotel.controller.factory.impl;
+package com.example.hotel.controller.factory.action.impl;
 
 import com.example.hotel.controller.commons.Path;
 import com.example.hotel.controller.action.Action;
@@ -23,7 +23,7 @@ import com.example.hotel.controller.action.manager.ShowApartmentsAction;
 import com.example.hotel.controller.action.manager.ShowPreferredApartmentsAction;
 import com.example.hotel.controller.action.manager.ShowTemporaryApplicationsAction;
 import com.example.hotel.controller.action.manager.ShowUsersAction;
-import com.example.hotel.controller.factory.ActionFactory;
+import com.example.hotel.controller.factory.action.ActionFactory;
 
 import java.util.HashMap;
 import java.util.Map;
