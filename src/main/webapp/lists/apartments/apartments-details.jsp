@@ -10,7 +10,7 @@
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
 
-<table>
+<table class="table table-striped table-bordered table-hover w-75">
     <tr>
         <th><fmt:message key="number"/></th>
         <th><fmt:message key="floor"/></th>
@@ -45,9 +45,6 @@
         </tr>
     </c:forEach>
 </table>
-<br/>
-<br/>
-<br/>
 <jsp:include page="../pages.jsp"/>
 </body>
 </html>

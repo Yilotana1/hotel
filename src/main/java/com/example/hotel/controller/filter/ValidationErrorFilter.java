@@ -24,6 +24,7 @@ public class ValidationErrorFilter implements Filter {
     public void doFilter(final ServletRequest servletRequest,
                          final ServletResponse servletResponse,
                          final FilterChain filterChain) throws IOException, ServletException {
+        log.debug("doFilter started; request URI = " + ((HttpServletRequest)servletRequest).getRequestURI());
 
         final var request = (HttpServletRequest) servletRequest;
         final var session = request.getSession();
@@ -43,7 +44,7 @@ public class ValidationErrorFilter implements Filter {
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-    private static String getRequestUrl(final HttpServletRequest request) {
+    private String getRequestUrl(final HttpServletRequest request) {
         final var baseUrl = request.getContextPath();
         final var fullRequestUrl = request.getRequestURL().toString();
         return fullRequestUrl

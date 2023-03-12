@@ -6,7 +6,7 @@ import com.example.hotel.controller.factory.impl.ActionFactoryImpl;
 public abstract class ActionFactory {
     private static ActionFactory actionFactory;
 
-    public abstract Action getCommand(final String uri);
+    public abstract Action getAction(final String uri);
 
     public static ActionFactory getInstance() {
         if (actionFactory == null) {

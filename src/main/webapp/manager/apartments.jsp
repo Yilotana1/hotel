@@ -12,11 +12,9 @@
 <body>
 <fmt:setLocale value="${sessionScope.lang.getLanguage()}"/>
 <fmt:setBundle basename="message"/>
-<jsp:include page="../locale_buttons.jsp"/>
-<jsp:include page="../lists/apartments/apartments-details.jsp"/>
-<form action="${pageContext.request.contextPath}/profile">
-    <fmt:message key="back" var="back"/>
-    <input type="submit" value="${back}"/>
-</form>
+<div class="mx-3 my-3">
+    <jsp:include page="../locale_buttons.jsp"/>
+    <jsp:include page="../lists/apartments/apartments-details.jsp"/>
+</div>
 </body>
 </html>

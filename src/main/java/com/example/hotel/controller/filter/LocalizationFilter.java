@@ -39,7 +39,7 @@ public class LocalizationFilter implements Filter {
     public void doFilter(final ServletRequest servletRequest,
                          final ServletResponse servletResponse,
                          final FilterChain filterChain) throws IOException, ServletException {
-
+        log.debug("doFilter started; request URI = " + ((HttpServletRequest)servletRequest).getRequestURI());
         final var request = (HttpServletRequest) servletRequest;
         final var response = (HttpServletResponse) servletResponse;
         final var langStoredInSession = (Locale) request.getSession().getAttribute(LANGUAGE);

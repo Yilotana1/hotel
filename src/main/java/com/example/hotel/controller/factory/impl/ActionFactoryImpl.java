@@ -37,7 +37,7 @@ public class ActionFactoryImpl extends ActionFactory {
     }
 
     @Override
-    public Action getCommand(final String uri) {
+    public Action getAction(final String uri) {
         if (getCommands.containsKey(uri)) {
             return getCommands.get(uri);
         }
